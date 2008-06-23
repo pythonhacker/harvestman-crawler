@@ -1,0 +1,67 @@
+
+=================================================
+* Enhancements done in HarvestMan Datastructures*
+=================================================
+
+Many data structures were either enhanced or removed from HarvestMan
+during work done on this from Feb 12 to Feb 14 2008. Here are a list
+of changes.
+
+I. Module datamgr.py
+
+This module has the most critical data structures which manage the
+state of the program. 
+
+1. Dictionary _downloaddict is removed. Its constituents have been
+either removed, replaced with counters or enhanced. Here are the
+changes.
+
+  a. _savedfiles list is removed. This is really not required.
+     It is replaced with self.savedfiles which just keeps the
+     counter of the saved files.
+  b. _deletedfiels list is removed. This is replaced with nothing.
+     It is really a redundant list/counter.
+  c. _failedurls list is removed. Instead failed URLs are calculated
+     at program end by searching through the BST _urlsdb (below) by
+     using the atttributes of the URL object stored in it.
+  d. _doneurls list is removed. This again was not very imporant and
+     was redundant.
+  e. _collections list is replaced with a self.collections BST.
+  f. _reposfiles moved to self.reposfiles.
+  g. _cachefiles moved to self.cachefiles.
+
+2. self._fetcherstatus dictionary is removed. This logic is not
+required. This was mainly used to find out whether a URL is currently
+being downloaded etc, but this is replaced with a state transition
+on the URL objects.
+
+3. self._urldict is replaced with the disk-caching BST self._urlsdb .
+This has shown very good results.
+
+4. self._projectcache is no longer a shelve dictionary, instead an
+instance of Base, which is a in-memory dictionary like database
+written by Pierre Quentel and published in ASPN as "pydblite"
+recipe {http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/496770}.
+This seems to work pretty well and use memory efficiently. It also
+makes searching into the cache more efficient.
+
+5. New counters added - self._numfailed2, self._numretried etc.
+
+
+II. Module rules.py
+
+1. The self._links list is removed. This was used to filter out
+duplicate links. This has been replaced by a search in the _urlsdb
+data structure. This is made possible by using the integer hash of the
+full url string as the index into the _urlsdb BST. So similar URLs
+(URLs with same full url string) will hash to the same index.
+
+2. self._filter is now a dictionary, not a list. Instead of
+keeping the list of full URLs, this now just keeps a hash of
+the index of the URLs which are filtered. 
+
+3. self._rexplist is removed since it was found to be used
+nowhere.
+
+
+

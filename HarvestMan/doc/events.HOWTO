@@ -1,0 +1,155 @@
+This document describes the event framework of HarvestMan
+which allows the programmer to hook into specific places
+at the program flow and perfom custom handling, thereby
+altering program behavior.
+
+Events
+------
+The event framework sits in the module lib/event.py . It
+defines an Event class and a HarvestManEvent class. The
+former defines an event and the latter acts as an
+event manager providing functions to bind to and
+raise events.
+
+Event class
+-----------
+An event class defines an event. It has the following
+fields. 
+
+1. name => A string, for the name of the event. The
+           name should be unique.
+2. config => A reference to the configuration object
+3. url => A handle to the URL object associated to the event.
+4. document => A handle to the document object associated to
+         the event.
+
+Note that of the above 4 attributes, only the document
+attribute could have a null (None) value. The rest
+of the attribtues should have non null values.
+
+Raising an event
+----------------
+An event can be raised by the raise_event method of 
+the HarvestManEvent class. The raise_event method takes
+the following arguments.
+
+1. event => The event name (string) for which we are raising
+            the event.
+2. url   => The URL object associated to the event.
+3. document => The document object associated to the event.
+            This could be a null value.
+
+Apart from the above 3 arguments, keyword arguments can be
+passed. The keyword arguments will be passed on to the 
+event handler.
+
+Note that every event may not supply all the arguments
+to the event handler.
+
+
+Binding event handlers
+----------------------
+Event handlers can be bound using the 'bind' method of the
+HarvestManEvent class. This takes 3 arguments namely,
+
+1. event -> The event of interest.
+2. funktion - A function registered to handle the event.
+              The function is called back when the event is
+              raised.
+
+Apart from that you can pass additional positional arguments
+for the function. This will be passed to the function when
+the event is raised.
+
+The bind method is exposed on the HarvestMan class (as
+bind_event), so practically, you will be using that method 
+instead of using the method directly on the HarvestManEvent class.
+
+
+Example
+-------
+The following code shows how to bind for an event
+
+def write_this_url(event, *args):
+        
+    url = event.url
+    if url.is_image():
+        return True
+    else:
+        return False
+
+We want to bind this to the 'writeurl' event to make
+sure we write only image URLs. To bind it,
+
+spider = HarvestMan()
+spider.bind_event('writeurl', write_this_url)
+
+Now whenever the 'writeurl' event is raised, the function
+'write_this_url' is called automatically.
+
+Using Events
+------------
+Typical use of events are as 'before handlers', to
+allow the developer to insert custom logic to decide
+whether an action should be taken on a URL or document.
+
+For example, the event 'includelinks' allows the developer
+to hook into int and return a value, based on custom
+processing. If the event handler returns True, the URL
+is included, else filtered. 
+
+To write such handlers, the programmer has to clearly
+return True if we want the handler to allow the action
+or return False to deny the action. Look at the previous
+sample code as an illustration for this.
+
+Other events are 'after handlers' which raise an event
+after an action is done. Since the programmer cannot 
+influence the action at this stage, the return value of 
+these events are of no importance.
+
+Events in HarvestMan
+--------------------
+HarvestMan as of now, defines the following events. This
+is grouped into 'before events' and 'after events'.
+
+Before Events
+-------------
+1. beforecrawl => Raised before a URL's children are 
+put into the crawl queue. Args: url, document .
+2. beforefetch => Raised before a URL is fetched, i.e
+downloaded from the web. Args: url .
+3. beforeparse => Raised before a webpage URL's data
+is parsed to extract child links. Args: url, document
+4. beforejsparse => Raised before a webpage URL's data
+is parsed to extract any links hidden in Javascript. 
+Args: url, document.
+5. beforecssparse => Raised before a stylesheet URL's data
+is parsed to extract any links. Args: url, document. 
+6.writeurl => Raised before a URL's data is saved to disk.
+Args: url, data
+7. includelinks => Raised before a URL is put into the 
+crawl queue. Filtering logic can be added in the handler
+to filter the URL. Args: url .
+
+After Events
+-------------
+1. aftercrawl => Raised after the crawl of a URL's children
+are complete, i.e the children are put into the crawl
+queue. Args: url, document.
+2. afterfetch => Raised after the URL is downloaded and
+if a webpage, parsed and its children are put into the
+fetch queue. Args: url, document.
+3. afterjsparse => Raised after a webpage URL's data
+is parsed to extract any links hidden in Javascript. 
+Args: url, document, links
+4. afterparse => Raised after a webpage URL's data
+is parsed to extract webpage links. Args: url, document, links
+5. aftercssparse => Raised after a stylesheet URL's data
+is parsed to extract any links. Args: url, document, links.
+6. postdownload => Raised immediately after the steps
+performed after a download is completed. (This effectively
+functions as a callback function for the post_download_setup
+method in datamgr module). Args: None .
+
+

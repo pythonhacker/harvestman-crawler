@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<HarvestMan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://harvestmanontheweb.com/schemas/HarvestMan.xsd">
+  <config version="3.0" xmlversion="1.0">
+    <projects>
+      
+      <project skip="0">
+
+        <url>http://nltk.sourceforge.net/index.php/Book</url>
+        <name>nltk-book</name>
+
+        <basedir>~/websites</basedir>
+        <verbosity value="3"/>
+      </project>
+      
+    </projects>
+    
+    <network>
+      <proxy>
+        <proxyserver></proxyserver>
+        <proxyuser></proxyuser>
+        <proxypasswd></proxypasswd>
+        <proxyport value="80"/>
+      </proxy>
+    </network>
+    
+    <download>
+      <types>
+        <html value="1"/>
+        <images value="0"/>
+        <javascript value="1"/>
+        <javaapplet value="1"/>
+        <querylinks value="1"/>
+      </types> 
+      <cache status="1">
+        <datacache value="0"/>
+      </cache>
+      <protocol>
+        <http compress="1" />
+      </protocol>
+      <misc>
+        <retries value="0"/>
+      </misc>
+    </download>
+    
+    <control>
+      <links>
+        <imagelinks value="1"/>
+        <stylesheetlinks value="1"/>
+        <offset start="0" end="-1" />
+      </links>
+      <extent>
+        <fetchlevel value="3"/>
+        <depth value="10"/>
+        <extdepth value="0"/>
+        <subdomain value="1"/>
+        <ignoretlds value="0" />
+      </extent>
+      <limits>
+        <maxextservers value="0"/>
+        <maxextdirs value="0"/>
+        <maxfiles value="5000"/>
+        <maxfilesize value="5242880"/>
+        <connections value="5"/>
+        <timelimit value="-1"/>
+      </limits>
+      <rules>
+        <robots value="1"/>
+        <urlpriority></urlpriority>
+        <serverpriority></serverpriority>
+      </rules>
+      <filters>
+        <urlfilter>+nltk.org/doc/en/*</urlfilter>
+        <serverfilter></serverfilter>
+        <wordfilter></wordfilter>
+        <junkfilter value="1"/>
+      </filters>
+      <plugins>
+        <plugin name="swish-e" enable="0" />
+        <plugin name="simulator" enable="0" />
+        <plugin name="lucene" enable="1" />
+      </plugins>
+    </control>
+
+    <system>
+      <workers status="1" size="10" timeout="1200"/>
+      <trackers value="10"/>
+      <timegap value="3.0" random="1" />
+    </system>
+    
+    <files>
+      <urltreefile>urls.html</urltreefile>
+      <archive status="0" format="bzip"/>
+      <urlheaders status="1" />
+      <localise value="0"/>
+    </files>
+    
+    <display>
+      <browsepage value="0"/>
+    </display>
+    
+  </config>
+  
+</HarvestMan>

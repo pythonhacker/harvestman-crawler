@@ -1,0 +1,15 @@
+$def with (form)
+
+<p><b>Generate HarvestMan Configuration</b></p>
+<p>Enter the parameters in the form below and click on "Generate Configuration" button at the end.</p>
+<p><i>Hovering on the input boxes with your mouse will pop up a tool-tip with help text.</i></p>
+</p>
+
+<form name="main" method="post"> 
+$if not form.valid: <p class="error"></p>
+$:form.render()
+<br>
+<p align="center">
+<input type="submit" value="Generate Configuration" />
+</p>
+</form>

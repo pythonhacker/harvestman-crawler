@@ -1,0 +1,1405 @@
+
+*==========================================================*
+|            -Changelog.txt file for HarvestMan-           |
+|                                                          |
+|           URL: http://www.harvestmanontheweb.com         |
+*==========================================================*
+
+
+Version 2.0 b1
+Release Date: TBD
+
+Release Focus: Re-design, major enhancements, features & bug-fixes
+
+Brief
+=====
+The 2.0 version is a release of HarvestMan after more than 2.0
+years. This version has numerous new features in terms of
+extensibility and usability. This version also converts HarvestMan
+from a web crawler application to a full-fledge application framework
+for writing custom web crawling/data mining applications.
+
+The changes in this version are many - there are changes in the
+source code layout, extensibility and usability features, performance
+enhancement fixes and numerous other bug-fixes and changes in dependence
+on third-party modules and in the setup.py script. Each of these
+changes will be discussed in detail here.
+
+
+Source code layout changes
+==========================
+The source code layout is changed considerably. Tne new layout splits
+the code into well-defined folders which abstract a functionality.
+The new layout starts from a top-level "harvestman" folder which holds
+all the code. The layout in this folder is as follows.
+
+harvestman
+        |
+        +---apps
+        |     |
+        |     |
+        |     +---samples
+        |
+        |
+        +---dev
+        |
+        |
+        +---ext
+        |    |
+        |    |  
+        |    +---lucene
+        |    |
+        |    |
+        |    +---swish-e
+        |
+        |
+        +---lib
+        |    |
+        |    +---common
+        |    |
+        |    +---js
+        |         |
+        |         +---samples
+        |
+        +---test
+
+The folders and their function are described below.
+
+1. apps - This holds all application modules. The HarvestMan framework's
+main application (harvestman.py), the Hget application's module (hget.py)
+and the module holding the base application class (appbase.py) sit in
+this module. This module also holds some sample configuration XML files.
+
+2. apps/samples - This holds sample applications based on HarvestMan
+event framework which demonstrates custom crawling applications, extending
+the HarvestMan framework. 
+
+3. dev - This holds sample code and code which is under a prototype stage
+and not part of the HarvestMan library yet, but could become so in future
+versions.
+
+4. ext - This holds modules which make use of the HarvestMan plugin
+framework and implement plugin extensions on HarvestMan. 
+
+5. ext/lucene - This holds some useful code for working with Lucene
+indexes.
+
+6. ext/swish-e - This holds some documentation and a sample swish-e
+configuration file which can be used with the swish-e plugin of HarvestMan.
+
+7. lib - This holds the main library modules of HarvestMan. This folder
+contains most of the code of the HarvestMan framework and in a way
+defines the HarvestMan framework. 
+
+8. lib/common - This holds library modules which implement common
+algorithms or data structures or generic libraries or holds global 
+data/objects or contain code from third party libraries. 
+
+9. lib/js - This holds a barebones Javascript parser written in pure
+Python which is used in HarvestMan to parse basic javascript. It also
+contains a pure Python implementation of the Narcissus javascript
+parser, though this parser is not used in HarvestMan framework anywhere.
+
+10.lib/js/samples - Contains sample javascript/html files as test
+cases for the Javascript/Narcissus parsers.
+
+11.test - Contains a unit test module and a single unit test case
+for the urlparser module. 
+
+
+New Features
+============
+As mentioned earlier, the features can be split into two - extensibility
+features and usability features. 
+
+Extensibility
+-------------
+1. HarvestMan Event framework - This release adds an event framework
+to HarvestMan which allows a developer to very easily extend the program's
+behavior. Specific functions raise events before and after certain
+operations. A developer can bind his functions to these events and his
+functions are automatically called back by HarvestMan during program flow,
+when the event is raised. The developer can provide his own specific 
+custom processing in his event callback, which can modify the program
+behavior.
+
+There are many examples of writing custom crawler applications by using
+events in the "apps/samples" folder. For more information on HarvestMan
+event framework read the document "events.HOWTO" in this folder.
+
+2. HarvestMan plugins framework - This release adds a plugin
+mechanism to HarvestMan, which allows the developer to modify
+program behavior by writing custom logic and hooking it on to specific
+methods in HarvestMan classes. The plugin mechanism works using metaclasses
+and allows a developer to completely replace the code of a method or
+to attach functions as pre/post callbacks on methods. This has been
+used to implement sample plugins - the "ext" folder contains plugins
+which involve a simulator, a swish-e plugin, a lucene plugin etc. 
+
+For more information on plugins read "plugins.HOWTO" in this folder.
+
+3. Swish-e integration implemented as a plugin (see (2)). This plugin
+allows HarvestMan to run as an external program feeding content to swish-e
+indexer.
+
+4. Lucene integration implemented as a plugin (see (2)). This plugin
+converts HarvestMan to a web indexer, allowing to crawl and index web
+pages using Lucene via PyLucene.
+
+5. A simulate feature implemented as a standard plugin (see (2)). 
+This simulates crawling without actually downloading anything. 
+
+6. Crawl user database - From 2.0, a user crawl database named
+"crawls.db" is created in a user directory and all crawl meta
+information and statistics are appended as records to this database.
+The database is an sqlite database and consists of two tables
+namely "projects" and "project_stats". The former stores meta
+information on every HarvestMan project, while the latter stores
+information on crawl statistics of every project.
+
+For more information on the crawl database, see "dbdesign.txt" .
+
+7. New modules: Several new modules have been added. 
+These are:
+
+lib/
+
+o configparser.py - This contains configuration file parsing
+code. (This used to be named as xmlparser.py).
+o db.py - Defines classes implementing crawl database feature.
+o document.py - Defines a class which stands for a web document.
+o event.py - Defines classes for the HarvestMan event framework.
+o filethread.py - Defines a class for writing files in separate
+threas (not used).
+o hooks.py - Defines classes for the plugin mechanism
+o methodwrapper.py - Defines metaclass level mechanisms for
+implementing the plugin feature.
+o mirrors.py - Defines classes which helps to manage mirrors
+for the Hget application.
+o options.py - Summarizes and holds all harvestman/hget options
+in tuples.
+o urlcollections.py - Defines URL context and collections classes
+which helps to associate and relate URLs belonging to specific
+contexts (frame, css etc) easily and to define new contexts.
+o urlproc.py - Defines a function which helps to replace HTML
+entitites in URLs.
+o urltypes.py - Defines a hierarchical type system for URLs encountered
+in the web, which is used by other modules.
+
+o common/* - The "common" sub-folder and all contained modules are
+brand new. These modules are,
+
+  - bst.py - Defines a binary search tree with disk caching.
+  - common.py - Contains global functions/data
+  - dictcache.py - Defines a dictionary type with disk caching.
+  - keepalive.py - Module borrowed from "urlgrabber" project, defining
+    HTTP handlers which provide HTTP/1.0 keep-alive connections.
+  - lrucache.py - Defines an O(1) LRU cache class. Code courtesy
+    Josiah Carlson.
+  - macros.py - Defines a metaclass and its derived C-like "macro" variables
+    and defines several "macros" for HarvestMan.
+  - netinfo.py - Common data and state moved from urlparser.py to this module.
+  - optionparser.py - Defines a generic option parser class which makes it
+    easy to write and modify command line options in the form of tuples.
+  - progress.py - Defines a progress bar class. Code borrowed from the 
+    "S.M.A.R.T" package manager project and customized.
+  - properties.py - A pure Python implementation of java.util.Properties class.
+  - pydblite.py - A pure Python in-memory database with selection by list 
+    comprehension and generator expression. Code courtesy Pierre Quentel.
+  - singleton.py - Singleton implementations.
+  - spincursor.py - A console spin-cursor implementation used by hget.
+
+apps/
+
+o hget.py - New application module for the "hget" application
+o appbase.py - New top-level application class module.
+
+ext/
+
+ o This folder and all code under it are new.
+
+test/
+
+ o This folder and all code under it are new.
+
+
+8. Deprecated/renamed modules - Several modules have been deprecated
+or renamed (moved) w.r.t 1.4.6 version.
+
+ o common.py moved to "common" sub-folder.
+ o feedparser.py moved to "dev" folder.
+ o strptime.py deprecated and removed.
+ o urlserver.py deprecated and removed.
+ o xmlparser.py renamed to configparser.py .
+
+
+Usability
+---------
+1. Support for HTTP compression (gzip, deflate).
+2. Support for HTML "embed" and "object" tags.
+3. Support and control for multimedia URL types. A
+new type called "multimedia" and subtypes "movies"
+and "sounds" have been added.
+4. Support for meta "refresh" tags.
+5. Support for meta "robot" tags (index, follow, noindex, nofollow).
+6. Feature to parse stylesheets, extract URLs and download them.
+7. Support for parsing and replacing HTML entities in URLs.
+8. Support for keywords and description attribtues in "meta" tags 
+for web pages.
+9. Support for specifying offset in child URLs of webpages.
+10. Support for HTTP 304 using "If-Modified-Since" HTTP headers.
+11. Support for "etags" in HTTP headers.
+12. Support for HTTP keep-alive in mutliple connections to the
+same site. Program now attempts to keep HTTP connections open
+as much as possible.
+13. Support for HTTP basic authorization for URLs.
+14. Command line options can be mixed with configuration file
+when using the -C option.
+15. Command line changes - The following command line options
+have been removed, added or updated.
+  1. --subdomain, -S: Changed to -s.
+  2. -m,--simulate: New option to simulate crawling.
+  3. -g,--plugin: New option to apply a given plugin.
+  4. --urllistfile, --urltreefile: Removed these options.
+  5. -F, --urlfile: New option to read list of start URLs from a file
+
+
+Other Changes (including performance enhancements)
+--------------------------------------------------
+
+1. Project caching uses the database object defined by the pydblite
+module instead of using pickling or shelve. This helps fast
+cache reads/writes than before.
+2. Logging module rewritten to make use of Python logging library.
+3. Log for same project run many times, keeps appending to same
+log file instead of deleting old logs. 
+4. Log files now have time stamps in every log line.
+5. Replaced md5 with sha module for generating hashes.
+6. Removed lock objects in many places when the data types are
+automatically synchronized (lists etc) by the GIL.
+7. Removed strptime module since it is no longer required.
+8. Default value for maximum file size (for single file) increased
+to 5MB (was 1 MB earlier).
+9. Changed sleep times inside the loops of fetcher/crawler thread
+clases to random times ranging from 0 to 0.3 second. This allows
+for more better resource allocation and pooling.
+10. Sleep times is available as a configuration option. This can
+be used to increase sleep-times for slow/traffic intense websites.
+11. Caching supports HTTP-304 using "If-modified-since" and 
+etags using "If-none-match". Etags in HTTP headers are saved
+to project cache if found along with last-modified time information.
+12. Better management of HTTP errors in connector module. A new
+error class is defined and errors are managed according to 
+HTTP/1.1 definitions.
+13. Rudimentary javascript support - for javascript based URL
+forwarding and basic support for DOM modifications using document.write* .
+14. Better support for Frame pages.
+15. Arbitrary return values in most methods replaced by custom 
+defined macros where a number is expected as return value.
+Each macro is a class which maps to a numerical value.
+16. A fast HTML parser based on sgmlop is added to HarvestMan.
+By default this parser is used. This parser can parse even bad
+HTML so more pages should get parsed than in previous versions.
+17. The "GetObject", "SetObject" methods are replaced by a global
+object named "objects" which holds handles to all global objects
+by using alias strings. For example, instead of getting the
+config object using,
+
+cfg = GetObject('config')
+
+now this is,
+
+cfg = objects.config
+
+The "objects" object lives in the common/common.py module. The
+aliases are set using the "SetAlias" method. Objects which want
+to be registered using "SetAlias" should define their unique alias 
+string in the "alias" attribute.
+
+
+(The following are specific performance enhancement fixes)
+
+18. The url dictionary and collections data structure are now
+disk-caching BSTs as opposed to pure in-memory dictionaries as earlier.
+This helps reduce the memory usage of the application and also
+to increase program speed. 
+19. Many redundant data structures removed. No separate data structure
+used for duplicate link checking. Instead the url dictionary BST
+is reused. The "downloaddict" in datamgr.py module replaced with
+counters.
+20. The "_filter" dictionary in rules.py module no longer stores
+full URLs, but only their indices. The "_links" list is removed
+from this module.
+
+21. In urlparser.py module a new method named "get_canonical_url"
+is added. This returns the canonical form of a URL. This form is used
+to calculate an index of the URL which is used to filter out 
+duplicate URLs etc. Since canonicalization is done, this URL 
+duplicate filter algorithm works much better than before.
+22. Better unicode handling in url* modules.
+23. A state machine has been added for managing program exit
+condition instead of the previous active wait loop. The state machine
+keeps track of state changes in threads using a dictionary. Program
+exit is related to certain synchronization of states. Active wait
+replaced by waiting on a condition object.
+24. Url status dictionaries in datamgr replaced by url queue status
+variable on url objects and status macros. The "qstatus" variable
+on a URL object changes when the URL enters and exits queues, gets
+downloaded etc.
+25. Retry logic improved. Only URLs which failed without fatal
+errors and which were not read from cache are retried. 
+26. The requests dictionary is removed from the HarvestManUrlConnectorFactory
+class. There is no need to limit connections per server, only a global
+limit is used.
+
+For more information on data structure changes, see "Datastructures.txt".
+For more information on the state machine, see "state_machine.txt".
+
+Bug-fixes
+---------
+1. Fixed 100% CPU utilization bug.
+2. Fixed many bugs in urlparser module,
+   - Correctly interpreting HTML entities
+   - Better unicode handling
+   - Bug-fixes for URLs with ".." character (URLs like http://www.foo.com/../bar )
+   - Bugs in re-resolving of URLs
+   - Bug to fix too many recalculations of the absolute url (in get_full_url())
+   - Bug fixing the URL index calculation
+   - Bug fixing handling of anchor tags
+   - Bug fixing handling of % characters in URLs
+   - Bug fixing changes in URLs which requires changes in directories/filenames etc (adding of recalc_locations method)
+3. Bug-fix in rules module to speed up rules checks.
+4. Bug-fix in rules module to correctly add URLs to filters dictionary for filtered URLs.
+5. Bug-fixes in downloading of duplicate content by fetchers.
+6.  Fixed problem with URLs not downloaded when base url is
+redefined. This was causing a deep-crawling problem for
+many sites.
+7. Bug-fixes in pageparser module. Fixed logic in CaselessDict class.
+8. Fixed unicode handling bug in logger module.
+9. Many others...
+
+
+Changes in setup/configuration
+------------------------------
+
+Since the 2.0 version also adds many changes in the setup.py script
+and also brings in the concept of user specific folders and 
+different levels of configuration and changes in the structure
+of configuration files also, so this is discussed separately
+in this section. 
+
+1. User folder - From 2.0 version, HarvestMan will create a folder
+for user specific configuration and data. For POSIX systems this
+folder is $HOME/.harvestman where $HOME is the home directory of the
+user. For Win32 systems this is %USERPROFILE%/Local Settings/Application Data/HarvestMan
+folder where %USERPROFILE% maps to the profile folder of the user, typically
+being the "C:/Documents and Settings/%USERNAME%" folder. A user specific
+configuration file is created in the "config" sub-folder of this folder.
+
+2. System folder - From 2.0 version, HarvestMan will create a folder for
+system wide configuration. For POSIX systems this is "/etc/harvestman"
+folder. For Win32 systems this is %ALLUSERPROFILE%/Application Data/HarvestMan/conf"
+folder. A system level configuration file is created and copied to this folder.
+
+HarvestMan can be customized by altering either the system configuration file,
+the user configuration file or both. HarvestMan first loads the system configuration
+file (if found) and next the user configuration file (if found) and further any
+project specific configuration files. So system-wide customization (for all users)
+can be kept in the system configuration file, user-specific customization in the
+user configuration file and project specific customization in specific project
+configuration files. Any changes applied further upstream overrides the settings
+applied earlier. In other words, project configuration files override user configuration
+files and user configuration files override the system configuration file.
+
+
+3. Configuration files - Earlier configuration XML files had to be complete and
+specify a <projects>...</projects> section specifying the URLs and other configuration
+for crawls. Now config XML files can be part or incomplete, with each specifying
+one or more top-level elements for any levels of configuration. In fact the user
+and system configuration files will not have the <projects>...</projects> section.
+These can be specified in another configuration file. 
+
+For example it is possible to have a configuration file as follows.
+
+<?xml version="1.0" encoding="utf-8"?>
+
+<HarvestMan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://harvestmanontheweb.com/schemas/HarvestMan.xsd">
+  <config version="3.0" xmlversion="1.0">
+    
+    <control>
+      <plugins>
+        <plugin name="swish-e" enable="0" />
+        <plugin name="simulator" enable="0" />
+        <plugin name="lucene" enable="1" />
+      </plugins>
+    </control>
+
+  </config>
+  
+</HarvestMan>
+
+Since, this does not have a <projects>...</projects> section, to do
+any meaningful crawl with it, a URL has to be specified on the command line.
+So assuming the name of the above file is "cfg.xml", a sample crawl
+using this config file is,
+
+$ harvestman -C cfg.xml http://www.python.org/doc/current/tut/tut.html
+
+It is important to note that HarvestMan does not support multi-level cascading
+of configuration files. Only 3 levels of cascading are supported namely
+that of system=>user=>custom .So a crawl can be customized with configuration
+files at three levels which should be enough for most usage scenarios.
+
+4. setup.py - The setup.py script now installs sgmlop if it is not found.
+Since HarvestMan-2.0 depends on pyparsing it is also pulled in and automatically
+installed if not found. The setup.py script installs Python documentation for
+HarvestMan (generated by epydoc) and creates two shortcuts (softlinks) in POSIX
+systems namely "harvestman" for running the HarvestMan program and "hget" for
+running the hget program.
+
+---------------------------------------------------------------------------
+
+
+Version 1.4.6 final
+Release Date: Sep 9 2005
+
+Release Focus: Minor bugfix
+
+Changes
+=======
+1. Fixed bugs in the setup.py and install scripts
+so that they work with Python 2.4.
+2. Updated py2exe install script. It works correctly
+with py2exe version 0.6.1 upwards.
+
+
+Version 1.4.5 final
+Release Date: Aug 19 2005
+
+Release Focus: Bug-fixes
+
+Changes
+=======
+1. Added a subdomain flag to the command line.
+2. For verbosity level of zero, no message is printed.
+Earlier this used to print the welcome message.
+
+Bug-fixes
+=========
+1. Fixed the bug with starting a project by reading
+back an existing project file. This was not working
+before. Project file written out using Python marshal
+module, not pickle.
+2. Fixed bugs in localization. The regular expression's
+sub method should replace URL only once. Test site:
+http://www.oligopolywatch.com .
+3. Verbosity command line flag was not working. Fixed
+it. Fixed errors with a few other command line options.
+4. The stop project method of the program now
+calls the "terminate" method on threads so we dont
+have hanging threads.
+
+
+Version 1.4.5 b1 (beta 1)
+Release Date: Aug 02 2005
+
+Improvements
+============
+1. There is only one improvement in this release, the new
+command line options. The new release has a complete set
+of new command line options written from scratch. It 
+replaces the previous cluttered and confusing command line.
+A notable feature is that you can use HarvestMan like wget
+for only downloading URLs with a nocrawl option. The new
+command line supports a number of useful options which
+the user is most likely to configure. It skips a number
+of advanced or obscure options that the user need not
+be bothered with, making the command line user friendly.
+For more information, consult the Readme.txt of the package
+or go to http://harvestman.freezope.org/commandline.html .
+
+Bug-fixes
+=========
+1. Added extensions .shtm, .php4, .aspx, .cfm, .cfml,
+.cms as valid web-page extensions in urlparser.py. So
+web-pages ending in these extensions will work with
+HarvestMan.(These were present in HarvestMan 1.4 alphas 
+but somehow got lost!). 
+
+2. When printing the url tree, duplicate links were not
+checked. This has been fixed by adding a check.
+3. A minor bug in setting verbosity in logger object
+was fixed.
+4. Comments will be printed for starting & stoppping
+of url server at verbosity level 3. Comments for pinging
+url server is raised to debug level 4.
+5. Program version number, when print using the -v option
+will print the release level also. For example right now
+this will be printed as 'HarvestMan 1.4.5 beta 1'. Earlier
+it used to print only the version number.
+6. The __fix method of config.py now looks at the number
+of URLs. If no URLs are found (either from config.xml or
+through command line), it exits with an error message.
+7. Asyncore thread for urlserver is now a daemon thread,
+so it will exit if the program is killed.
+8. Fixed a minor bug in set_proxy in connector.py where
+the function to set proxy was being called three times.
+Changed this to once.
+9. Fixed a bug in rules.py. Member self._robocache should
+be a list.
+
+
+
+Version 1.4.5 a2 (alpha 2)
+Release Date: 21/07/2005
+
+Bug Fixes
+=========
+1. Fixed a bug in calculating url paths of directory-like
+urls which use the set_directory_url method in module
+urlparser.py . This was causing a number of invalid urls
+which resulted in HTTP 404 errors. This bug is fixed in
+this version.
+
+2. Fixed a bug in urls that use HTTP redirection with
+cookies. Sometimes some websites send a new url and
+a cookie along with an HTTP redirection error (301,302)
+when a url is requested. The HTTP redirection handler
+is expected to send a new request with the new url
+and the cookie. These kind of urls now work with
+HarvestMan. Fix in connector.py module.
+
+  If you are using Python 2.4, this uses the cookielib
+module and the new HTTPCookieProcessor handler. However,
+even if you are using Python 2.3 or earlier versions,
+this will work since a new HTTP redirect handle is 
+added in the connector module, that takes care of this.
+
+3. Fixed a bug in parsing <base href="..."> tags in
+module pageparser.py .
+
+4. Fixed a bug that created invalid urls because the
+html parser object was not reset before parsing everytime.
+This is now fixed in module crawler.py .
+
+5. Fixed a bug in connector.py module in extracting
+error numbers and error strings from error objects. 
+
+6. Fixed a bug in logger.py module to correctly convert
+non-string types to string types.
+
+7. Fixed a bug in config.py to take care of timelimit
+settings. This was getting ignored before.
+
+Other Changes
+=============
+1. All file encodings are now in latin-1, since
+iso-8859-1 was causing some problems.
+2. A number of modules now use the high performance
+collections.deque data structure if HarvestMan is
+run with Python 2.4. If not, these default to lists.
+3. Some functions in common.py module are removed.
+Some are moved to utils.py module.
+4. Error handler function in harvestman.py removed.
+5. Module htmlparser is removed since it is no
+longer used.
+6. Module cookiemgr is removed, since it is no
+longer used. Essential cookie handling is available
+in connector.py module.
+7. The PriorityQueue in urlqueue.py module now
+uses a modified collections.deque object if run
+with Python 2.4.Otherwise it defaults to a list.
+8. Exception handlers rewritten in many modules.
+9. Unnecessary and commented out debug statements
+are removed.
+10. Tool 'cachereader.py' is removed from tools
+sub-directory.
+
+Version: 1.4.5 a1 (alpha 1)
+Release Date: 27/05/2005
+
+Features
+========
+1. Changed config file format from text to xml. The default
+config file from this version onwards is named 'config.xml'. 
+The text config file format also works, but wil be slowly phased
+out in future releases.
+2. New HTML parser based on SGMLParser module.
+3. Dependency on HTML tidy is removed. 
+4. New archive feature for archiving project files
+   to tar.bz2/tar.gz archives.
+5. Changes in project caching: 
+
+   - Data of web pages is compressed before writing to cache. 
+   - Cache data structure changed to a dictionary, from list. 
+   - Option for writing cache in DBM format. 
+   - Headers of urls is also written to cache. 
+     This can be turned on or off.
+6. A junk filter for filtering out banner ads and similar urls.
+7. HarvestMan now Works with Python 2.4 .
+8. New scripts in 'tools' directory
+    - A script to generate project files from cache.
+    - A script to dump url headers in the form of
+      a DBM file from the project cache.
+    - A script to convert between xml & text 
+      config files.
+
+Bug-fixes
+========= 
+1. Bug fixes in urlparser module. 
+2. Bug fixes in datamgr module. 
+3. Bug fixes in rules module.
+
+
+Version: 1.4 final (Bug fixes + Minor features)
+Release Date: Dec 17 2004
+
+Changes from version 1.3.9-1
+============================
+
+Features
+========
+
+1. Added an asynchronous url server which listens
+to port 3081 (by default). The url server can be
+optionally enabled to gather and send urls instead
+of using a Queue. This can be faster, since the
+url server uses asyncore module of Python with
+queues, which is faster than just using queues.
+
+To enable this feature, set the config variable
+network.urlserver to 1.
+
+2. Modified caching algorithm to store the data
+of the files download in the cache file. Hence
+if some one accidentally deletes the downloaded files,
+HarvestMan can recreate the files from the cache file,
+without actually downloading them, if they are uptodate.
+
+3. Queue architecture modified. The data queue has
+been replaced with a links queue. Instead of pushing
+web page data into a queue, fetchers process them and
+push the new urls to a queue. Crawlers get the urls 
+, walk through them and posts the newly created url
+objects into the url queue or sends them to the url
+server. This saves memory on the queues.
+
+4. Added an option for controlling file download
+based on maximum file size. The maximum size by default
+for a single file is 1 MB.
+
+5. Added an option for dumping a url tree which shows
+parent-child dependencies of the urls generated. This
+can be either a text file or an html file. 
+
+6. Added an advertisement/banner filter to the rules
+module. If enabled this can skip urls related to ad
+banners or graphics.
+
+7. New controller thread to manage file and time limits
+on downloads.
+
+Fixes
+=====
+1. This release fixes a huge bug in HarvestMan, i.e
+that of hanging threads. The threading architecture
+is modified to introduce local buffers. Threads 
+do an unblocked push on the queue as opposed to
+a blocked push in all previous versions. If they
+cannot push the data (Queue full) after 5 attempts,
+they store the data in a local buffer. In the next
+loop of the threads, they try to push the buffer data
+before creating any new objects to push (by crawling
+pages/parsing html files. This ensures that the
+threads dont block continously on the queue leading
+to deadlocks and time outs.)
+
+2.Increased the idling time of threads to reduce CPU
+  load.
+
+3. Fixed a bug with correctly identifying WWW urls.
+4. Fixed a bug that incorrectly modifies urls
+   with spaces between words.
+5. Fixed many bugs with get_relative_filename method.
+6. Fixed bugs with generating urls. Trailing spaces
+   and/or newlines need to be removed from path
+   components.
+7. Added a method to correctly identify the type of
+   a url based on its mimetype.
+8. Fixed bugs in robot protocol checking method.
+   Many optimizations are also added to quickly
+   process urls. A robot object cache (dictionary)
+   and url object whitelist has been added to
+   reduce processing time. Also html files need
+   to be processed.
+9. Fixed bugs in url filter checking method.
+10.Fixed bugs in the order of checking rules
+   in violates_basic_rules method.
+11.Fixed bug in creating regular expression for
+   filtering based on file extension.
+12. Many bug fixes in localise_file_links method.
+13. Fixed a bug in correctly generating the
+    regular expression for old url.
+14. Fixed a bug in localising file names. All
+    web page files are correctly localised now.
+15. Fixed a bug in updating files from project
+    cache.
+16. Bugfixes in urltracker module.
+17. Fixed the bug when program exits sometimes
+    just after downloading the first url.
+18. Fixed bug with parsing <base href="..."> 
+    link.
+19. Fixed error in managing an empty url.
+    Correct error message is printed now.
+20. Fixed bugs with logging errors.
+    The error log stream is not enabled
+    now.
+21. Fix to allow special characters in project base
+    directory (such as ~ for home directory on
+    Unix systems).
+22. Fixed bug in function that opens robots.txt
+    urls.
+23. Removed some useless arguments from some
+    functions.
+24. Fixed bug with url object in connect(...) 
+    function.
+25. Fixes to make slow mode work.
+26. Modified to use methods of cPickle module instead
+    of pickle module in utils.py (cPickle is faster).
+27. Use our own strptime module since this function
+    is not available on all Python versions on Windows.
+28. Fixes in locale setting on Windows platform.
+29. Log file for each project is now generated in the
+    project directory as '<projectname>.log'. This is
+    not a configurable option anymore.
+30. The verification of downloaded files by checksumming
+    is disabled. This is not a configurable option
+    anymore.
+31. The renaming algorithm is disabled since it is not
+    general purpose.
+
+Other Changes
+=============
+
+1. License of program changed to GNU GPL.
+2. The genconfig.py script is more interactive now,
+   displaying the options selected.
+3. Language encoding specified on top of all Python
+   files.
+4. A script to check Python dependency namely, 'check_dep.py'
+   has been added.
+5. Installation made easier on Linux and Unix like systems.
+   A script named 'install' does the job for you.
+6. The 'genutils' directory is renamed to 'tools'.
+
+Version: 1.3.9-1 (minor bug fixes)
+Release Date: June 24 2004
+
+Changes in version 1.3.9-1 from 1.3.9
+=====================================
+
+1. Fixed a bug in cache algorithm. Key 'checksum'
+should not be checked if it is old cache.
+2. Fixed a bug in connector.py. Check for valid
+url object in line 622.
+3. Fixed a bug in urlparser. Anchor type urls
+should have the url file name as base url, not
+original url filename.
+4. Fixed a bug in url tracker. Anchor type urls
+should not be skipped.
+
+
+Version: 1.3.9 (features/bug fixes)
+Release Date: June 14 2004
+
+Changes in version 1.3.9 from 1.3.4
+==================================
+
+New Features
+------------
+
+1. Url priorities: Every url is assigned a priority according
+to which it is downloaded. Urls with higher priority are downloaded
+first. Priorities are determined by 3 factors.
+
+    a. The generation of the url
+    b. Whether the url is a webpage
+    c. User defined priorities
+
+Urls in a lower generation are given higher priority when compared
+to urls in a higher generation. This makes sure that urls which
+were created in the beginning of a project gets downloaded first.
+
+Webpage urls are given a higher priority when compared to other urls.
+
+Apart from this user can defined priorities in the config file in the
+range of (-5,5) based on file extensions.
+
+2. Website priorites: These are like url priorities but which
+can be specified by the user in the config file.
+
+Sample usage:
+
+control.serverpriority     www.foo.com+3,www.bar.com-3
+
+3. Thread groups for downloads: The download threads are now
+pre-launched in a group similar to tracker threads. The download
+jobs are submitted to the thread pool, which in turn delegates
+them to the threads. The thread pool has been made into a 
+queue for this. 
+
+ This reduces thread latency, since we no longer spawn
+new threads during the life cycle of the program.
+
+4. Allow urls with spaces: HarvestMan can now download urls which 
+contain spaces like 'http://www.foo.com/bar/this url.html'.
+
+5. Changed the way to distinguish between directory and file like
+urls. Earlier when we parsed the url, a connection was made to
+the url, assuming it was directory like. If the reply was HTTP 404
+error, then it was assumed correctly to be a file like url.
+
+  This has been changed in the new version. We assume all urls are
+file like, For example, if there is a url like http://www.foo.com/bar/file
+, which can be a directory http://www.foo.com/bar/file/index.html or
+file http://www.foo.com/bar/file, we assume it is a file initialy and
+try to download it. The geturl() method of the file-like object returned
+by opening the url, will tell whether it is file like or directory like.
+This information is used to modify the local (disk) file name of the url
+at that point. This decouples the modules urlparser and connector to
+a large extent and makes performance better with such urls.
+
+6. Added functionality to tidy html pages before parsing them by
+   using 'uTidy', the python port of html tidy. This helps to crawl
+   sites that exit due to parsing errors in previous versions of
+   HarvestMan.
+
+7. Intranet downloads need not set a specific flag (download.intranet).
+   Instead HarvestMan can figure out whether the server is in intranet
+   by resolving its name and take appropriate action. This allows
+   intranet/internet downloads to be mixed in the same project.
+
+8. Modified the way url information is cached. The field 'last-modified'
+in url's headers is used, if it is available. If it is not there, a
+checksum based on the content of the url is used (previous algorithm)
+as fallback.
+
+Other Changes
+=============
+
+1. Regular expressions for filters are pre-compiled.
+2. Derived HarvestManStateObject (config class) from 'dict'  type.
+3. Main thread 'joins' each tracker thread with zero timeout instead
+   of killing them at the end of project.
+4. Optimization fix: Links are stored for localising, only if their
+   download is successful.
+5. Assigned 2:1 ratio for fetchers and crawlers instead of current
+   1:1 ratio.
+6. Renamed all modules.
+7. Used 'weakref' wherever possible to reduce extra references to
+   objects and avoid reference loops. This is mostly used in
+   'GetObject' method and in urlparser module.
+8. 
+
+Bug fixes
+========
+
+1. Fixed a bug with http://localhost downloads. Bug ID # B1083256752.28 .
+2. Fixed bug in url filter for images. 
+3. Fixed a bug with timezone printing. Bug ID # B1083253695.02.
+4. Close file like object returned by opening urls
+   after reading data.
+5. Fixed a bug in localising links. Directory like urls
+   need to be skipped.
+6. Fixed bug in finding common domain for servers that 
+   have lesser than three 'dots' in their name string. (This is
+   the same bug as # B1083256752.28 .)
+7. Fixed a bug in setting up network for clients behind a proxy/
+   firewall.
+
+
+Version: 1.3.3 (bug fixes)
+Release Date: Feb 24 2004
+
+Changes in Version 1.3.3 from 1.3.2
+===================================
+
+1. Fixed bug with parsing of FTP links.  Bug # B1077613467.85.
+2. Fixed another bug with external server links.
+3. Fixed bug with request control. Request dictionary 
+   key is server name, not ip.
+
+Version: 1.3.2 (minor feature enhancements)
+Release Date: Feb 13 2004
+
+Changes in Version 1.3.2 from 1.3.1
+===================================
+
+There is one minor feature in this release. 
+
+1. This release adds ability to limit downloads by
+controlling the number of simultaneous requests from the
+same server. This option can be controlled by the config
+variable named 'control.requests'.
+
+2. Apart from that I have re-structured the package,
+and added a distutils setup.py script which copies the 
+package to your PYTHON installation folder.
+
+
+Version: 1.3.1 (bug fix)
+Release Date: Feb 10 2004
+
+Changes in Version 1.3.1 from 1.3
+=================================
+
+This version is a bug fix version fixing most
+of the critical and annoying HarvestMan bugs.
+These bugs can be located in the bugs database
+at http://harvestman.freezope.org/Discussons .
+
+1. Fixed bug with query forms. The program no longer
+   tries to download server side query form links.
+   Bug #B1073291938.97.
+2. Fixed bug with handling frame redirects. Bug #B1076402199.0.
+3. Fixed bug with robots.txt url. Bug #B1072436188.35.
+4. Fixed bug in finding out external server links.
+   Bug #B1076402348.52.
+5. Fixed bug in external links with respect to subdomains.
+   Bug #B1076409910.45.
+6. Fixed bug with following non-existent links in a 
+   directory listing Bug #B1073028403.71.
+7. Fixed problem in printing harvestman url in welcome
+   message.
+8. Fixed some problems in config file parsing.
+9. Fixed problem with printing version string (-v and
+   --version options).
+10. Other miscellaneous fixes and corrections thanks to
+    Vivian, Sascha and some others.
+
+
+Version: 1.3 (final)
+Release Date: Dec 15 2003
+
+Changes in Version 1.3 (from 1.3 a1)
+=========================================
+
+1. This version adds one feature, that of searching 
+   a webpage for keywords. You can create complex
+   boolean regular expressions and supply them to
+   HarvestMan. HarvestMan will parse the regular
+   expressions and download only those web pages that
+   match the regular expression.
+
+   In simpler words, this means a keyword(s) search. :-)
+
+   For example, you need to download only those webpages
+   that contain the term 'Saddam' and 'WMD'. You create
+   the following regular expression and pass it on to
+   HarvestMan as the option 'control.wordfilter'.
+
+   ;; config file for harvestman
+   control.wordfilter    (Saddam & WMD)
+
+   You use the boolean '&' and '|' to create the regular
+   expressions.
+
+   I have added this as a recipe in the ASPN Python Cookbook.
+   For more information on how it works, point to the URL,
+   http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/252526.
+
+Changes in Version 1.3 a1 (from 1.2 final)
+=========================================
+
+1. This version features the new threading model which was
+   started in the last release. This model is now completely
+   written to prevent thread deadlocking incidents. A description
+   of the model can be found in the HarvestMan webpage at
+   http://harvestman.freezope.org. 
+
+   This model will be developed further and will be the default
+   for all future releases of HarvestMan.
+
+2. The other major changes are complete re-writes of many modules.
+   Classes have been renamed wherever suitable and some function
+   names changed. The HarvestMan module has been trimmed up
+   considerably.
+
+3. This version has added an extra module HarvestManUtils which has
+   some utility classes for reading/writing project & cache files and for
+   creating the browse page. The code for these were earlier in the
+   HarvestMan, HarvestManDataManager and HarvestManConfig modules.
+
+4. The cache and project file information is compressed before writing
+   to files.
+
+Changes in Version 1.2 final (from 1.2 rc2)
+===========================================
+
+1. Added support for javascript and java applet tag parsing.
+   HarvestMan can now fetch javascript (.js) files and
+   java applets (.class) files from webpages. 
+  
+   The code for parsing this sits in the new HTMLParser 
+   customized for HarvestMan.
+
+2. Designated url trackers to two flavors - Fetchers and Getters.
+   Fetchers are responsible for crawling webpages and fetching links,
+   and Getters get the non-html files fetched by Fetchers. Images
+   are still fetched by the Fetchers in thier threads.
+
+   This should help in the growth of this program and make future
+   development easier. Also this might help in preventing the thread
+   locking incidents.
+
+3. Fixed bugs in localizing anchor type links. Rewrote HarvestManPageParser,
+   HarvestManUrlPathParser and HarvestManDataManager classes to take care
+   of this. Anchor links in webpages are localized correctly now.
+
+4. Due to javascript/javaapplet parsing code in the new html parser,
+   many webpages which failed to work before (due to mostly javascript
+   tags which the parser could not understand) will work correctly now.
+   
+5. Other routine bug fixes.
+
+   a) Fixed a problem in creating the project browse page.
+      We need to provide the absolute path of the project start url file.
+   b) Fixed a problem in getRelativeFilename() in HarvestManUrlPathParser
+      class.
+   c) A few more...
+
+
+Changes in Version 1.2 rc2 (from 1.2 rc1)
+=========================================
+Release Date: Sep 27 2003
+
+1. Rewrote the algorithm for fetching urls with no filename
+   extensions. We assume that it is a directory-like url
+   (of the form dir/index.html) and try to fetch it during 
+   url path resolving time (in urlPathParser clas). 
+
+   If this fails, a 404 error is returned. The url is cached
+   for later lookup in the datamanager in a invalid urls cache.
+   We re-resolve the url assuming it now as a file-like url
+   (of the form /file ) and fetch it.
+  
+   If it does not fail, the url is again cached for later lookup
+   in the datamanager in a valid urls cache. The connector object
+   is also cached in a connector dictionary of the datamanager so
+   that we dont need to re-create the connection later.
+
+   This fixes the long-standing bug with urls with no filename
+   extensions.
+
+2. Rewrote algorithm for localizing links. Instead of re-parsing
+   html files and localizing the links, a dictionary of html files
+   and their links are kept in the datamanager object. This dictionary
+   is updated during crawling time with the url objects for each html
+   file. This dictionary is used at the end for localizing.
+
+   This improves localization time to as much as 500%.
+
+3. Fixed a bug in calculating project time. (Time for localization
+   should not be included).
+
+4. Modification in priting error messages. Error messages are printed
+   only for verbosity levels of 3 and up. OS and IO exceptions are 
+   printed only at verbosity level 4 (debug).
+
+   For seeing url error messages (connection errors), you need to set
+   the verbosity to 3 now.
+
+   At the default verbosity level (2), no error messages can be seen.
+
+5. Modified the checking of hanging threads. This check was not done
+   properly. Now it is done in the loop that checks for exit condition.
+   Also, reduced default timeout for hanging threads from 600 seconds
+   (10 minutes) to 120 seconds ( 2 minutes ). 
+   
+   Added socket timeout for sockets. This is same as thread timeout above.
+   (This works for users using Python 2.3.)
+
+   This will fix the problem of hanging threads in a big way.
+
+Changes in Version 1.2 rc1 (from 1.2 alpha)
+===========================================
+
+Release Date: Sep 24 2003
+
+1. Removed the earlier global download lock. Earlier the url
+   connector instances shared a common lock which they had to acquire
+   before downloading. This led to only a single download possible a
+   given moment. 
+
+   This has been changed to multiple downloads which can be specified
+   in the configuration file.
+
+2. We can specify any number of connections in the config file now.
+   The program makes sure that there are only so many connections
+   running at a given instant. This takes the place of the previous
+   global download lock. Since now many simultaneous downloads are possible
+   (apart from many threads), the program is much faster than before.
+
+3. Added an option for writing pickled cache files. This has been
+   made the default in this release. XML cache files take a long
+   time to read, if they are big.  
+
+4. Integrated genconfig.py script with harvestManConfig class. 
+   This makes future developments of this script easier. Added an abort
+   condition to the script which can be invoked by pressing the <space>
+   key.
+
+5. Fixes for handling error conditions in the url connector class.
+   Arbitrary error numbers are no longer used, instead we try to
+   get the error number by parsing the error strings.
+
+6. Redownload of failed links works only for links that failed with
+   non-fatal errors. This speeds up projects.
+
+7. Modified the regular expression behaviour. Compile the reg expressions
+   to optimize regular expression search.
+
+8. Moved code around from HarvestMan.py module to reduce its size. 
+   Parsing of config file is now done in the HarvestManConfig module.
+
+9. Removed usage of 'string' module everywhere and replaced with
+   methods on string objects.
+
+10. Added a timeout option for the project. Sometimes the last thread
+    in the program does not complete hanging a well downloaded project.
+    This option looks at the last data operation into the url queue 
+    and times it. If the time of the last operation (get/put) is more
+    than a prescribed time, the project times out. 
+
+    We also wait now for the download sub-threads to complete their work 
+    before exiting. This fixes any premature project exit conditions.
+
+11. Change in writing project files. We now write pickled project files
+    instead of XML project files. This will be the default from this
+    release.
+
+12. Bug fixes in urlpathparser module for fixing relative filename computation
+    errors.
+
+13. Bug fixes in rules module. Rewrote some methods in this module.
+
+14. Fixes in creating the project browse page. The project browse
+    page entry is now created correctly for every new project.
+
+15. Many other routine bug fixes to speed up downloads and reduce
+    bugs in threading.
+
+Changes in Version 1.2 alpha (From version 1.1.2)
+================================================
+
+1. This version has introduced limited support for Cookies.
+   This is experimental code, written from scratch
+   following RFC 2109. The cookie support is pretty
+   basic with only domain cookies supported. Netscape
+   style cookies may not work.
+
+2. Support for webpage caching is available. A cache
+   file (xml) is created in the project directory for
+   a project, the first time. The cache file associates
+   urls to file on the disk. We compare files by using
+   an md5 checksum on the file content. For any 
+   further runs of the project, only the out-of-date
+   files are re-fetched.
+
+3. Many bug fixes and better error checking.
+
+4. Bugs in genconfig script fixed.
+
+5. Documentation changes: We provide an RTF version of the
+   documentation file now. (Request by John J Lee of
+   Clientcookie fame)
+
+Changes in Version 1.1.2(From version 1.1.1)
+============================================
+1. Added a fast html parser based on sgmlop module by F.Lundh.
+   This can be selected by setting the variable HTMLPARSER in the
+   config file to 1. The default parser is still the standard
+   python parser.
+
+2. Added an option to localise links relatively. This is the
+   default now. That is we dont replace filenames with their
+   absolute pathname but only relative pathname, so that users
+   can browse the downloaded pages on another filesystem also.
+
+3. Added an option for the user to control md5 checksumming of files.
+   This option is controlled by the variable CHECKFILES in the 
+   config file.
+
+4. Support comments at the end of an option line in the config file.
+   (Egs: <URL http://www.python.org # This is the url> is valid now.
+   It would have thrown an error before.)
+
+5. We are not localising form links. This makes sure that a cgi
+   query goes directly to the webserver.
+
+6. An option for JIT (Just In Time) localization of url links.
+   If this option is selected, then urls in html files are localized
+   immediately after they are downloaded, instead of at the end.
+
+
+Changes In Architecture (Version 1.1)
+====================================
+
+1. Global Object Register/Lookup
+   -----------------------------
+
+ One of the major changes in this version is the architecture of harvestman program.
+It uses a modified Object Oriented approach of looking up objects whenever the services
+of an object is needed by other objects. The classes no longer maintain pointers to
+other class instances inside them. 
+
+All Harvestman program objects register themselves with a global registry/look-up object
+when they are created. (It is upto the programmer to do this.). The registry object is
+a Borg singleton ensuring that the state of the objects is maintained. The objects are
+stored in the dictionary of the registry object using strings as the key. 
+
+When an object needs the services of another, it performs a simple 'query' or 'lookup'
+of the registry using the key of that particular object (This should be known. Right now
+we dont support a publish/subscribe mechanism, it will be added later.). The register
+object sits in the Harvestman globals module, so it is available to objects in all modules
+which do an import of this module. An example is given below.
+
+
+  # Create and register the object.
+  obj1 = HarvestManObject1()
+  HarvestManGlobals.SetObject('object1', obj1)
+
+  # Object2 wants services of obj1 
+  obj1instance = HarvestManGlobals.GetObject('object1')
+  # Use its services
+  obj1instance.func1(...)
+  
+
+This makes adding new modules to HarvestMan easy, if you make sure that you register them
+in the globals module.
+
+
+2. Threading Model
+   ---------------
+
+HarvestMan versions till 1.0 was using a model where url tracker threads were store in a
+queue. A url tracker object consisting of data of a url was pushed into a queue and was
+later popped by a monitor object so that downloads could be controlled. This gave rise
+to problems of controlling threads and overhead in the form of new thread contexts since
+we were not reusing threads.
+
+HarvestMan version 1.1 uses a preemptive threading model and reuses threads. Also, thread
+data is only managed in the queue, and not threads themselves. The number of threads 
+(as per the config file or command line user input) are pre-launched in the beginning of
+the program. They run in a loop looking for url data which is managed by a url data queue.
+Threads post their url data to this queue. This ensures that we always have a given number
+of threads running. It also reduces overheads and latency.
+
+HarvestMan sub-threads in the HarvestManUrlThread module still uses a post-emptive
+(new thread launched per request) mechanism. This might be changed in future releases.
+
+3. Code Reorganization
+   -------------------
+
+   The new version features some extra modules which have been created by moving code
+   from existing modules and re-writing them. The aim was to split crawler code from
+   data management code, in which we succeeded quite well. There is a new Data Manager
+   module which takes care of scheduling downloading requests, indexing files, keeping
+   file statistics and localizing links. A Rules module checks the HarvestMan download
+   rules (this was earlier done by the previous "WebUrlTrackerMonitor" class).
+
+   A Synchronization lock has been added in the Connector module. This might
+   slow down downloads a bit, but should ensure that threads dont corrupt the data.
+   Interested users can experiment with the lock, removing it or modifying it, and
+   see how it works. Please report any improvements in performance you see to the
+   authors.
+
+4. Other Changes
+   -------------
+
+   For other changes continue reading.
+
+
+HISTORY
+=======
+
++-----------------------------------------+
+|Changes in Version 1.1 (from Version 1.0)|
++-----------------------------------------+
+
+1. A project file is created for every project in the harvestman directory
+   in the subdirectory 'projects'.
+2. Always download css files related to a web-page, even if 
+    it is outside of domain or directory. Same for images. Config options
+    for both added in the config file.
+3. Added a config file option to rename dynamically generated images.
+    Works right now for jpeg/gif images.
+4. Modified the urlfilter algorithm to check the order of filter
+    strings in case of a collision in filter results.
+5. Added a new option FETCHLEVEL to the program to allow very
+    basic control of download. For details see Readme.txt/HarvestMan.doc
+    file. 
+6. Get background images of webpages.
+7. Better error/message logging. Error files are created in each project's
+    download directory. All messages are logged to a file in the harvestman
+    installation directory. This by default is named 'harvestman.log'. User
+    can change this option by editing the config file. This file is created fresh
+      for every project.
+8. Added support for getting files from ftp servers.
+9. Write a project file based on HarvestMan.dtd before starting to crawl.
+    This file is written to the base directory.
+10. Stats file is no longer written in the current directory under "projects". Instead
+    it is written to the project directory of the particular project.
+11. Added command line support.
+12. Modified proxy setting. Removed port number from proxy string. Port number
+    needs to be specified as a separate config entry.
+13. Modified writing of stats. Stats are written to a file named 'projectname.hst' (where
+    projectname is the name of the current project) to the project directory. The file
+    extension 'hst' stands for 'HarvestMan Stats File'.
+14. Write a binary project file also. 
+15. Modified localise links function to take care of localising anchor type links also.
+    This was an undetected bug in version 1.0.
+16. HarvestMan can now load projects from saved project files. This can be done for
+    both the xml and binary project files. Added encryption for proxy related data.
+17. Fixed some bugs in genconfig script. The script now encrypts any proxy related data
+    (except port number) before writing it to the config file.
+18. Added code in WebUrlConnector to request user for authentication information 
+    for a proxy-authenticated firewall. If the project file does not contain this information,
+    it will be requested from the user, interactively.
+19. WebRobotParser module uses the services of WebUrlConnector now, instead of having
+    its own internet connection code.
+20. Added a mechanism to log errors made in the config file, and inform user about it
+    at the end. The mechanism uses a list of strings in the Global module (HarvestManGlobals).
+21. Updated HarvestMan.dtd to add the new config entries. (CONFIGFILE/PROJECTFILE).
+22. Modified FETCHLEVEL handling. Levels 0 - 1 does not fetch external server links now.
+    0 - 1 will fetch only local links. 2 fetches local + first level external links and
+    3 fetches any link.
+23. Tried different approaches to running thread queue. Ideally the runTrackers() method
+    should be called when you start the project and it should run separately from the
+    push() method. But this lead to blocking of the last download thread in many tests since
+    the CPU seems to run the runTrackers() method in priority to the last download thread.
+    So I reverted back to the existing method of running trackers where the push method
+    makes a call to runTrackers() ( I know that it is not good thread programming, but it works . )
+24. Modification to webUrlConnector class, this class now accepts a urlPathParser object
+    instead of a url directly. This makes handling of urls easy and we can pass more information
+    around. Made correspoding changes to Monitor/Tracker/Thread classes.
+25. Fixes for slowmode. Rewrote some code.
+
+
++-----------------------------------------+
+|Changes in Version 1.0 (from Version 0.8)|
++-----------------------------------------+
+
+1. Fully multithreaded. Multithreaded mode is the default.
+2. Depth fetching for starting server and external servers in config file.
+3. Browser page for projects similar to HTTrack.
+4. Added re-fetching of failed urls.
+5. Support for intranet servers.
+6. Verbosity option added in config file.
+7. Lots of configurable options added in the config file.
+   The list of options (apart from the basic ones) is now about 30.
+8. Signal handler for keyboard interrupts autmatically does clean up jobs.
+
+
+

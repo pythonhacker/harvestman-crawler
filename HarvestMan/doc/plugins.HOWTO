@@ -1,0 +1,229 @@
+This document summarizes the plugin architecture of HarvestMan
+and describes the procedure of writing and enabling plugins.
+
+Plugin Architecture
+-------------------
+From version 2.0, HarvestMan provides a way to extend and modify
+the behaviour of the program by writing simple "plugins". Plugins
+are small pieces of Python code which sit in the "ext" folder
+in HarvestMan source tree. When a plugin or a set of plugins are
+enabled, the program behaviour is modified depending on how
+the plugins modify the functionality of certain methods of certain
+classes in HarvestMan.
+
+Hooks Module
+------------
+The plugin architecture and model is defined by the new "hooks"
+module. This module defines two different methods of modifying
+behavior of key classes of HarvestMan without modifying the
+original code statically.
+
+1. By defining your own functions which dynamically replace 
+the methods of certain classes in HarvestMan.
+2. By defining your own functions which can be dynamically
+injected as pre/post hooks of methods of certain classes 
+in HarvestMan. 
+
+The magic through which this happens without modifying the
+original code is through Python meta-classes. 
+
+Module Attributes
+-----------------
+Any module in HarvestMan which wants to expose methods of its
+classes to the any or both of the above forms of extension,
+makes them available as two attributes.
+
+Any method which is available for complete code replacement
+is listed as part of the "__plugins__" attribute. This is a dictionary
+of key-value pairs, where the key is the plugin name and the
+value is a string which combines the class name and the method
+name in the form "<klass>:<method>".
+
+For example, this is how the harvestman.py module defines this
+attribute.
+
+__plugins__ = { 'clean_up_plugin':'HarvestMan:clean_up',
+                'save_current_state_plugin': 'HarvestMan:save_current_state',
+                'restore_state_plugin': 'HarvestMan:restore_state',
+                'reset_state_plugin': 'HarvestMan:reset_state' }
+
+
+Any method which allows pre/post hooks is made available as part
+of the "__callbacks__" attribute. This is also a dictionary with
+the same format as above.
+
+For example, the datamgr module defines this attribute as,
+
+__callbacks__ = { 'download_url_callback': 'HarvestManDataManager:download_url' }
+
+
+Writing Plugins
+---------------
+In order to write a particular feature as a plugin, it is important to
+have a good understanding of the HarvestMan source code. This helps 
+you to decide which code requires to be modified and how, in order
+to add the feature.
+
+Next you need to figure out if the entire logic of a method needs
+to be replaced. If so, a plugin has to be registered. However, if
+the functionality requires only injecting some code before/after
+a method is called, a callback needs to be used. In order to develop
+plugins which do complex tasks, both options would have to be used.
+
+Once this is decided, a plugin module should be developed which
+contains the required code in the form of functions which are meant
+to be either method callbacks or plugins.
+
+Once the function(s) are written, a special function named "apply_plugin"
+has to be written. This function should not take any arguments. In
+this function, the callback/plugin functions have to be registered
+at appropriate contexts by using respective methods defined
+in the hooks module. These methods are listed below:
+
+1. register_plugin_function: This takes a context and a function
+object as arguments. It injects the code of the function object
+in place of the context. The context is nothing but a key defined
+in the __plugins__ attribute of a module which connects it to
+a method in a class. The effect is to replace the code of the
+particular method with the cod of the function object.
+
+2. register_pre_callback_method/register_postcallback_method:
+These functions takes same arguments as register_plugin_function.
+They inject the code of the function object as eitherpre/post 
+callbacks to the passed class method, respectively. The effect
+is to modify the behaviour of the original method.
+
+The apply_plugin function will also change certain require
+configuration parameters. For example, in the simulator plugin
+provided along with HarvestMan, the localise and caching
+features are turned off in the configuration. This is because
+since no files are saved in a crawl simulation, it does not
+make sense to keep these features on. Your plugin might have
+to turn features on/off in a similar fashion.
+
+If any informational message is required to be printed to
+inform the user about the plugin, it can also be done. For
+this the "logconsole" method has to be used.
+
+
+Default Plugins
+---------------
+HarvestMan provides the following default plugins.
+
+1. spam - A sample plugin which demoes adding a function
+as a pre-callback.
+2. swish-e - A plugin which allows to use HarvestMan 
+as the crawler for the swish-e indexer.
+3. simulator - A plugin which modifies the program
+behaviour to simulate crawling without downloading
+of files.
+4. lucene - A plugin which integrates HarvestMan with
+Lucene using PyLucene. Enabling the plugin causes
+the program to index the downloaded pages at the
+end of the crawl.
+5. userbrowse - A plugin which imitates user browsing,
+i.e it downloads URLs as if the user is browsing the
+current page and its immediate links.
+
+These plugins can be used as templates in developing
+your own plugins.
+
+Enabling Plugins
+----------------
+Plugins can be enabled using the configuration file or
+by using command-line arguments. 
+
+
+1. Configuration File
+
+Add an entry under the "plugins" element with an "enable" 
+attribute and a "name" attribute. The name attribute's
+value should be set to the name of the plugin module. In 
+order to enable the plugin, se the value of "enable" attribute
+to 1.
+
+For example, assume you have developed a plugin module
+named "spamplugin", you will enable it as follows in
+the configuration file.
+
+<plugins>
+  <plugin name="spamplugin" enable="1" />
+</plugins>
+
+2. Command Line
+
+Specify the value of the option "plugins" (short option "g")
+as the plugin's name. For example, to enable the spamplugin,
+
+$ harvestman -g spamplugin -C <someconfigfile>
+
+
+It is possible to enable more than one plugin at once. 
+However in such cases, it is important to make sure that
+their behaviors are supplmenting each other and not in
+conflict. This can be done for a group of plugins which
+togethe add a certain set of features.
+
+To enable more than one plugin using the configuration file,
+simply set the "enable" attribute of each plugin to "1".
+
+To enable on the command-line, concatenate the plugin 
+module names using the "+" character.
+
+For example, to enable both "spamplugin" and "fooplugin"
+in the configuration file.
+
+<plugins>
+  <plugin name="spamplugin" enable="1" />
+  <plugin name="fooplugin" enable="1" />
+</plugins>
+
+To do the same on the command line,
+
+$ harvestman -g spamplugin+fooplugin -C <someconfigfile>
+
+NOTE: Plugins are enabled in th same order they are 
+presented in the configuration file or the command line.
+The order can affect the cumulative behavior of the plugins
+if they are working with the same contexts. So it is important
+to specify the order correctly, to get the righe behavior.
+
+Also some plugins have contradicting behaviour, so it does
+not make sense to enable them together. For example the
+lucene plugin requires downloaded files whereas the simulator
+plugin changes program behaviour to not to download files.
+So a combination of simulator+lucene does not make sense,
+though the program accepts it.
+
+Things to note
+--------------
+Here are a few points worthy of noting when writing plugins.
+
+1. Arguments - Most methods in HarvestMan classes take fixed
+length arguments. When you write a replacement function which
+acts as a plugin, it is important to make sure that it keeps
+the number and order of arguments the same.
+
+A function inserted as a pre-callback takes the same number of
+arguments as the original method. However a function insert
+as a post-callback takes an additional argument of the
+return value of the original method. This comes as the first
+argument in the list. In other words the argument list is 
+pushed back by this return value argument.
+
+2. Return value - When writing plugins or callbacks (especially
+post-callbacks), it is important to see that the return value
+semantics are not modified. For example, if a method returns
+downloaded data as a return value, the replacement plugin or
+a post-callback should also do the same. Otherwise it can
+break the program.
+
+
+
+
+
+
+
+
+
+

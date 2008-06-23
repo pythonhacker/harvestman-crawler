@@ -1,0 +1,36 @@
+
+Based on EIAO bug tracker...
+
+------------------------------------------------------------------------------------------------
+
+Bug ID          Description             % Completed             Status
+-------------------------------------------------------------------------------------------------
+607      State machine changes          Mostly done             Can be assumed as done.
+
+608      Config parameter for           100%                    Completed.
+         managing multimedia
+         download content
+
+609      Make sgmlop parser as          100%                   Completed. 
+         default
+
+610      Option for URL filters         0%
+         to only filter URLs for
+         downloads
+
+611      Config file split              100%                   Done. But not using another
+                                                               name for the configuration files.
+                                                               Instead program generates config.xml
+                                                               with non-project information and copies
+                                                               it to a system-wide area and also to 
+                                                               the user area. Need to add more params
+                                                               in the config file for this to be
+                                                               effective.
+
+612      URL Localization fixes         0%
+
+613      Back-port EIAO                 30%               Mostly done. 
+         stability fixes.                                
+
+628      Improved setup.py              50%              Check bug for more details.
+                                                            

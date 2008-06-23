@@ -1,0 +1,98 @@
+#!/usr/bin/env python
+
+"""
+postingcrawler.py - Demonstrating custom crawler writing by
+subscribing to events. This is a crawler which crawls
+BangPyper archives, finds job postings and posts it to
+a specific blog.
+
+Created by Anand B Pillai <abpillai at gmail dot com> 
+
+Copyright (C) 2008 Anand B Pillai
+"""
+import __init__
+from apps.harvestmanimp import HarvestMan
+import sys
+import blogger
+import getpass
+
+class JobPostingCrawler(HarvestMan):
+    """ A job-posting crawler by integrating HarvestMan
+    with the google blogger API """
+
+    def __init__(self):
+        self.jobs = {}
+        super(JobPostingCrawler, self).__init__()
+        
+    def after_parse_cb(self, event, *args, **kwargs):
+        
+        document = event.document
+        url = event.url
+
+        if document:
+            content = document.content.lower()
+            title = document.title.lower()
+            
+            if title.find('job') != -1:
+                # If this is a reply to an original job post, ignore it...
+                data = document.content
+                
+                idx = data.find('Previous message:')
+                if idx != -1:
+                    idx2 = data.find('</A>', idx)
+                    # print 'String=>',data[idx:idx2]
+                    # print 'Title=>',document.title
+                    if not data[idx:idx2].endswith(document.title):
+                        self.jobs[document.title] = (url.get_full_url(), document.content)
+                else:
+                    self.jobs[document.title] = (url.get_full_url(), document.content)                    
+
+    def finish_event_cb(self, event, *args, **kwargs):
+
+        if len(self.jobs):
+            print 'Found %d job postings' % len(self.jobs)
+            go_ahead = raw_input("Go ahead with posting [y/n] ? ")
+            if go_ahead.lower().strip() == 'y':
+                print 'Logging to blogger...'
+                username = raw_input("Enter username: ").strip()
+                passwd = getpass.getpass("Enter password: ").strip()
+                b = blogger.BlogJobPoster(username, passwd)
+                print 'Successfully logged into blogger.'
+
+                count = 0
+                content = ''
+
+                for title, (url,data) in self.jobs.items():
+                    # Extract date from the text...
+                    print data
+                    go_ahead = raw_input("Post this JOB [y/n] ? ")
+                    if go_ahead.lower().strip() != 'y': continue
+                    
+                    count += 1
+                    date = data[data.find('<I>')+3:data.find('</I>')]
+                    title += '(Posted on: %s)' % date
+                    content = data[data.find('<PRE>')+5:data.find('</PRE>')] + '<br>\n'
+                    # Wrap content to text width nicely
+                    # content = wrap(content) + '<br>'
+
+                    content += 'Referrering URL: <i><a href="%s">%s</a></i>\n' % (url, url)
+                    content = '<P>' + content + '</P>'
+
+                    print 'Posting job ID %d for %s' % (count, url)
+                    b.post_job(title, content)
+            else:
+                print 'Found %d jobs, but did not post.' % len(self.jobs)
+        else:
+            print 'No job postings found!'
+
+if __name__ == "__main__":
+    spider=JobPostingCrawler()
+    spider.initialize()
+    config = spider.get_config()
+    config.verbosity = 3
+    config.robots = 0
+    config.localise = 0
+
+    spider.bind_event('afterparse', spider.after_parse_cb)
+    spider.bind_event('beforefinish', spider.finish_event_cb)    
+    spider.main()

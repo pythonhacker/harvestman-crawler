@@ -1,0 +1,128 @@
+PLAN for HarvestMan 2.0
+-----------------------
+
+This document captures the list of TBD and planned dates for HarvestMan
+and Hget for the next release (2.0).
+
+
+HarvestMan TBD
+--------------
+
+Most of the changes are shared between HarvestMan and
+EIAOHarvestMan, but a few are specific to HarvestMan.
+The changes specific to HarvestMan are marked with an
+asterik (*).
+
+Completed
+
+1. New program exit logic => Completed
+2. New control params for controllong multimedia, movies,
+etc => Done.
+3. Signal management - Added support for SIGINT, is enough for now, Done.
+4. Integration with sgmlop - Done.
+5. Config file split - Done.
+6. Datastructure enhancements - Mostly completed.
+7. GetObject(...) and SetObject(...) replacements with global 
+objects namespace, removal of Registry class and object => Done.
+8. New document module and HarvestManDocument class => Done
+9. Event framework => Done
+10. Custom sample crawler application modules using events => Done.
+11. Database integration -> Done.
+
+TODO
+# 11. Crawler strategy classes => Not sure if this is needed now.
+11. Full docstrings for all classes, functions and modules - TBD
+12. Command line option to pass a param by name and value - Done.
+13. Better, fool-proof logic for exit condition in state machine => Partially done,
+need testing.
+
+14. Crawler strategy classes, which combine various crawl conditions
+in one class.
+15. RSS integration ?
+16. URL localizing => converting outward pointing links to disk links.
+The logic is broken and I should plan for a full rewrite of this function.
+17. Option for urlfilter to filter URLs only for download. 
+18. Tools =>
+
+    1. web.py based configuration generation tool - Done!
+    2. web.py interface to harvestman to run, schedule and see 
+       status of crawls ? - would be nice.
+
+
+Docstrings Progress
+-------------------
+App modules
+-----------
+
+1. harvestman.py - Done.
+2. appbase.py    - Done.
+3. hget.py - Done.
+
+Lib modules
+-----------
+1. config.py - Done
+2. configparser.py - Done
+3. connector.py - Done
+4. crawler.py - In progress
+
+
+Database integration
+--------------------
+This will be a basic database for the stand-alone crawler creating
+and storing only project (meta-data) data, configuration data
+and statistical data. There won't be any way to store 
+actual crawl data in the database.
+
+How to do this...
+
+1. A single database file is created for storing HarvestMan crawl
+meta information. The file will reside in ~/.harvestman/data folder.
+2. The file will contain a few databases. 
+
+Pending minor tasks
+
+
+Hget TBD
+--------
+
++---+-----------------------+---------------+---------------+---------------------------------------+
+| NO|       Feature/Fix     | STATUS        |    Priority   |       Description                     |
++---+-----------------------+---------------+---------------+---------------------------------------+
+|   | Automatic thread      |               |   Desirable   | When program finds that the user has  |
+| 1 | reduction control     |               |               | split the download to "n", but either |
+|   |                       |  Lower        |               | it cannot get "n" mirrors or the host |
+|   |                       | Priority/ Drop|               | is not responding to "n" threads (in  |
+|   |                       |               |               | case of same host downloads), use a   |
+|   |                       |               |               | logic to automatically reduce the     |
+|   |                       |               |               | load on the host/mirrors by reducing  |
+|   |                       |               |               | the thread count adaptively and       |
+|   |                       |               |               | recomputing the file piece size per   |
+|   |                       |               |               | thread, thereby ensuring that the     |
+|   |                       |               |               | download is completed. The user can   |
+|   |                       |               |               | set a minimum value for this, the     |
+|   |                       |               |               | default being 1.                      |
++---+-----------------------+---------------+---------------+---------------------------------------+
+|   |Mirror selection       |               |  Normal       |When failing mirrors, put mirrors that |
+| 2 |improvements           |               |               |fail with non-fatal errors in a retry  |
+|   |                       |      Done     |               |cache, so that when mirror list is     |
+|   |                       |               |               |exhausted,we can try these again.      |
++---+-----------------------+---------------+---------------+---------------------------------------+
+|   |Mirror search          |               |  High         |Add support for searching mirrors      |
+| 3 |engine                 |   Done        |               |in mirror search engines and dynamicall|
+|   |                       |               |               |y obtain mirrors for URLs.             |
++---+-----------------------+---------------+---------------+---------------------------------------+
+|   |FTP resume/multipart   |               |               |                                       |
+| 4 |support                |               |  Highest      |So far, supports only HTTP byte-range  |
+|   |                       |      TODO     |               |and resume. Need to add same for FTP   |
+|   |                       |               |               |for supporting most of the mirrors out |
+|   |                       |               |               |there.                                 |
++---+-----------------------+---------------+---------------+---------------------------------------+
+|   |Adaptive learning      |               | Desirable     |Rank mirrors based on historical       |
+| 5 |and mirror prioritizing|   Lower       |               |performance and automatically select   |
+|   |                       |Priority/Drop  |               |the best ones. (Get logic from SMART)  |
++---+-----------------------+---------------+---------------+---------------------------------------+
+|   |Better failover        |               |  Normal       |Detect threads which hang and perform  |
+| 6 |                       |       TODO    |               |check-pointing and migration etc to    |
+|   |                       |               |               |increase robustness.                   |
++---+-----------------------+---------------+---------------+---------------------------------------+
+
