@@ -1023,7 +1023,7 @@ class HarvestManUrlConnector(object):
                         clength = self.get_content_length()
                         
                         t1 = time.time()
-                        self._tmpfname = self.make_tmp_fname(filename, urlobj.)
+                        # self._tmpfname = self.make_tmp_fname(filename, urlobj.)
                         
                         if self._fo==None:
                             limit = float(self._cfg.bandwidthlimit*1024)/float(HarvestManUrlConnectorFactory.connector_count)
