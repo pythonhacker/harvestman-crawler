@@ -1069,8 +1069,8 @@ class HarvestManUrlConnector(object):
                         
                 break
 
-            except Exception, e:
-                raise
+            #except Exception, e:
+            #    raise
             
             except urllib2.HTTPError, e:
                 
