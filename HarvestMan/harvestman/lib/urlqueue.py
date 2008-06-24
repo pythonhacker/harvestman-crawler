@@ -781,7 +781,7 @@ class HarvestManCrawlerQueue(object):
         # Wait till all threads report
         # to the state machine, with a
         # timeout of 5 minutes.
-        moreinfo("Waiting for threads to finish up...")
+        logconsole("Waiting for threads to finish up...")
 
         timeslot, tottime = 0.5, 0
         while not self.stateobj.exit_state():
@@ -794,7 +794,7 @@ class HarvestManCrawlerQueue(object):
         # Don't wait for worker threads in an abnormal exit - no point.
         # pool = objects.datamgr.get_url_threadpool()
         # if pool: pool.wait(10.0, 120.0)
-        moreinfo("Done.")
+        logconsole("Done.")
         
         self.trackers = []
         self.basetracker = None

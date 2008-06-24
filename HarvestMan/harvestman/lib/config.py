@@ -131,7 +131,7 @@ CONFIG_XML_TEMPLATE="""\
         <maxextdirs value="%(maxextdirs)s" />
         <maxfiles value="%(maxfiles)s" />
         <maxfilesize value="%(maxfilesize)s" />
-        <maxbytes value="%s)s" />
+        <maxbytes value="%(maxbytes)s" />
         <connections value="%(connections)s" />
         <bandwidth value="%(bandwidthlimit)s" />
         <timelimit value="%(timelimit)s" />
@@ -199,6 +199,7 @@ CONFIG_XML_TEMPLATE="""\
 param_re = re.compile(r'\S+=\S+',re.LOCALE|re.UNICODE)
 int_re = re.compile(r'\d+')
 float_re = re.compile(r'\d+\.\d*')
+maxbytes_re = re.compile(r'(\d+\s*)(kb?|mb?|gb?)?$', re.IGNORECASE)
 
 # This will contain the absolute path of parent-folder of
 # harvestman installation...
@@ -487,6 +488,7 @@ class HarvestManStateObject(dict, Singleton):
                          'maxextdirs_value' : ('maxextdirs','int'),
                          'maxfiles_value' : ('maxfiles','int'),
                          'maxfilesize_value' : ('maxfilesize','int'),
+                         'maxbytes_value' : ('maxbytes', 'func:set_maxbytes'),
                          'connections_value' : ('connections','int'),
                          'maxbandwidth_value' : ('bandwidthlimit','float'),                         
                          'robots_value' : ('robots','int'),
@@ -715,6 +717,41 @@ class HarvestManStateObject(dict, Singleton):
 
         return CONFIG_OPTION_SET        
 
+    def set_maxbytes(self, key, val, attrdict):
+
+        # The value could be in any of the following forms
+        # <maxbytes value="5000" /> - End crawl at 5000 bytes
+        # <maxbytes value="10kb" /> - End crawl at 10kb 
+        # <maxbytes value="50MB" /> - End crawl at 50 MB.
+        # <maxbytes value="1GB" /> - End crawl at 1 GB.
+        # <maxbytes value="10k" /> - End crawl at 10kb 
+        # <maxbytes value="50M" /> - End crawl at 50 MB.
+        # <maxbytes value="1G" /> - End crawl at 1 GB.        
+        # Any extra spaces should also be taken care of
+
+        # The regexp does all the above
+        items = maxbytes_re.findall(val.strip())
+        if items:
+            # 'item' is a pair
+            item = items[0]
+            # First member is the number, second the
+            # specification for kb, mb, gb if any.
+            limit, spec = item
+            limit = int(limit)
+            
+            if spec != '':
+                # Check for kb, mb, gb
+                spec = spec.strip().lower()
+                if spec.startswith('k'):
+                    limit *= 1024
+                elif spec.startswith('m'):
+                    limit *= pow(1024, 2)
+                elif spec.startswith('g'):
+                    limit *= pow(1024, 3)
+
+            # Set maxbytes
+            self.maxbytes = limit
+                    
     def set_project(self, key, val, prjdict):
         # Same function is called for url, basedir, name
         # and verbosity

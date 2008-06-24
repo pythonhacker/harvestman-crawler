@@ -114,8 +114,7 @@ class HarvestManDataManager(object):
         self.collections = BST()
         self.collections.set_auto(2)
         # byte count
-        self._bytes = 0L
-        self.savedbytes = 0L
+        self.bytes = 0L
         # Redownload flag
         self._redownload = False
         # Mirror manager
@@ -552,7 +551,7 @@ class HarvestManDataManager(object):
                    'filesinrepos' : numfilesinrepos,
                    'filesincache' : numfilesincache,
                    'retries' : numretried,
-                   'bytes': self._bytes,
+                   'bytes': self.bytes,
                    'fetchtime' : fetchtime,
                 }
 
@@ -568,8 +567,7 @@ class HarvestManDataManager(object):
     def update_bytes(self, count):
         """ Update the global byte count """
 
-        self._bytes += count
-        self.savedbytes += count
+        self.bytes += count
 
     def update_file_stats(self, urlObject, status):
         """ Add the passed information to the saved file list """
@@ -766,7 +764,7 @@ class HarvestManDataManager(object):
         lists, dictionaries and resetting other member items"""
 
         # Reset byte count
-        self._bytes = 0L
+        self.bytes = 0L
         #try:
         #if 1:
             ## moreinfo("Stats for urldb BST...")
@@ -1077,7 +1075,7 @@ class HarvestManDataManager(object):
         else:
             fps=0.0
 
-        bytes = self._bytes
+        bytes = self.bytes
 
         ratespec='KB/sec'
         if bytes and dnldtime:
@@ -1300,7 +1298,8 @@ class HarvestManController(threading.Thread):
             time.sleep(1.0)
             self._manage_time_limits()
             self._manage_file_limits()
-
+            self._manage_maxbytes_limits()
+            
     def stop(self):
         """ Stop this thread """
 
@@ -1345,16 +1344,20 @@ class HarvestManController(threading.Thread):
             self.terminator()
             
         return HARVESTMAN_OK
+
     def _manage_maxbytes_limits(self):
         """ Manage limits on maximum bytes a crawler should download in total per job. """
-        
-        lsaved = self._dmgr.savedbytes
+
+        lsaved = self._dmgr.bytes
         lmax = self._cfg.maxbytes
+
         if lsaved < lmax:
             return HARVESTMAN_FAIL
-        if lsaved == lmax:
+
+        if lsaved >= lmax:
             moreinfo('Specified maxbytes limit of',lmax ,'reached!')
             self.terminator()   
+
         return HARVESTMAN_OK
         
                     

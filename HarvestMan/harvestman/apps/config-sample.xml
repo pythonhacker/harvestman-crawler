@@ -12,7 +12,7 @@
 
       </project>
 
-      <project ignore="0">
+      <project ignore="1">
 
         <url>www.foo.com</url>
         <name>foo</name>
@@ -69,6 +69,7 @@
         <maxextdirs value="0"/>
         <maxfiles value="5000"/>
         <maxfilesize value="5242880"/>
+        <maxbytes value='50 k'/>
         <connections value="5"/>
         <timelimit value="-1"/>
       </limits>
