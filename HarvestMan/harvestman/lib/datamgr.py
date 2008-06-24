@@ -1296,9 +1296,12 @@ class HarvestManController(threading.Thread):
             # Wake up every second and look
             # for exceptional conditions
             time.sleep(1.0)
-            self._manage_time_limits()
-            self._manage_file_limits()
-            self._manage_maxbytes_limits()
+            if self._cfg.timelimit != -1:
+                self._manage_time_limits()
+            if self._cfg.maxfiles:
+                self._manage_file_limits()
+            if self._cfg.maxbytes:
+                self._manage_maxbytes_limits()
             
     def stop(self):
         """ Stop this thread """
@@ -1315,10 +1318,6 @@ class HarvestManController(threading.Thread):
     def _manage_time_limits(self):
         """ Manage limits on time for the project """
 
-        # If time limit is not set, return
-        if self._cfg.timelimit == -1:
-            return HARVESTMAN_FAIL
-        
         t2=time.time()
 
         timediff = float((math.modf((t2-self._cfg.starttime)*100.0)[1])/100.0)
