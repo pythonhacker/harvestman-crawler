@@ -728,7 +728,7 @@ class HarvestManStateObject(dict, Singleton):
         # <maxbytes value="50M" /> - End crawl at 50 MB.
         # <maxbytes value="1G" /> - End crawl at 1 GB.        
         # Any extra spaces should also be taken care of
-
+        
         # The regexp does all the above
         items = maxbytes_re.findall(val.strip())
         if items:

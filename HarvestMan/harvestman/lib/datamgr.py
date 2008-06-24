@@ -1339,7 +1339,7 @@ class HarvestManController(threading.Thread):
         if lsaved < lmax:
             return HARVESTMAN_FAIL
         
-        if lsaved == lmax:
+        else:
             moreinfo('Specified file limit of',lmax ,'reached!')
             self.terminator()
             
@@ -1354,7 +1354,7 @@ class HarvestManController(threading.Thread):
         if lsaved < lmax:
             return HARVESTMAN_FAIL
 
-        if lsaved >= lmax:
+        else:
             moreinfo('Specified maxbytes limit of',lmax ,'reached!')
             self.terminator()   
 
