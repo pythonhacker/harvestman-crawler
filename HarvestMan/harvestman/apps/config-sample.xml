@@ -69,8 +69,9 @@
         <maxextdirs value="0"/>
         <maxfiles value="5000"/>
         <maxfilesize value="5242880"/>
-        <maxbytes value='50 k'/>
+        <maxbytes value='500 k'/>
         <connections value="5"/>
+        <maxbandwidth value="10" />
         <timelimit value="-1"/>
       </limits>
       <rules>
