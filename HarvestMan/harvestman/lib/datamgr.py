@@ -788,7 +788,7 @@ class HarvestManDataManager(object):
     def archive_project(self):
         """ Archive project files into a tar archive file.
         The archive will be further compressed in gz or bz2
-        format. New in 1.4.5 """
+        format """
 
         extrainfo("Archiving project files...")
         # Get project directory
