@@ -131,6 +131,7 @@ CONFIG_XML_TEMPLATE="""\
         <maxextdirs value="%(maxextdirs)s" />
         <maxfiles value="%(maxfiles)s" />
         <maxfilesize value="%(maxfilesize)s" />
+        <maxbytes value="%s)s" />
         <connections value="%(connections)s" />
         <bandwidth value="%(bandwidthlimit)s" />
         <timelimit value="%(timelimit)s" />
@@ -273,6 +274,7 @@ class HarvestManStateObject(dict, Singleton):
         self.fastmode=1
         self.usethreads=1
         self.maxfiles=5000
+        self.maxbytes=0
         self.maxextservers=0
         self.maxextdirs=0
         self.retryfailed=1

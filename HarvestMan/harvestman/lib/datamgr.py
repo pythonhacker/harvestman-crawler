@@ -115,6 +115,7 @@ class HarvestManDataManager(object):
         self.collections.set_auto(2)
         # byte count
         self._bytes = 0L
+        self.savedbytes = 0L
         # Redownload flag
         self._redownload = False
         # Mirror manager
@@ -568,6 +569,7 @@ class HarvestManDataManager(object):
         """ Update the global byte count """
 
         self._bytes += count
+        self.savedbytes += count
 
     def update_file_stats(self, urlObject, status):
         """ Add the passed information to the saved file list """
@@ -1343,4 +1345,16 @@ class HarvestManController(threading.Thread):
             self.terminator()
             
         return HARVESTMAN_OK
+    def _manage_maxbytes_limits(self):
+        """ Manage limits on maximum bytes a crawler should download in total per job. """
+        
+        lsaved = self._dmgr.savedbytes
+        lmax = self._cfg.maxbytes
+        if lsaved < lmax:
+            return HARVESTMAN_FAIL
+        if lsaved == lmax:
+            moreinfo('Specified maxbytes limit of',lmax ,'reached!')
+            self.terminator()   
+        return HARVESTMAN_OK
+        
                     
