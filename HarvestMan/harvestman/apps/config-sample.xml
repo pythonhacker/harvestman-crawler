@@ -5,10 +5,17 @@
   <config version="3.0" xmlversion="1.0">
     <projects>
       
+      <project ignore="1">
+
+        <url>http://www.python.org/doc/current/tut/tut.html</url>
+        <name>pytut</name>
+
+      </project>
+
       <project ignore="0">
 
-        <url>www.python.org/doc/current/tut/tut.html</url>
-        <name>pytut</name>
+        <url>http://docs.python.org/lib/lib.html</url>
+        <name>pydoc</name>
 
       </project>
 
@@ -69,9 +76,9 @@
         <maxextdirs value="0"/>
         <maxfiles value="5000"/>
         <maxfilesize value="5242880"/>
-        <maxbytes value='500 k'/>
-        <connections value="5"/>
+        <maxbytes value="0" />
         <maxbandwidth value="10" />
+        <connections value="5"/>
         <timelimit value="-1"/>
       </limits>
       <rules>
@@ -80,7 +87,7 @@
         <serverpriority></serverpriority>
       </rules>
       <filters>
-        <urlfilter>-*.png</urlfilter>
+        <urlfilter></urlfilter>
         <serverfilter></serverfilter>
         <wordfilter></wordfilter>
         <junkfilter value="1"/>
@@ -116,7 +123,7 @@
     </system>
     
     <files>
-      <urltreefile>urls.html</urltreefile>
+      <urltreefile status="1" />
       <archive status="0" format="bzip"/>
       <urlheaders status="1" />
       <localise value="0"/>

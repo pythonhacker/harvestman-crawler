@@ -181,7 +181,7 @@ CONFIG_XML_TEMPLATE="""\
     </system>
     
     <files>
-      <urltreefile>%(urltreefile)s</urltreefile>
+      <urltreefile status="%(urltreefile)s" />
       <archive status="%(archive)s" format="%(archformat)s" />
       <urlheaders status="%(urlheaders)s" />
       <localise value="%(localise)s" />
@@ -351,7 +351,7 @@ class HarvestManStateObject(dict, Singleton):
         self.junkfilter = 1
         self.junkfilterdomains = 1
         self.junkfilterpatterns = 1
-        self.urltreefile = ''
+        self.urltreefile = 0
         self.urlfile = ''
         self.maxfilesize=5242880
         self.minfilesize=0
@@ -468,7 +468,7 @@ class HarvestManStateObject(dict, Singleton):
                          'datacache_value' : ('datacache','int'),
 
                          'urllist': ('urlfile', 'str'),
-                         'urltreefile' : ('urltreefile', 'str'),
+                         'urltreefile_status' : ('urltreefile', 'int'),
                          'archive_status' : ('archive', 'int'),
                          'archive_format' : ('archformat', 'str'),
                          'urlheaders_status' : ('urlheaders', 'int'),
@@ -1361,6 +1361,15 @@ class HarvestManStateObject(dict, Singleton):
         # fix errors in config variables
         self.setup()
 
+    def enable_controller(self):
+        """ Return whether we need to start the controller
+        thread. This is determined by whether we have
+        any limits either on time, files or data """
+
+        return (self.timelimit != -1) or \
+               (self.maxfiles) or \
+               (self.maxbytes)
+    
     def reset_progress(self):
         """ Rests the progress bar object (used by Hget)"""
         

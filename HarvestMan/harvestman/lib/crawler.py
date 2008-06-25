@@ -264,7 +264,7 @@ class HarvestManBaseUrlCrawler( threading.Thread ):
         self.set_download_flag(False)
         threading.Thread.join(self, 1.0)
         self.stateobj.set(self, THREAD_STOPPED)
-        raise HarvestManUrlCrawlerException, "%s: Stopped" % self.getName()
+        # raise HarvestManUrlCrawlerException, "%s: Stopped" % self.getName()
     
     def sleep(self):
 

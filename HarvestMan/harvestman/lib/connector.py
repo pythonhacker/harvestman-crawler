@@ -164,10 +164,7 @@ class HarvestManFileObject(threading.Thread):
         self._bwlimit = bwlimit
         # If bandwidth limit is specified, we will read in smaller
         # chunks, else larger chunks.
-        if bwlimit:
-            self._bs = 2048
-        else:
-            self._bs = 8192
+        self._bs = 4096
             
         threading.Thread.__init__(self, None, None, 'data reader')
 
@@ -199,14 +196,23 @@ class HarvestManFileObject(threading.Thread):
         # library may not be able to create so many distinct Event
         # objects...
 
-        # FIXME: Replace with something which does not waste
-        # CPU cycles.
         if diff>0:
-            time.sleep(0.2*diff)
-            self._bs = 2048
-        else:
-            self._bs = 8192
-        
+            # We are 'ahead' of the required bandwidth, so sleep
+            # the time difference off.
+            newbs = self._bs - int(self._bwlimit*abs(diff))
+            if newbs>=512:
+                self._bs = newbs
+            else:
+                # Experiments show that a 0.2 factor produces
+                # the best agreement with the required bandwidth
+                # though I cannot explain why it is so! It has
+                # no relation with the number of connections...
+                time.sleep(0.2*diff)
+        elif diff<0:
+            # We are behind the required bandwidth, so read the
+            # additional data
+            self._bs += int(self._bwlimit*abs(diff))
+
     def run(self):
         """ Overloaded run method """
         

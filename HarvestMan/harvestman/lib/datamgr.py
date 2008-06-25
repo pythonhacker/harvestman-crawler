@@ -521,7 +521,7 @@ class HarvestManDataManager(object):
             
         # dump url tree (dependency tree) to a file
         if self._cfg.urltreefile:
-            self.dump_urltree(self._cfg.urltreefile)
+            self.dump_urltree()
 
         if not self._cfg.project: return
 
@@ -537,7 +537,7 @@ class HarvestManDataManager(object):
 
         numretried = self._numretried
         
-        fetchtime = float((math.modf((self._cfg.endtime-self._cfg.starttime)*100.0)[1])/100.0)
+        fetchtime = self._cfg.endtime-self._cfg.starttime
         
         statsd = { 'links' : nlinks,
                    'filtered': nfiltered,
@@ -1069,23 +1069,20 @@ class HarvestManDataManager(object):
         fns = map(plural, strings)
         info(' ')
 
-        if fetchtime and nfiles:
-            fps = (float(nfiles/dnldtime))
-            fps = float((math.modf(fps*100.0))[1]/100.0)
-        else:
-            fps=0.0
 
         bytes = self.bytes
 
         ratespec='KB/sec'
         if bytes and dnldtime:
-            bps = (float(bytes/dnldtime))/100.0
-            bps = float((math.modf(bps*100.0))[1]/1000.0)
+            bps = float(bytes/dnldtime)/1024.0
             if bps<1.0:
                 bps *= 1000.0
                 ratespec='bytes/sec'
+            bps = '%.2f' % bps
         else:
-            bps = 0.0
+            bps = '0.0'
+
+        fetchtime = float((math.modf(fetchtime*100.0)[1])/100.0)
 
         if self._cfg.simulate:
             info("HarvestMan crawl simulation of",self._cfg.project,"completed in",fetchtime,"seconds.")
@@ -1146,18 +1143,18 @@ class HarvestManDataManager(object):
             #sf.write(infostr)
             #sf.close()
 
-    def dump_urltree(self, urlfile):
+    def dump_urltree(self):
         """ Dump url tree to a file """
 
-        # This function provides a little
-        # more functionality than the plain
-        # dump_urls in the rules module.
         # This creats an html file with
         # each url and its children below
         # it. Each url is a hyperlink to
         # itself on the net if the file
         # is an html file.
 
+        # urltreefile is <projdir>/urls.html
+        urlfile = os.path.join(self._cfg.projdir, 'urltree.html')
+        
         try:
             if os.path.exists(urlfile):
                 os.remove(urlfile)
@@ -1313,7 +1310,7 @@ class HarvestManController(threading.Thread):
         in case of an exceptional condition """
 
         # This somehow got deleted in HarvestMan 1.4.5
-        self._tq.endloop()
+        self._tq.endloop(True)
         
     def _manage_time_limits(self):
         """ Manage limits on time for the project """
@@ -1326,7 +1323,8 @@ class HarvestManController(threading.Thread):
         if timediff >= timemax -1:
             moreinfo('Specified time limit of',timemax ,'seconds reached!')            
             self.terminator()
-
+            return CONTROLLER_EXIT
+        
         return HARVESTMAN_OK
 
     def _manage_file_limits(self):
@@ -1335,13 +1333,11 @@ class HarvestManController(threading.Thread):
         lsaved = self._dmgr.savedfiles
         lmax = self._cfg.maxfiles
 
-        if lsaved < lmax:
-            return HARVESTMAN_FAIL
-        
-        else:
+        if lsaved >= lmax:
             moreinfo('Specified file limit of',lmax ,'reached!')
             self.terminator()
-            
+            return CONTROLLER_EXIT
+        
         return HARVESTMAN_OK
 
     def _manage_maxbytes_limits(self):
@@ -1350,13 +1346,11 @@ class HarvestManController(threading.Thread):
         lsaved = self._dmgr.bytes
         lmax = self._cfg.maxbytes
 
-        if lsaved < lmax:
-            return HARVESTMAN_FAIL
-
-        else:
+        if lsaved >= lmax:
             moreinfo('Specified maxbytes limit of',lmax ,'reached!')
             self.terminator()   
-
+            return CONTROLLER_EXIT
+        
         return HARVESTMAN_OK
         
                     

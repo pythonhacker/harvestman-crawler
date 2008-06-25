@@ -411,7 +411,7 @@ class HarvestManCrawlerQueue(object):
     def reset(self):
         
         self.basetracker = None
-        self.controller = None # New in 1.4
+        self.controller = None 
         self.flag = 0
         self.pushes = 0
         self.lasttimestamp = time.time()
@@ -503,8 +503,7 @@ class HarvestManCrawlerQueue(object):
         if self.stateobj.abortmsg:
             extrainfo(self.stateobj.abortmsg)
             
-        if self.flag != 1:
-            self.endloop()
+        self.end_threads()
 
     def endloop(self, forced=False):
         """ Exit the mainloop """
@@ -513,16 +512,16 @@ class HarvestManCrawlerQueue(object):
         self.flag = 1
         if forced:
             self.forcedexit = True
-        self.end_threads()
 
     def restart(self):
         """ Alternate method to start from a previous restored state """
 
         # Start harvestman controller thread
         import datamgr
-        
-        self.controller = datamgr.HarvestManController()
-        self.controller.start()
+
+        if self.configobj.enable_controller():
+            self.controller = datamgr.HarvestManController()
+            self.controller.start()
 
         # Start base tracker
         self.basetracker.start()
@@ -558,8 +557,9 @@ class HarvestManCrawlerQueue(object):
         #if self.configobj.fastmode:
 
         # Start harvestman controller thread
-        self.controller = datamgr.HarvestManController()
-        self.controller.start()
+        if self.configobj.enable_controller():        
+            self.controller = datamgr.HarvestManController()
+            self.controller.start()
 
         # Create the number of threads in the config file
         # Pre-launch the number of threads specified
@@ -766,7 +766,7 @@ class HarvestManCrawlerQueue(object):
         # Stop controller
         if self.controller:
             self.controller.stop()
-
+        
         if self.forcedexit:
             self._kill_tracker_threads()
         else:
@@ -776,25 +776,25 @@ class HarvestManCrawlerQueue(object):
                     t.stop()
                 except Exception, e:
                     pass
+
+            # Wait till all threads report
+            # to the state machine, with a
+            # timeout of 5 minutes.
+            extrainfo("Waiting for threads to finish up...")
+
+            timeslot, tottime = 0.5, 0
+            while not self.stateobj.exit_state():
+                # print 'Waiting...'
+                self.stateobj.wait2(timeslot)
+                tottime += timeslot
+                if tottime>=300.0:
+                    break
+
+            pool = objects.datamgr.get_url_threadpool()
+            if pool: pool.wait(10.0, 120.0)
             
-
-        # Wait till all threads report
-        # to the state machine, with a
-        # timeout of 5 minutes.
-        logconsole("Waiting for threads to finish up...")
-
-        timeslot, tottime = 0.5, 0
-        while not self.stateobj.exit_state():
-            # print 'Waiting...'
-            self.stateobj.wait2(timeslot)
-            tottime += timeslot
-            if tottime>=300.0:
-                break
-
-        # Don't wait for worker threads in an abnormal exit - no point.
-        # pool = objects.datamgr.get_url_threadpool()
-        # if pool: pool.wait(10.0, 120.0)
-        logconsole("Done.")
+            extrainfo("Done.")
+            # print 'Done.'
         
         self.trackers = []
         self.basetracker = None
@@ -816,5 +816,6 @@ class HarvestManCrawlerQueue(object):
                 logconsole(str(e))
             except ValueError, e:
                 logconsole(str(e))
-
+            except crawler.HarvestManUrlCrawlerException, e:
+                pass
 
