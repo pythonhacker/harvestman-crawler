@@ -503,7 +503,8 @@ class HarvestManCrawlerQueue(object):
         if self.stateobj.abortmsg:
             extrainfo(self.stateobj.abortmsg)
             
-        self.end_threads()
+        if self.flag != 1:
+            self.end_threads()
 
     def endloop(self, forced=False):
         """ Exit the mainloop """
@@ -512,6 +513,13 @@ class HarvestManCrawlerQueue(object):
         self.flag = 1
         if forced:
             self.forcedexit = True
+            # A forced exit happens when we exit because a
+            # download limit is breached, so instruct connectors
+            # to not save anything from here on...
+            conndict = objects.connfactory.get_connector_dict()
+            for conn in conndict.keys():
+                if conndict.get(conn):
+                    conn.blockwrite = True
 
     def restart(self):
         """ Alternate method to start from a previous restored state """

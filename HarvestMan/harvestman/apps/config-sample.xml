@@ -5,14 +5,14 @@
   <config version="3.0" xmlversion="1.0">
     <projects>
       
-      <project ignore="1">
+      <project ignore="0">
 
         <url>http://www.python.org/doc/current/tut/tut.html</url>
         <name>pytut</name>
 
       </project>
 
-      <project ignore="0">
+      <project ignore="1">
 
         <url>http://docs.python.org/lib/lib.html</url>
         <name>pydoc</name>
@@ -74,9 +74,9 @@
       <limits>
         <maxextservers value="0"/>
         <maxextdirs value="0"/>
-        <maxfiles value="5000"/>
+        <maxfiles value="5"/>
         <maxfilesize value="5242880"/>
-        <maxbytes value="0" />
+        <maxbytes value="100 k" />
         <maxbandwidth value="10" />
         <connections value="5"/>
         <timelimit value="-1"/>

@@ -115,6 +115,8 @@ class HarvestManDataManager(object):
         self.collections.set_auto(2)
         # byte count
         self.bytes = 0L
+        # saved bytes count
+        self.savedbytes = 0L        
         # Redownload flag
         self._redownload = False
         # Mirror manager
@@ -568,6 +570,11 @@ class HarvestManDataManager(object):
         """ Update the global byte count """
 
         self.bytes += count
+
+    def update_saved_bytes(self, count):
+        """ Update the saved byte count """
+
+        self.savedbytes += count        
 
     def update_file_stats(self, urlObject, status):
         """ Add the passed information to the saved file list """
@@ -1071,7 +1078,8 @@ class HarvestManDataManager(object):
 
 
         bytes = self.bytes
-
+        savedbytes = self.savedbytes
+        
         ratespec='KB/sec'
         if bytes and dnldtime:
             bps = float(bytes/dnldtime)/1024.0
@@ -1101,7 +1109,9 @@ class HarvestManDataManager(object):
 
         if nbroken: info(nbroken,fns[9],wasOrWere(nbroken),'were broken.')
         if fatal: info(fatal,fns[5],'had fatal errors and failed to download.')
-        if bytes: info(bytes,' bytes received at the rate of',bps,ratespec,'.\n')
+        if bytes: info(bytes,' bytes received at the rate of',bps,ratespec,'.')
+        if savedbytes: info(savedbytes,' bytes were written to disk.\n')
+        
         info('*** Log Completed ***\n')
         
         # get current time stamp
@@ -1294,11 +1304,14 @@ class HarvestManController(threading.Thread):
             # for exceptional conditions
             time.sleep(1.0)
             if self._cfg.timelimit != -1:
-                self._manage_time_limits()
+                if self._manage_time_limits()==CONTROLLER_EXIT:
+                    break
             if self._cfg.maxfiles:
-                self._manage_file_limits()
+                if self._manage_file_limits()==CONTROLLER_EXIT:
+                    break
             if self._cfg.maxbytes:
-                self._manage_maxbytes_limits()
+                if self._manage_maxbytes_limits()==CONTROLLER_EXIT:
+                    break
             
     def stop(self):
         """ Stop this thread """
@@ -1343,10 +1356,11 @@ class HarvestManController(threading.Thread):
     def _manage_maxbytes_limits(self):
         """ Manage limits on maximum bytes a crawler should download in total per job. """
 
-        lsaved = self._dmgr.bytes
+        lsaved = self._dmgr.savedbytes
         lmax = self._cfg.maxbytes
 
-        if lsaved >= lmax:
+        # Let us check for a closer hit of 90%...
+        if (lsaved >=0.90*lmax):
             moreinfo('Specified maxbytes limit of',lmax ,'reached!')
             self.terminator()   
             return CONTROLLER_EXIT

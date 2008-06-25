@@ -80,8 +80,9 @@ import glob
 import random
 import base64
 import sha
-import document
+import weakref
 
+import document
 import mirrors
 import urlparser
 from methodwrapper import MethodWrapperMetaClass
@@ -774,6 +775,10 @@ class HarvestManUrlConnector(object):
         self._numtries = 0
         # Acquired flag
         self._acquired = True
+        # Block write flag - to be used
+        # to indicate to connector to
+        # not save the data to disk
+        self.blockwrite = False
         
     def __del__(self):
         del self._data
@@ -1954,6 +1959,9 @@ class HarvestManUrlConnector(object):
         if objects.eventmgr.raise_event('writeurl', urlobj, data=self._data)==False:
             extrainfo('Filtering write of URL',urlobj)
             return WRITE_URL_FILTERED
+
+        if self.blockwrite:
+            return WRITE_URL_BLOCKED
         
         dmgr = objects.datamgr
         
@@ -2041,6 +2049,9 @@ class HarvestManUrlConnector(object):
     def write_url_filename(self, filename, overwrite=True, printmsg=False):
         """ Writes downloaded data for a URL to the file named 'filename' """
 
+        if self.blockwrite:
+            return WRITE_URL_BLOCKED
+        
         if self._data=='':
             return DATA_EMPTY_ERROR
 
@@ -2196,7 +2207,10 @@ class HarvestManUrlConnector(object):
         retval = self._write_url(urlobj, overwrite)
         
         if SUCCESS(retval):
+            # Update saved bytes
+            objects.datamgr.update_saved_bytes(datalen)
             return DOWNLOAD_YES_OK
+        
         elif retval == WRITE_URL_FILTERED:
             return DOWNLOAD_NO_WRITE_FILTERED
         else:
@@ -2698,17 +2712,8 @@ class HarvestManUrlConnectorFactory(object):
         # The requests dictionary
         self._requests = {}
         self._sema = threading.BoundedSemaphore(maxsize)
-        self._connstack = []
-        # Count of connections
-        self._count = 0
-        self._size = maxsize
+        self._conndict = weakref.WeakKeyDictionary()
 
-    def push(self, connector):
-        """ Push a connector to the stack. This will be reused in the next call
-        instead of creating a new one """
-
-        self._connstack.append(connector)
-        
     def create_connector(self):
         """ Creates and returns a connector object """
 
@@ -2722,32 +2727,30 @@ class HarvestManUrlConnectorFactory(object):
         # thread
         self._sema.acquire()
 
-        if len(self._connstack):
-            return self._connstack.pop()
-
         # Make a connector 
         connector = self.__class__.klass()
-        self._count += 1
-        self.__class__.connector_count = self._count
+        self._conndict[connector] = 1
+        self.__class__.connector_count += 1
         
-        # print 'Connector returned, count is',self._count
-            
         return connector
         
     def remove_connector(self, conn):
         """ Removes a connector object after use """
 
         # Release the semaphore once to increase the internal count
-        self._count -= 1
-        self.__class__.connector_count = self._count        
+        self.__class__.connector_count -= 1
         # print 'Connector removed, count is',self._count
         conn.release()
+        del conn       
         self._sema.release()
 
     def get_count(self):
         """ Return the current connector count """
 
-        return self._count
+        return self.__class__.connector_count
+
+    def get_connector_dict(self):
+        return self._conndict
     
 # test code
 if __name__=="__main__":
