@@ -1368,7 +1368,8 @@ class HarvestManStateObject(dict, Singleton):
 
         return (self.timelimit != -1) or \
                (self.maxfiles) or \
-               (self.maxbytes)
+               (self.maxbytes) or \
+               (self.bandwidthlimit)
     
     def reset_progress(self):
         """ Rests the progress bar object (used by Hget)"""

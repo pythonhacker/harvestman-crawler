@@ -495,7 +495,6 @@ class HarvestManCrawlerQueue(object):
             tottime += timeslot
             if self.flag: break
             
-        # print 'Broken...'
         # extrainfo("Waiting for pool...")
         if pool: pool.wait(10.0, self.configobj.timeout)
         # extrainfo("Pool is free now...")                
@@ -503,7 +502,7 @@ class HarvestManCrawlerQueue(object):
         if self.stateobj.abortmsg:
             extrainfo(self.stateobj.abortmsg)
             
-        if self.flag != 1:
+        if not self.forcedexit:
             self.end_threads()
 
     def endloop(self, forced=False):

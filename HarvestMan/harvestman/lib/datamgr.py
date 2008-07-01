@@ -1291,18 +1291,26 @@ class HarvestManController(threading.Thread):
         self._dmgr = objects.datamgr
         self._tq =  objects.queuemgr
         self._cfg = objects.config
+        self._cfact = objects.connfactory
         self._exitflag = False
-        self._conn = {}
+        self._starttime = 0
+        # Bandwidth limit
+        self._bwlimit = float(self._cfg.bandwidthlimit*1024)
         threading.Thread.__init__(self, None, None, 'HarvestMan Control Class')
 
     def run(self):
         """ Run in a loop looking for
         exceptional conditions """
 
+        self._starttime = time.time()
+        
         while not self._exitflag:
-            # Wake up every second and look
+            if self._bwlimit>0:
+                self._manage_bandwidth_limits()
+            
+            # Wake up every half second and look
             # for exceptional conditions
-            time.sleep(1.0)
+            time.sleep(0.5)
             if self._cfg.timelimit != -1:
                 if self._manage_time_limits()==CONTROLLER_EXIT:
                     break
@@ -1324,6 +1332,37 @@ class HarvestManController(threading.Thread):
 
         # This somehow got deleted in HarvestMan 1.4.5
         self._tq.endloop(True)
+
+    def _manage_bandwidth_limits(self):
+        """ Manage bandwidth limits by throttling the connectors """
+
+        # Get total data downloaded so far
+        # Check if we fall within bandwidth limits
+        diff = float(self._dmgr.bytes)/self._bwlimit - (time.time() - self._starttime)
+        # print 'Diff=>',diff
+
+        conndict = self._cfact.get_connector_dict()
+
+        for conn in conndict.keys():
+            if conndict.get(conn):
+                fo = conn.get_fileobj()
+                if fo:
+                    # We are ahead of the required bandwidth, so divide it by
+                    # number of connectors and set it on them. Also decerement
+                    # byte chunk size by 128 bytes, with the bottom limit being 256.
+                    if diff>0:
+                        fo.set_sleeptime(1.01*float(diff)/float(self._cfact.get_count()))
+                        if fo._bs>=384: fo._bs -= 128
+                    else:
+                        # We are behind the require bandwidth, so try to read more
+                        # data at one go.
+                        fo._bs += 128
+                else:
+                    # File object not created yet for this connector, so set
+                    # throttle time on the connector itself. It will set it on
+                    # the file object, after it is initialized.
+                    conn.throttle_time = 1.01*float(diff)/float(self._cfact.get_count())
+                    
         
     def _manage_time_limits(self):
         """ Manage limits on time for the project """

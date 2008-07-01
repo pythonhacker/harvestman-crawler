@@ -163,10 +163,9 @@ class HarvestManFileObject(threading.Thread):
         self._lasterror = None
         # Bandwidth limit as bytes/sec
         self._bwlimit = bwlimit
-        # If bandwidth limit is specified, we will read in smaller
-        # chunks, else larger chunks.
         self._bs = 4096
-            
+        # Throttle sleep time
+        self._sleeptime = 0
         threading.Thread.__init__(self, None, None, 'data reader')
 
     def initialize(self):
@@ -186,33 +185,42 @@ class HarvestManFileObject(threading.Thread):
         
         self._fobj = fileobj
 
+    def set_sleeptime(self, sleeptime):
+        """ Setter method for the throttle sleep time """
+        
+        self._sleeptime = sleeptime
+        
     def throttle(self):
         """ Throttle to fall within limits of specified download speed """
 
-        diff = float(self._contentlen)/float(self._bwlimit) - (time.time() - self._start)
-        # We need to sleep. But a time.sleep does waste raw CPU
-        # cycles. Still there does not seem to be an option here
-        # since we cannot use SleepEvent class here as there could
-        # be many connectors at any given time and hence the threading
-        # library may not be able to create so many distinct Event
-        # objects...
-
-        if diff>0:
-            # We are 'ahead' of the required bandwidth, so sleep
-            # the time difference off.
-            newbs = self._bs - int(self._bwlimit*abs(diff))
-            if newbs>=512:
-                self._bs = newbs
-            else:
-                # Experiments show that a 0.2 factor produces
-                # the best agreement with the required bandwidth
-                # though I cannot explain why it is so! It has
-                # no relation with the number of connections...
-                time.sleep(0.2*diff)
-        elif diff<0:
-            # We are behind the required bandwidth, so read the
-            # additional data
-            self._bs += int(self._bwlimit*abs(diff))
+        if self._sleeptime>0:
+            # print 'sleeping',self._sleeptime,self
+            time.sleep(self._sleeptime)
+            
+   ##      diff = float(self._contentlen)/float(self._bwlimit) - (time.time() - self._start)
+##         # We need to sleep. But a time.sleep does waste raw CPU
+##         # cycles. Still there does not seem to be an option here
+##         # since we cannot use SleepEvent class here as there could
+##         # be many connectors at any given time and hence the threading
+##         # library may not be able to create so many distinct Event
+##         # objects...
+##         print 'Diff=>',diff
+##         if diff>0:
+##            # We are 'ahead' of the required bandwidth, so sleep
+##            # the time difference off.
+##            #newbs = self._bs - int(self._bwlimit*abs(diff))
+##            #if newbs>=512:
+##            #self._bs = newbs
+##            #else:
+##            # Experiments show that a 0.2 factor produces
+##            # the best agreement with the required bandwidth
+##            # though I cannot explain why it is so! It has
+##            # no relation with the number of connections...
+##            time.sleep(diff)
+##         elif diff<0:
+##            # We are behind the required bandwidth, so read the
+##            # additional data
+##            self._bs += int(self._bwlimit*abs(diff))
 
     def run(self):
         """ Overloaded run method """
@@ -237,8 +245,7 @@ class HarvestManFileObject(threading.Thread):
                     reads += 1
                     self._data = self._data + block
                     self._contentlen += len(block)
-                    if self._bwlimit:
-                        self.throttle()
+                    self.throttle()
                     
                     # Flush data to disk
                     if self._mode==CONNECTOR_DATA_MODE_FLUSH:
@@ -269,7 +276,8 @@ class HarvestManFileObject(threading.Thread):
             else:
                 self._data = self._data + block
                 self._contentlen += len(block)
-                if self._bwlimit: self.throttle()
+                self.throttle()
+                # self.throttle()
                 
                 # Flush data to disk
                 if self._mode==CONNECTOR_DATA_MODE_FLUSH:
@@ -779,6 +787,9 @@ class HarvestManUrlConnector(object):
         # to indicate to connector to
         # not save the data to disk
         self.blockwrite = False
+        # Throttle sleeping time to be
+        # set on the file object
+        self.throttle_time = 0
         
     def __del__(self):
         del self._data
@@ -1037,13 +1048,13 @@ class HarvestManUrlConnector(object):
                         # self._tmpfname = self.make_tmp_fname(filename, urlobj.)
                         
                         if self._fo==None:
-                            limit = float(self._cfg.bandwidthlimit*1024)/float(HarvestManUrlConnectorFactory.connector_count)
                             self._fo = HarvestManFileObject(self._freq,
                                                             self._tmpfname,
                                                             clength,
                                                             CONNECTOR_DATA_MODE_INMEM,
-                                                            limit)
+                                                            float(self._cfg.bandwidthlimit*1024))
                             self._fo.initialize()
+                            self._fo.set_sleeptime(self.throttle_time)
                         else:
                             self._fo.set_fileobject(self._freq)
 
@@ -2654,6 +2665,14 @@ class HarvestManUrlConnector(object):
 
         return self._fo
 
+    def get_data_sofar(self):
+        """ Returned the length of data downloaded so far """
+
+        if self._fo:
+            return self._fo.get_datalen()
+
+        return 0
+    
     def get_data_mode(self):
         """ Returns the data download mode """
 

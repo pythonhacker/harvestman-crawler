@@ -74,11 +74,11 @@
       <limits>
         <maxextservers value="0"/>
         <maxextdirs value="0"/>
-        <maxfiles value="5"/>
+        <maxfiles value="0"/>
         <maxfilesize value="5242880"/>
-        <maxbytes value="100 k" />
-        <maxbandwidth value="10" />
-        <connections value="5"/>
+        <maxbytes value="0" />
+        <maxbandwidth value="5" />
+        <connections value="10"/>
         <timelimit value="-1"/>
       </limits>
       <rules>
