@@ -502,6 +502,7 @@ class HarvestManStateObject(dict, Singleton):
                          'serverfilter' : ('serverfilter','str'),
                          'wordfilter' : ('wordfilter','str'),
                          'junkfilter_value' : ('junkfilter','int'),
+                         'useragent_value': ('USER_AGENT','str'),
                          'workers_status' : ('usethreads','int'),
                          'workers_size' : ('threadpoolsize','int'),
                          'workers_timeout' : ('timeout','float'),

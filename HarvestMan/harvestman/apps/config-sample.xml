@@ -125,6 +125,7 @@
     </parser>
 
     <system>
+      <useragent value="Firefox v2.0.0.8" />
       <workers status="1" size="10" timeout="1200"/>
       <trackers value="10"/>
       <timegap value="3.0" random="1" />

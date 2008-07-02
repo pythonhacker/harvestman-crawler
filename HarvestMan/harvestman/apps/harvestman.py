@@ -396,7 +396,9 @@ class HarvestMan(HarvestManAppBase):
         """ Initialize the crawler by creating, register common objects and creating the
         user folders """
 
-        objects.config.USER_AGENT = self.__class__.USER_AGENT
+        if objects.config.USER_AGENT=='':
+            objects.config.USER_AGENT = self.__class__.USER_AGENT
+            
         self.register_common_objects()
         self.create_user_directories()
 
