@@ -881,10 +881,10 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
 
 
                     if objects.datamgr.check_exists(child_urlobj):
-                        extrainfo("Duplicate => ", child_urlobj)
+                        # extrainfo("Duplicate => ", child_urlobj)
                         continue
                     else:
-                        extrainfo("Not Duplicate => ", child_urlobj)                        
+                        # extrainfo("Not Duplicate => ", child_urlobj)                        
                         objects.datamgr.add_url(child_urlobj)
                         coll.addURL(child_urlobj)                    
                         children.append(child_urlobj)

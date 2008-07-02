@@ -1308,7 +1308,7 @@ class HarvestManStateObject(dict, Singleton):
             if entry.get('basedir','')=='':
                 entry['basedir'] = '.'
 
-            if entry.get('verbosity',0)==0:
+            if entry.get('verbosity',-1)==-1:
                 entry['verbosity'] = 2
 
         self.plugins = list(set(self.plugins))

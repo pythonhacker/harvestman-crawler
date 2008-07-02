@@ -9,7 +9,7 @@
 
         <url>http://www.python.org/doc/current/tut/tut.html</url>
         <name>pytut</name>
-
+        <verbosity value="0"/>
       </project>
 
       <project ignore="1">
