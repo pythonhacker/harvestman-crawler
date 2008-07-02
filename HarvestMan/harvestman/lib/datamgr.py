@@ -1295,7 +1295,10 @@ class HarvestManController(threading.Thread):
         self._exitflag = False
         self._starttime = 0
         # Bandwidth limit
-        self._bwlimit = float(self._cfg.bandwidthlimit*1024)
+        self._bwlimit = self._cfg.bandwidthlimit
+        # Throttling factor
+        self._throttlef = self._cfg.throttlefactor
+        
         threading.Thread.__init__(self, None, None, 'HarvestMan Control Class')
 
     def run(self):
@@ -1351,7 +1354,7 @@ class HarvestManController(threading.Thread):
                     # number of connectors and set it on them. Also decerement
                     # byte chunk size by 128 bytes, with the bottom limit being 256.
                     if diff>0:
-                        fo.set_sleeptime(1.01*float(diff)/float(self._cfact.get_count()))
+                        fo.set_sleeptime(self._throttlef*float(diff)/float(self._cfact.get_count()))
                         if fo._bs>=384: fo._bs -= 128
                     else:
                         # We are behind the require bandwidth, so try to read more
@@ -1361,7 +1364,7 @@ class HarvestManController(threading.Thread):
                     # File object not created yet for this connector, so set
                     # throttle time on the connector itself. It will set it on
                     # the file object, after it is initialized.
-                    conn.throttle_time = 1.01*float(diff)/float(self._cfact.get_count())
+                    conn.throttle_time = self._throttlef*float(diff)/float(self._cfact.get_count())
                     
         
     def _manage_time_limits(self):

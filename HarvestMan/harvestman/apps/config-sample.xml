@@ -28,6 +28,14 @@
         <verbosity value="2"/>
       </project>
       
+      <project ignore="1">
+
+        <url>www.automotive.com</url>
+        <name>auto</name>
+        <verbosity value="3"/>
+      </project>
+      
+
     </projects>
     
     <network>
@@ -43,7 +51,7 @@
       <types>
         <html value="1"/>
         <images value="1"/>
-        <javascript value="1"/>
+        <javascript value="0"/>
         <javaapplet value="1"/>
         <querylinks value="1"/>
       </types> 
@@ -76,8 +84,8 @@
         <maxextdirs value="0"/>
         <maxfiles value="0"/>
         <maxfilesize value="5242880"/>
-        <maxbytes value="0" />
-        <maxbandwidth value="5" />
+        <maxbytes value="5 MB" />
+        <maxbandwidth value="20 k" factor="1.5" />
         <connections value="10"/>
         <timelimit value="-1"/>
       </limits>

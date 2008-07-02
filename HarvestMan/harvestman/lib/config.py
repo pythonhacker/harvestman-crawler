@@ -133,7 +133,7 @@ CONFIG_XML_TEMPLATE="""\
         <maxfilesize value="%(maxfilesize)s" />
         <maxbytes value="%(maxbytes)s" />
         <connections value="%(connections)s" />
-        <bandwidth value="%(bandwidthlimit)s" />
+        <maxbandwidth value="%(bandwidthlimit)s" factor="%(throttlefactor)s" />
         <timelimit value="%(timelimit)s" />
       </limits>
       <rules>
@@ -200,6 +200,7 @@ param_re = re.compile(r'\S+=\S+',re.LOCALE|re.UNICODE)
 int_re = re.compile(r'\d+')
 float_re = re.compile(r'\d+\.\d*')
 maxbytes_re = re.compile(r'(\d+\s*)(kb?|mb?|gb?)?$', re.IGNORECASE)
+maxbw_re = re.compile(r'(\d+\s*)(k(b|bps)?|m(b|bps)?|g(b|bps)?)?$', re.IGNORECASE)
 
 # This will contain the absolute path of parent-folder of
 # harvestman installation...
@@ -324,6 +325,7 @@ class HarvestManStateObject(dict, Singleton):
         self.connections=5
         # Bandwidth limit, 0 means no limit
         self.bandwidthlimit = 0
+        self.throttlefactor = 1.5
         self.cachefileformat='pickled' 
         self.testing = 0
         self.testnocrawl = 0
@@ -490,7 +492,8 @@ class HarvestManStateObject(dict, Singleton):
                          'maxfilesize_value' : ('maxfilesize','int'),
                          'maxbytes_value' : ('maxbytes', 'func:set_maxbytes'),
                          'connections_value' : ('connections','int'),
-                         'maxbandwidth_value' : ('bandwidthlimit','float'),                         
+                         'maxbandwidth_value' : ('bandwidthlimit','func:set_maxbandwidth'),
+                         'maxbandwidth_factor': ('throttlefactor','float'),
                          'robots_value' : ('robots','int'),
                          'timelimit_value' : ('timelimit','float'),
                          'urlpriority' : ('urlpriority','str'),
@@ -751,6 +754,40 @@ class HarvestManStateObject(dict, Singleton):
 
             # Set maxbytes
             self.maxbytes = limit
+
+    def set_maxbandwidth(self, key, val, attrdict):
+
+        # The value could be in any of the following forms
+        # <maxbandwidth value="5" /> - Crawl at 5 bytes per sec 
+        # <maxbandwidth value="5 k" /> - Crawl at 5 kbps
+        # <maxbandwidth value="5 kb" /> - Crawl at 5 kbps
+        # <maxbandwidth value="5 kbps" /> - Crawl at 5 kbps        
+        # <maxbandwidth value="5 m" /> - Crawl at 5 mbps
+        # <maxbandwidth value="5 mb" /> - Crawl at 5 mbps
+        # <maxbandwidth value="5 mbps" /> - Crawl at 5 mbps        
+        # Any extra spaces should also be taken care of
+        
+        # The regexp does all the above
+        items = maxbw_re.findall(val.strip())
+        if items:
+            item = items[0]
+            # First member is the number, second the
+            # specification for kb, mb, gb if any.
+            limit = int(item[0])
+            spec = item[1]
+            
+            if spec != '':
+                # Check for kb, mb, gb, kbps, mbps, gbps
+                spec = spec.strip().lower()
+                if spec.startswith('k'):
+                    limit *= 1024
+                elif spec.startswith('m'):
+                    limit *= pow(1024, 2)
+                elif spec.startswith('g'):
+                    limit *= pow(1024, 3)
+
+            # Set maxbandwidth
+            self.bandwidthlimit = float(limit)
                     
     def set_project(self, key, val, prjdict):
         # Same function is called for url, basedir, name
