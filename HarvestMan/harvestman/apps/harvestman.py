@@ -173,6 +173,8 @@ class HarvestMan(HarvestManAppBase):
         globaldata.userdebug = []
         logconsole('HarvestMan session finished.')
 
+        objects.datamgr.clean_up()
+        objects.rulesmgr.clean_up()
         objects.logger.shutdown()
 
     def save_current_state(self):
@@ -277,7 +279,9 @@ class HarvestMan(HarvestManAppBase):
             pass
 
         # Reset objects keeping project-specific states now
+        # Reset and re-initialize datamgr
         objects.datamgr.clean_up()
+        objects.datamgr.initialize()
         objects.rulesmgr.reset()
             
         # Read the project cache file, if any
@@ -443,8 +447,6 @@ class HarvestMan(HarvestManAppBase):
         # sites.
         locale.setlocale(locale.LC_ALL, '')
 
-        # Initialize datamgr
-        objects.datamgr.initialize()
         objects.rulesmgr.make_filters()
         
         if objects.config.verbosity:
@@ -495,9 +497,13 @@ class HarvestMan(HarvestManAppBase):
         
         if objects.config.basedir:
             objects.config.projdir = os.path.join( objects.config.basedir, objects.config.project )
-            if objects.config.projdir:
-                if not os.path.exists( objects.config.projdir ):
-                    os.makedirs(objects.config.projdir)
+            if objects.config.projdir and not os.path.exists( objects.config.projdir ):
+                os.makedirs(objects.config.projdir)
+                
+            if objects.config.datamode == CONNECTOR_DATA_MODE_FLUSH:    
+                objects.config.projtmpdir = os.path.join(objects.config.projdir, '.tmp')
+                if objects.config.projtmpdir and not os.path.exists( objects.config.projtmpdir ):
+                    os.makedirs(objects.config.projtmpdir)            
 
         # Set message log file
         if objects.config.projdir and objects.config.project:

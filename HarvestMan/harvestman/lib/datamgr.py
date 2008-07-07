@@ -107,12 +107,6 @@ class HarvestManDataManager(object):
         # has only one entry.
         # i.e accept-ranges.
         self._serversdict = {}
-        # URL database, a BST with disk-caching
-        self._urldb = BST()
-        self._urldb.set_auto(2)
-        # Collections database, a BST with disk-caching        
-        self.collections = BST()
-        self.collections.set_auto(2)
         # byte count
         self.bytes = 0L
         # saved bytes count
@@ -123,16 +117,25 @@ class HarvestManDataManager(object):
         self.mirrormgr = HarvestManMirrorManager.getInstance()
         # Condition object for synchronization
         self.cond = threading.Condition(threading.Lock())        
-        
+        self._urldb = None
+        self.collections = None
+
     def initialize(self):
         """ Do initializations per project """
 
         # Url thread group class for multithreaded downloads
-        if self._cfg.usethreads and self._cfg.fastmode:
+        if self._cfg.usethreads:
             self._urlThreadPool = HarvestManUrlThreadPool()
             self._urlThreadPool.spawn_threads()
         else:
             self._urlThreadPool = None
+
+        # URL database, a BST with disk-caching
+        self._urldb = BST()
+        # Collections database, a BST with disk-caching        
+        self.collections = BST()
+        self._urldb.set_auto(2)
+        self.collections.set_auto(2)
 
         # Load any mirrors
         self.mirrormgr.load_mirrors(self._cfg.mirrorfile)
@@ -284,8 +287,8 @@ class HarvestManDataManager(object):
         content = self.cache._url[url]
         if content:
             rec = content[0]
-            self.cache.update(rec, checksum=csum, location=filename,content_length=contentlen, last_modified=lastmodified,
-                              etag=tag, updated=True)
+            self.cache.update(rec, checksum=csum, location=filename,content_length=contentlen, 
+                              last_modified=lastmodified,etag=tag, updated=True)
             if self._cfg.datacache:
                 self.cache.update(rec,data=zlib.compress(urldata))
         else:
@@ -750,7 +753,12 @@ class HarvestManDataManager(object):
                     moreinfo("Saved to",filename)
 
                 self.update_file_stats( url, res )
-                data = conn.get_data()
+                if url.is_webpage():
+                    if self._cfg.datamode==CONNECTOR_DATA_MODE_INMEM: 
+                        data = conn.get_data()
+                    else:
+                        # Need to read data from the file...
+                        data = open(filename, 'rb').read()
 
             else:
                 fetchurl = url.get_full_url()
@@ -771,26 +779,11 @@ class HarvestManDataManager(object):
         lists, dictionaries and resetting other member items"""
 
         # Reset byte count
-        self.bytes = 0L
-        #try:
-        #if 1:
-            ## moreinfo("Stats for urldb BST...")
-##             moreinfo("Size left=>", self._urldb.size_lhs())
-##             moreinfo("Size right=>", self._urldb.size_rhs())        
-##             moreinfo('BST stats=>',self._urldb.stats())
-##             moreinfo("BST diskcache stats=>",self._urldb.diskcache.get_stats())
-##             moreinfo("Stats for collections BST...")
-##             moreinfo("Size left=>", self.collections.size_lhs())
-##             moreinfo("Size right=>", self.collections.size_rhs())        
-##             moreinfo('BST stats=>',self.collections.stats())        
-##             moreinfo("BST diskcache stats=>",self.collections.diskcache.get_stats())        
-        self._urldb.clear()
-        self.collections.clear()
+        if self._urldb and self._urldb.size:
+            self._urldb.clear()
+        if self.collections and self.collections.size:
+            self.collections.clear()
         self.reset()
-        #except TypeError:
-        #    pass
-        #except Exception:
-        #    pass
 
     def archive_project(self):
         """ Archive project files into a tar archive file.
@@ -1291,29 +1284,18 @@ class HarvestManController(threading.Thread):
         self._dmgr = objects.datamgr
         self._tq =  objects.queuemgr
         self._cfg = objects.config
-        self._cfact = objects.connfactory
         self._exitflag = False
         self._starttime = 0
-        # Bandwidth limit
-        self._bwlimit = self._cfg.bandwidthlimit
-        # Throttling factor
-        self._throttlef = self._cfg.throttlefactor
-        
         threading.Thread.__init__(self, None, None, 'HarvestMan Control Class')
 
     def run(self):
         """ Run in a loop looking for
         exceptional conditions """
 
-        self._starttime = time.time()
-        
         while not self._exitflag:
-            if self._bwlimit>0:
-                self._manage_bandwidth_limits()
-            
             # Wake up every half second and look
             # for exceptional conditions
-            time.sleep(0.5)
+            time.sleep(1.0)
             if self._cfg.timelimit != -1:
                 if self._manage_time_limits()==CONTROLLER_EXIT:
                     break
@@ -1336,37 +1318,6 @@ class HarvestManController(threading.Thread):
         # This somehow got deleted in HarvestMan 1.4.5
         self._tq.endloop(True)
 
-    def _manage_bandwidth_limits(self):
-        """ Manage bandwidth limits by throttling the connectors """
-
-        # Get total data downloaded so far
-        # Check if we fall within bandwidth limits
-        diff = float(self._dmgr.bytes)/self._bwlimit - (time.time() - self._starttime)
-        # print 'Diff=>',diff
-
-        conndict = self._cfact.get_connector_dict()
-
-        for conn in conndict.keys():
-            if conndict.get(conn):
-                fo = conn.get_fileobj()
-                if fo:
-                    # We are ahead of the required bandwidth, so divide it by
-                    # number of connectors and set it on them. Also decerement
-                    # byte chunk size by 128 bytes, with the bottom limit being 256.
-                    if diff>0:
-                        fo.set_sleeptime(self._throttlef*float(diff)/float(self._cfact.get_count()))
-                        if fo._bs>=384: fo._bs -= 128
-                    else:
-                        # We are behind the require bandwidth, so try to read more
-                        # data at one go.
-                        fo._bs += 128
-                else:
-                    # File object not created yet for this connector, so set
-                    # throttle time on the connector itself. It will set it on
-                    # the file object, after it is initialized.
-                    conn.throttle_time = self._throttlef*float(diff)/float(self._cfact.get_count())
-                    
-        
     def _manage_time_limits(self):
         """ Manage limits on time for the project """
 

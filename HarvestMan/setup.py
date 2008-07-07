@@ -336,7 +336,7 @@ def main():
         use_sgmlop = True
             
     if use_sgmlop:
-        print 'sgmlop will be used as the default HTML parser...'
+        print 'sgmlop found, will be used as fall-back HTML parser...'
 
     try:
         print 'Checking for pyparsing...'

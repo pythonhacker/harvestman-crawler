@@ -132,7 +132,7 @@ CONFIG_XML_TEMPLATE="""\
         <maxfiles value="%(maxfiles)s" />
         <maxfilesize value="%(maxfilesize)s" />
         <maxbytes value="%(maxbytes)s" />
-        <connections value="%(connections)s" />
+        <maxconnections value="%(connections)s" />
         <maxbandwidth value="%(bandwidthlimit)s" factor="%(throttlefactor)s" />
         <timelimit value="%(timelimit)s" />
       </limits>
@@ -175,9 +175,11 @@ CONFIG_XML_TEMPLATE="""\
     </parser>
       
     <system>
+      <useragent value="%(USERAGENT)s" />
       <workers status="%(usethreads)s" size="%(threadpoolsize)s" timeout="%(timeout)s" />
       <trackers value="%(maxtrackers)s" timeout="%(fetchertimeout)s" />
       <timegap value="%(sleeptime)s" random="%(randomsleep)s" />
+      <connections type="%(datamodename)s" />
     </system>
     
     <files>
@@ -234,13 +236,13 @@ class HarvestManStateObject(dict, Singleton):
         
         self.items_to_skip=[]
         # USER-AGENT string
-        self.USER_AGENT = ''
         # Version for harvestman
         self.version='2.0'
         # Maturity for harvestman
         self.maturity="alpha 1"
         # Single appname property for hget/harvestman
         self.appname='HarvestMan'
+        self.USER_AGENT = 'v'.join((self.appname + ' ', self.version))
         self.progname="".join((self.appname," ",self.version," ",self.maturity))
         self.program = sys.argv[0]
         self.url=''
@@ -408,8 +410,10 @@ class HarvestManStateObject(dict, Singleton):
         # Flag for forcing multipart downloads
         self.forcesplit = 0
         # Data save mode for connectors
-        # Is in-mem by default
-        self.datamode = CONNECTOR_DATA_MODE_INMEM
+        # Is flush by default
+        self.datamode = CONNECTOR_DATA_MODE_FLUSH
+        # Name for data mode
+        self.datamodename = "flush"
         # Hget outfile - default empty string
         self.hgetoutfile = ''
         # Hget output directory - default current directory
@@ -491,7 +495,7 @@ class HarvestManStateObject(dict, Singleton):
                          'maxfiles_value' : ('maxfiles','int'),
                          'maxfilesize_value' : ('maxfilesize','int'),
                          'maxbytes_value' : ('maxbytes', 'func:set_maxbytes'),
-                         'connections_value' : ('connections','int'),
+                         'maxconnections_value' : ('connections','int'),
                          'maxbandwidth_value' : ('bandwidthlimit','func:set_maxbandwidth'),
                          'maxbandwidth_factor': ('throttlefactor','float'),
                          'robots_value' : ('robots','int'),
@@ -512,6 +516,7 @@ class HarvestManStateObject(dict, Singleton):
                          'savesessions_value': ('savesessions','int'),
                          'timegap_value': ('sleeptime', 'float'),
                          'timegap_random': ('randomsleep', 'int'),
+                         'connections_type' : ('datamode', 'func:set_datamode'),
                          'feature_name' : ('htmlfeatures', 'func:set_parse_features'),
                          'simulate_value': ('simulate', 'int'),
                          'localise_value' : ('localise','int'),
@@ -848,6 +853,23 @@ class HarvestManStateObject(dict, Singleton):
         enable = int(plugindict['enable'])
         if enable: self.plugins.append(plugin)
 
+    def set_datamode(self, key, val, modedict):
+        """ Sets the state of the connections param """
+
+        
+        mode = modedict['type']
+        if type(mode) is str:
+            if mode.lower()=='flush' :
+                self.datamode = CONNECTOR_DATA_MODE_FLUSH
+                self.datamodename == mode.lower()
+            elif mode.lower()=='mem':
+                self.datamode = CONNECTOR_DATA_MODE_INMEM
+                self.datamodename == mode.lower()
+        elif type(mode) is int:
+            self.datamode = mode
+            if self.datamode>1: 
+                self.datamode=1
+            
     def set_parse_features(self, key, val, featuredict):
         """ Sets the state of the plugins param """
 
@@ -1065,6 +1087,7 @@ class HarvestManStateObject(dict, Singleton):
                     if value:
                         print 'Warning: Enabling in-memory flag, data will be stored in memory!'
                         self.datamode = CONNECTOR_DATA_MODE_INMEM
+                        self.datamodename = "mem"
                 elif option=='notempdir':
                     if value:
                         print 'Temporary files will be saved to current directory'
@@ -1406,8 +1429,7 @@ class HarvestManStateObject(dict, Singleton):
 
         return (self.timelimit != -1) or \
                (self.maxfiles) or \
-               (self.maxbytes) or \
-               (self.bandwidthlimit)
+               (self.maxbytes)
     
     def reset_progress(self):
         """ Rests the progress bar object (used by Hget)"""

@@ -164,8 +164,7 @@ class HarvestManFileObject(threading.Thread):
         # Bandwidth limit as bytes/sec
         self._bwlimit = bwlimit
         self._bs = 4096
-        # Throttle sleep time
-        self._sleeptime = 0
+
         threading.Thread.__init__(self, None, None, 'data reader')
 
     def initialize(self):
@@ -185,42 +184,30 @@ class HarvestManFileObject(threading.Thread):
         
         self._fobj = fileobj
 
-    def set_sleeptime(self, sleeptime):
-        """ Setter method for the throttle sleep time """
-        
-        self._sleeptime = sleeptime
-        
-    def throttle(self):
+    def throttle(self, bytecount, start_time, factor):
         """ Throttle to fall within limits of specified download speed """
-
-        if self._sleeptime>0:
-            # print 'sleeping',self._sleeptime,self
-            time.sleep(self._sleeptime)
             
-   ##      diff = float(self._contentlen)/float(self._bwlimit) - (time.time() - self._start)
-##         # We need to sleep. But a time.sleep does waste raw CPU
-##         # cycles. Still there does not seem to be an option here
-##         # since we cannot use SleepEvent class here as there could
-##         # be many connectors at any given time and hence the threading
-##         # library may not be able to create so many distinct Event
-##         # objects...
-##         print 'Diff=>',diff
-##         if diff>0:
-##            # We are 'ahead' of the required bandwidth, so sleep
-##            # the time difference off.
-##            #newbs = self._bs - int(self._bwlimit*abs(diff))
-##            #if newbs>=512:
-##            #self._bs = newbs
-##            #else:
-##            # Experiments show that a 0.2 factor produces
-##            # the best agreement with the required bandwidth
-##            # though I cannot explain why it is so! It has
-##            # no relation with the number of connections...
-##            time.sleep(diff)
-##         elif diff<0:
-##            # We are behind the required bandwidth, so read the
-##            # additional data
-##            self._bs += int(self._bwlimit*abs(diff))
+        diff = float(bytecount)/self._bwlimit - (time.time() - start_time)
+        diff = factor*diff/HarvestManUrlConnectorFactory.connector_count
+        # We need to sleep. But a time.sleep does waste raw CPU
+        # cycles. Still there does not seem to be an option here
+        # since we cannot use SleepEvent class here as there could
+        # be many connectors at any given time and hence the threading
+        # library may not be able to create so many distinct Event
+        # objects...
+        # print 'Diff=>',diff
+
+        if diff>0:
+            # We are 'ahead' of the required bandwidth, so sleep
+            # the time difference off.
+            if self._bs>=256: 
+                self._bs -= 128
+            time.sleep(diff)
+
+        elif diff<0:
+            # We are behind the required bandwidth, so read the
+            # additional data
+            self._bs += int(self._bwlimit*abs(diff))
 
     def run(self):
         """ Overloaded run method """
@@ -232,6 +219,12 @@ class HarvestManFileObject(threading.Thread):
 
         reads = 0
         
+        dmgr = objects.datamgr
+        config = objects.config
+
+        start_time = config.starttime
+        tfactor = config.throttlefactor
+
         while not self._flag:
             try:
                 block = self._fobj.read(self._bs)
@@ -245,7 +238,8 @@ class HarvestManFileObject(threading.Thread):
                     reads += 1
                     self._data = self._data + block
                     self._contentlen += len(block)
-                    self.throttle()
+                    if self._bwlimit:
+                        self.throttle(dmgr.bytes, start_time, tfactor)
                     
                     # Flush data to disk
                     if self._mode==CONNECTOR_DATA_MODE_FLUSH:
@@ -265,6 +259,12 @@ class HarvestManFileObject(threading.Thread):
     def readNext(self):
         """ Method which reads the next block of data from the URL """
 
+        dmgr = objects.datamgr
+        config = objects.config
+
+        start_time = config.starttime
+        tfactor = config.throttlefactor
+
         try:
             block = self._fobj.read(self._bs)
             if block=='':
@@ -276,17 +276,19 @@ class HarvestManFileObject(threading.Thread):
             else:
                 self._data = self._data + block
                 self._contentlen += len(block)
-                self.throttle()
-                # self.throttle()
+                if self._bwlimit:
+                    self.throttle(dmgr.bytes, start_time, tfactor)
                 
                 # Flush data to disk
                 if self._mode==CONNECTOR_DATA_MODE_FLUSH:
                     self.flush()
 
         except socket.error, e:
+            print 'Error=>',error
             self._fobj.close()
             raise HarvestManFileObjectException, str(e)
         except Exception, e:
+            print 'Error=>',error
             self._fobj.close()            
             raise HarvestManFileObjectException, str(e)               
 
@@ -879,7 +881,7 @@ class HarvestManUrlConnector(object):
 
         # This is the work-horse method of this class...
         
-        data = '' 
+        data = ''
 
         dmgr = objects.datamgr
         rulesmgr = objects.rulesmgr
@@ -1016,7 +1018,7 @@ class HarvestManUrlConnector(object):
                                 
                         else:
                             # There is considerable change in the URL.
-                            # So we need to re-resolve it, since otherwise
+                            # So we need to re-resolve it, since otherwies
                             # some child URLs which derive from this could
                             # be otherwise invalid and will result in 404
                             # errors.
@@ -1045,41 +1047,47 @@ class HarvestManUrlConnector(object):
                         clength = self.get_content_length()
                         
                         t1 = time.time()
-                        # self._tmpfname = self.make_tmp_fname(filename, urlobj.)
                         
                         if self._fo==None:
+                            if self._mode==CONNECTOR_DATA_MODE_FLUSH:
+                                self._tmpfname = self.make_tmp_fname(urlobj.get_filename(),
+                                                                     self._cfg.projtmpdir)
                             self._fo = HarvestManFileObject(self._freq,
                                                             self._tmpfname,
                                                             clength,
-                                                            CONNECTOR_DATA_MODE_INMEM,
-                                                            float(self._cfg.bandwidthlimit*1024))
+                                                            self._mode,
+                                                            float(self._cfg.bandwidthlimit))
                             self._fo.initialize()
-                            self._fo.set_sleeptime(self.throttle_time)
                         else:
                             self._fo.set_fileobject(self._freq)
 
                         
-                        # data = self._freq.read()
                         self._fo.read()
-                        data = self._fo.get_data()
-                        
                         self._elapsed = time.time() - t1
                         
-                        # Save a reference
-                        data0 = data
-                        self._freq.close()                        
-                        dmgr.update_bytes(len(data))
-                        debug('Encoding',encoding)
+                        self._freq.close()                       
+ 
+                        if self._mode==CONNECTOR_DATA_MODE_INMEM:
+                            data = self._fo.get_data()
+                            self._datalen = len(data)
+
+                            # Save a reference
+                            data0 = data
+                            self._freq.close()                        
+                            dmgr.update_bytes(len(data))
+                            debug('Encoding',encoding)
                         
-                        if encoding.strip().find('gzip') != -1:
-                            try:
-                                gzfile = gzip.GzipFile(fileobj=cStringIO.StringIO(data))
-                                data = gzfile.read()
-                                gzfile.close()
-                            except (IOError, EOFError), e:
-                                data = data0
-                                #extrainfo('Error deflating HTTP compressed data:',str(e))
-                                pass
+                            if encoding.strip().find('gzip') != -1:
+                                try:
+                                    gzfile = gzip.GzipFile(fileobj=cStringIO.StringIO(data))
+                                    data = gzfile.read()
+                                    gzfile.close()
+                                except (IOError, EOFError), e:
+                                    data = data0
+                                    pass
+                        else:
+                            self._datalen = self._fo.get_datalen()
+                            dmgr.update_bytes(self._datalen)
                             
                     except MemoryError, e:
                         # Catch memory error for sockets
@@ -1091,8 +1099,8 @@ class HarvestManUrlConnector(object):
                         
                 break
 
-            #except Exception, e:
-            #    raise
+            # except Exception, e:
+            #     raise
             
             except urllib2.HTTPError, e:
                 
@@ -1319,7 +1327,7 @@ class HarvestManUrlConnector(object):
         if three_oh_four:
             return CONNECT_NO_UPTODATE
             
-        if data:
+        if self._data or self._datalen:
             return CONNECT_YES_DOWNLOADED
         else:
             return CONNECT_NO_ERROR
@@ -1693,6 +1701,8 @@ class HarvestManUrlConnector(object):
                             self._data = self._fo.get_data()
                         else:
                             self._data += self._fo.get_data()
+                        
+                        self._datalen = len(self._data)
                     else:
                         self._datalen = self._fo.get_datalen()
 
@@ -1917,7 +1927,7 @@ class HarvestManUrlConnector(object):
             # separated by commas.
             return int(clength.split(',')[0].strip())
         else:
-            return len(self._data)
+            return self._datalen
 
     def check_content_length(self):
         """ Checks whether content length of a URL is within the
@@ -1990,7 +2000,7 @@ class HarvestManUrlConnector(object):
             directory = urlobj.get_local_directory()
 
             if SUCCESS(dmgr.create_local_directory(directory)):
-                if SUCCESS(self.write_url_filename( urlobj.get_full_filename())):
+                if SUCCESS(self._write_url_filename( urlobj.get_full_filename())):
                     return WRITE_URL_OK
                 else:
                     return WRITE_URL_FAILED
@@ -2009,7 +2019,7 @@ class HarvestManUrlConnector(object):
                 directory = urlobj.get_local_directory_old()
 
                 if SUCCESS(dmgr.create_local_directory(directory)):
-                    if SUCCESS(self.write_url_filename( urlobj.get_full_filename_old())):
+                    if SUCCESS(self._write_url_filename( urlobj.get_full_filename_old())):
                         return WRITE_URL_OK
                     else:
                         return WRITE_URL_FAILED
@@ -2033,13 +2043,75 @@ class HarvestManUrlConnector(object):
                 directory = urlobj.get_local_directory()
 
                 if SUCCESS(dmgr.create_local_directory(directory)):
-                    if SUCCESS(self.write_url_filename( urlobj.get_full_filename())):
+                    if SUCCESS(self._write_url_filename( urlobj.get_full_filename())):
                         return WRITE_URL_OK
                     else:
                         WRITE_URL_FAILED
                 else:
                     extrainfo("Error in creating local directory for", urlobj.get_full_url())
                     return WRITE_URL_FAILED
+
+    def _write_url_filename(self, filename, overwrite=True, printmsg=False):
+        """ Writes downloaded data for a URL to the file named 'filename' """
+
+        if self.blockwrite:
+            return WRITE_URL_BLOCKED
+        
+        if self._data=='' and self._datalen==0:
+            return DATA_EMPTY_ERROR
+
+        if not overwrite:
+            # Recalcuate new filename...
+            origfilepath, n = filename, 1
+        
+            while os.path.isfile(filename):
+                filename = ''.join((origfilepath,'.',str(n)))
+                n += 1
+
+        try:
+            extrainfo('Writing file ', filename)
+            if self._mode==CONNECTOR_DATA_MODE_INMEM:
+                f=open(filename, 'wb')
+                f.write(self._data)
+                f.close()
+            else:
+                # Rename file
+                if os.path.isfile(self._tmpfname):
+                    # If gzip-encoded, we need to deflate data
+                    if self.get_content_encoding().strip().find('gzip') != -1:
+                        try:
+                            g=gzip.GzipFile(fileobj=open(self._tmpfname, 'rb'))
+                            # Open file for writing and write block by block
+                            f=open(filename, 'wb')
+                            while 1:
+                                block = g.read(8192)
+                                if block=='':
+                                    f.flush()
+                                    f.close()
+                                    break
+                                else:
+                                    f.write(block)
+                                    f.flush()
+                            g.close()
+                        except (IOError, OSError), e:
+                            return FILE_WRITE_ERROR
+                    else:
+                        shutil.move(self._tmpfname, filename)
+                    
+            if os.path.isfile(filename):
+                self._writelen = os.path.getsize(filename)
+
+                if printmsg:
+                    print '\nSaved to %s' % filename    
+                return FILE_WRITE_OK
+                
+        except IOError,e:
+            debug('IO Exception' , str(e))
+            return FILE_WRITE_ERROR
+        except ValueError, e:
+            return FILE_WRITE_ERROR
+
+        return FILE_WRITE_ERROR
 
     def write_url_info_file(self, url):
         """ Writes an information file in temporary directory for
@@ -2055,40 +2127,6 @@ class HarvestManUrlConnector(object):
                 open(info_file, 'wb').write(str(self._headers))
             except (OSError, IOError), e:
                 print e
-        
-        
-    def write_url_filename(self, filename, overwrite=True, printmsg=False):
-        """ Writes downloaded data for a URL to the file named 'filename' """
-
-        if self.blockwrite:
-            return WRITE_URL_BLOCKED
-        
-        if self._data=='':
-            return DATA_EMPTY_ERROR
-
-        if not overwrite:
-            # Recalcuate new filename...
-            origfilepath, n = filename, 1
-        
-            while os.path.isfile(filename):
-                filename = ''.join((origfilepath,'.',str(n)))
-                n += 1
-
-        try:
-            extrainfo('Writing file ', filename)
-            f=open(filename, 'wb')
-            # print 'Data len=>',len(self._data)
-            f.write(self._data)
-            f.close()
-            if printmsg:
-                print '\nSaved to %s' % filename            
-        except IOError,e:
-            debug('IO Exception' , str(e))
-            return FILE_WRITE_ERROR
-        except ValueError, e:
-            return FILE_WRITE_ERROR
-
-        return FILE_WRITE_OK
 
     def print_download_stats(self, statsdict):
         """ Prints download statistics such as bytes transferred, time and speed """
@@ -2189,7 +2227,6 @@ class HarvestManUrlConnector(object):
             # If this caused a 304 error, then our copy is up-to-date so nothing to be done.
             # print update, fileverified
             if res == CONNECT_NO_UPTODATE:
-
                 if update and fileverified:
                     extrainfo("Project cache is uptodate (304) =>", url)
                     return DOWNLOAD_NO_UPTODATE
@@ -2219,7 +2256,7 @@ class HarvestManUrlConnector(object):
         
         if SUCCESS(retval):
             # Update saved bytes
-            objects.datamgr.update_saved_bytes(datalen)
+            objects.datamgr.update_saved_bytes(self._writelen)
             return DOWNLOAD_YES_OK
         
         elif retval == WRITE_URL_FILTERED:
@@ -2595,7 +2632,7 @@ class HarvestManUrlConnector(object):
                 filename = os.path.join(outdir, os.path.split(filename)[1])                 
 
         if self._mode == CONNECTOR_DATA_MODE_INMEM:
-            res = self.write_url_filename(filename, False, True)
+            res = self._write_url_filename(filename, False, True)
             if SUCCESS(res):
                 self.print_download_stats(statsdict)
 
@@ -2705,6 +2742,8 @@ class HarvestManUrlConnector(object):
         self._data = ''
         # length of data downloaded
         self._datalen = 0
+        # length of data written
+        self._writelen = 0
         # error dictionary
         self._error.reset()
         # Http header for current connection
@@ -2731,7 +2770,7 @@ class HarvestManUrlConnectorFactory(object):
         # The requests dictionary
         self._requests = {}
         self._sema = threading.BoundedSemaphore(maxsize)
-        self._conndict = weakref.WeakKeyDictionary()
+        self._conndict = {}
 
     def create_connector(self):
         """ Creates and returns a connector object """
@@ -2760,7 +2799,7 @@ class HarvestManUrlConnectorFactory(object):
         self.__class__.connector_count -= 1
         # print 'Connector removed, count is',self._count
         conn.release()
-        del conn       
+        del self._conndict[conn]       
         self._sema.release()
 
     def get_count(self):

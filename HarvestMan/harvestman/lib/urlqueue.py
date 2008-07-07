@@ -490,10 +490,10 @@ class HarvestManCrawlerQueue(object):
         pool = objects.datamgr.get_url_threadpool()
         
         while not self.stateobj.end_state():
-            # print 'Waiting...'
             self.stateobj.wait2(timeslot)
             tottime += timeslot
-            if self.flag: break
+            if self.flag: 
+                break
             
         # extrainfo("Waiting for pool...")
         if pool: pool.wait(10.0, self.configobj.timeout)

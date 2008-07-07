@@ -9,7 +9,7 @@
 
         <url>http://www.python.org/doc/current/tut/tut.html</url>
         <name>pytut</name>
-        <verbosity value="0"/>
+        <verbosity value="3"/>
       </project>
 
       <project ignore="1">
@@ -33,6 +33,14 @@
         <url>www.automotive.com</url>
         <name>auto</name>
         <verbosity value="3"/>
+      </project>
+
+
+      <project ignore="1">
+
+        <url>http://swish-e.org/docs</url>
+        <name>swish-docs</name>
+        <verbosity value="2"/>
       </project>
       
 
@@ -85,8 +93,8 @@
         <maxfiles value="0"/>
         <maxfilesize value="5242880"/>
         <maxbytes value="5 MB" />
-        <maxbandwidth value="20 k" factor="1.5" />
-        <connections value="10"/>
+        <maxbandwidth value="5 k" factor="1.5" />
+        <maxconnections value="10"/>
         <timelimit value="-1"/>
       </limits>
       <rules>
@@ -129,6 +137,7 @@
       <workers status="1" size="10" timeout="1200"/>
       <trackers value="10"/>
       <timegap value="3.0" random="1" />
+      <connections type="flush" />
     </system>
     
     <files>

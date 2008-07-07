@@ -226,8 +226,6 @@ class Hget(HarvestMan):
         objects.config.version = VERSION
         objects.config.maturity = MATURITY
         objects.config.nocrawl = True
-        # For hget, default data mode is flush
-        objects.config.datamode = CONNECTOR_DATA_MODE_FLUSH
         self._pool = None
         self._monitor = None
         
