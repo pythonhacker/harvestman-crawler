@@ -70,7 +70,7 @@ class Hget(HarvestMan):
 
     __metaclass__ = MethodWrapperMetaClass
     
-    USER_AGENT = "HarvestMan v2.0"
+    USER_AGENT = "Python-urllib/1.16"
 
     def grab_url(self, url, filename=None):
         """ Download the given URL and save it to the (optional) filename """
@@ -130,7 +130,7 @@ class Hget(HarvestMan):
     def clean_up(self, conn, urlobj, exception=None):
         """ Perform clean up after any exception """
         
-        reader = conn.get_reader()
+        reader = conn.get_fileobj()
         if reader: reader.stop()
         if exception==None:
             print '\n\nDownload aborted by user interrupt.'
