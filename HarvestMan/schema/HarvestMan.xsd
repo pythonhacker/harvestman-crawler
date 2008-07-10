@@ -83,8 +83,8 @@
   <xsd:complexType name="ProjectsProjectType">
     <xsd:sequence>
       <xsd:element name="url" type="xsd:anyURI"/>
-      <xsd:element name="name" type="validString"/>      
-      <xsd:element name="basedir" type="validString"/>
+      <xsd:element name="name" type="validString" minOccurs="0" />      
+      <xsd:element name="basedir" type="validString" minOccurs="0" />
       <xsd:element name="verbosity" minOccurs="0">
         <xsd:complexType>
           <xsd:attribute name="value" type="VerbType" default="3"/>
@@ -306,6 +306,16 @@
           <xsd:attribute name="value" type="xsd:positiveInteger" default="1048576" use="optional"/>
         </xsd:complexType>
       </xsd:element>
+      <xsd:element name="maxbytes" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:integer" default="0" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="maxbandwidth" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:integer" default="0" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
       <xsd:element name="connections" minOccurs="0">
         <xsd:complexType>
           <xsd:attribute name="value" type="xsd:positiveInteger" default="5" use="optional"/>
@@ -399,7 +409,12 @@
   <!--- Defining the 'files' element -->
   <xsd:complexType name="ConfigFilesType">
     <xsd:sequence>
-      <xsd:element name="urltreefile" type="xsd:string" minOccurs="0"/>
+      <xsd:element name="urltreefile" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="status" type="xsd:boolean" default="0" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      
       <xsd:element name="archive" minOccurs="0">
         <xsd:complexType>
           <xsd:attribute name="status" type="xsd:boolean" default="0" use="optional"/>

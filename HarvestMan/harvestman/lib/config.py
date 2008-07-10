@@ -175,7 +175,7 @@ CONFIG_XML_TEMPLATE="""\
     </parser>
       
     <system>
-      <useragent value="%(USERAGENT)s" />
+      <useragent value="%(USER_AGENT)s" />
       <workers status="%(usethreads)s" size="%(threadpoolsize)s" timeout="%(timeout)s" />
       <trackers value="%(maxtrackers)s" timeout="%(fetchertimeout)s" />
       <timegap value="%(sleeptime)s" random="%(randomsleep)s" />
