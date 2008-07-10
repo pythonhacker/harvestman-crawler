@@ -18,10 +18,12 @@ def run_all_tests():
     suite = unittest.makeSuite(test_connector.TestHarvestManUrlConnector)
     result = unittest.TestResult()
     suite.run(result)
+    print result.errors
+    print result.failures    
     print 'Running test_urlparser...'    
     suite = unittest.makeSuite(test_urlparser.TestHarvestManUrl)
     suite.run(result)
-
+    
     test_base.clean_up()
     return result
 

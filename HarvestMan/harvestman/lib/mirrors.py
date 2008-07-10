@@ -21,6 +21,7 @@ Copyright (C) 2007 Anand B Pillai.
 import random
 import urlparser
 import connector
+import re
 
 from common.common import *
 from common.macros import *

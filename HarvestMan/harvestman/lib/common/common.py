@@ -417,10 +417,18 @@ def GetTempDir():
         return os.path.abspath(tmpdir)
 
 def GetMyTempDir():
-    """ Return temporary directory for HarvestMan """
+    """ Return temporary directory for HarvestMan. Also creates
+    it if the directory is not there """
 
     # This is tempdir/HarvestMan
-    return os.path.join(GetTempDir(), 'harvestman')
+    tmpdir = os.path.join(GetTempDir(), 'harvestman')
+    if not os.path.isdir(tmpdir):
+        try:
+            os.makedirs(tmpdir)
+        except OSError, e:
+            return ''
+
+    return tmpdir
 
 # Modified to use the logger object
 def info(arg, *args):

@@ -1050,8 +1050,13 @@ class HarvestManUrlConnector(object):
                         
                         if self._fo==None:
                             if self._mode==CONNECTOR_DATA_MODE_FLUSH:
-                                self._tmpfname = self.make_tmp_fname(urlobj.get_filename(),
-                                                                     self._cfg.projtmpdir)
+                                if self._cfg.projtmpdir:
+                                    self._tmpfname = self.make_tmp_fname(urlobj.get_filename(),
+                                                                         self._cfg.projtmpdir)
+                                else:
+                                    # For stand-alone use outside crawls
+                                    self._tmpfname = self.make_tmp_fname(urlobj.get_filename(),
+                                                                         GetMyTempDir())
                             self._fo = HarvestManFileObject(self._freq,
                                                             self._tmpfname,
                                                             clength,
@@ -1099,7 +1104,7 @@ class HarvestManUrlConnector(object):
                         
                 break
 
-            # except Exception, e:
+            #except Exception, e:
             #     raise
             
             except urllib2.HTTPError, e:
