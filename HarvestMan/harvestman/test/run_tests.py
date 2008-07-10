@@ -11,6 +11,7 @@ import test_connector
 import test_urlparser
 import test_base
 
+# FIXME: Add a unit-test log for failures with complete tracebacks
 def run_all_tests():
     """ Run all unit tests in this folder """
 
@@ -18,8 +19,8 @@ def run_all_tests():
     suite = unittest.makeSuite(test_connector.TestHarvestManUrlConnector)
     result = unittest.TestResult()
     suite.run(result)
-    print result.errors
-    print result.failures    
+    # print result.errors
+    # print result.failures
     print 'Running test_urlparser...'    
     suite = unittest.makeSuite(test_urlparser.TestHarvestManUrl)
     suite.run(result)
