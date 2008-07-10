@@ -1126,6 +1126,7 @@ class HarvestManStateObject(dict, Singleton):
                 elif option == 'mirrorsearch':
                     if value:
                         print  'Mirror search turned on'
+                        print 'Warning: This is an experimental feature and may not work well at all...'
                         self.mirrorsearch = True
                 elif option == 'relpathidx':
                     idx = int(value.strip())

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-datacrawler.py - Demonstrating custom crawler writing by
+searchingcrawler.py - Demonstrating custom crawler writing by
 subscribing to events. This is a crawler which downloads
 and crawls only pages which mention a certain keyword.
 

@@ -58,7 +58,7 @@ hget_options=\
   ('memory','short=m','long=inmem','help=Keep data in memory instead of flushing to disk (Warning: use with care as this might exhaust memory for huge file downloads!)', 'type=bool' ,'default=False'),
   ('notempdir','short=n','long=notemp','help=Use current directory instead of system temp directory for saving intermediate files','type=bool'),
   ('mirrorfile','short=f','long=mirrorfile','help=Load mirror information for the URL(s) from MIRRORFILE (The file must contain a list of valid mirrors for the URL, one per line)','meta=MIRRORFILE'),
-  ('mirrorsearch','short=M','long=mirrorsearch','help=Search for the file in file mirror sites and download file in multipart if mirrors are found (use with -P option)','meta=MIRRORSEARCH','type=bool','default=False'),  
+  ('mirrorsearch','short=M','long=mirrorsearch','help=Experimental Feature - Search for the file in file mirror sites and download file in multipart if mirrors are found (use with -P option)','meta=MIRRORSEARCH','type=bool','default=False'),  
   ('relpathidx','short=i','long=relpathidx','help=When loading mirrors, use the given index to calculate the relative path of the original URL (If given, the relative path of the original URL will be offset by this value)','meta=RELPATHINDEX'),
   ('norelpath','short=N','long=norelpath','type=bool','default=False','help=When loading mirrors, do not compute mirror URLs using relative-path (Instead just appends the filename to the mirror URL)','meta=NORELPATH'),  
   ('output','short=o','long=output','meta=FILE','help=Save document to FILE'),
