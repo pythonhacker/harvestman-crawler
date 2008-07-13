@@ -243,6 +243,7 @@ class Hget(HarvestMan):
         else:
             objects.config.verbosity = 1
 
+        objects.logger.make_logger()        
         objects.logger.setLogSeverity(objects.config.verbosity)
 
         self.process_plugins()
