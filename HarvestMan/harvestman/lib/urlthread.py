@@ -419,7 +419,6 @@ class HarvestManUrlThreadPool(Queue):
             # Append this thread to the list of threads
             self._threads.append(fetcher)
             # print 'Starting thread',fetcher
-            debug('Starting thread',fetcher)
             fetcher.start()
 
     def download_urls(self, listofurlobjects):

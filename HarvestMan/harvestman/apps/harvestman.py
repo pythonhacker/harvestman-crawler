@@ -162,7 +162,7 @@ class HarvestMan(HarvestManAppBase):
             try:
                 os.remove(objects.config.runfile)
             except OSError, e:
-                moreinfo('Error removing runfile %s.' % objects.config.runfile)
+                error('Error removing runfile %s.' % objects.config.runfile)
 
         # inform user of config file errors
         if globaldata.userdebug:
@@ -203,11 +203,11 @@ class HarvestMan(HarvestManAppBase):
         
         # Dump with time-stamp 
         fname = os.path.join(objects.config.usersessiondir, '.harvestman_saves#' + str(int(time.time())))
-        moreinfo('Saving run-state to file %s...' % fname)
+        extrainfo('Saving run-state to file %s...' % fname)
 
         try:
             cPickle.dump(state, open(fname, 'wb'), pickle.HIGHEST_PROTOCOL)
-            moreinfo('Saved run-state to file %s.' % fname)
+            extrainfo('Saved run-state to file %s.' % fname)
         except (pickle.PicklingError, RuntimeError), e:
             logconsole(e)
             moreinfo('Could not save run-state !')
