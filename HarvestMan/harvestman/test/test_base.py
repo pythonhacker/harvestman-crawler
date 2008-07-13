@@ -38,7 +38,9 @@ def setUp():
     from lib import logger
     from lib import event
 
-    SetAlias(logger.HarvestManLogger())
+    log=logger.HarvestManLogger()
+    log.make_logger()
+    SetAlias(log)
     
     # Data manager object
     dmgr = datamgr.HarvestManDataManager()

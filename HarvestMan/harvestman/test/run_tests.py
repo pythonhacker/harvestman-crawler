@@ -9,6 +9,7 @@ Copyright (C) 2008, Anand B Pillai.
 import unittest
 import test_connector
 import test_urlparser
+import test_logger
 import test_base
 
 # FIXME: Add a unit-test log for failures with complete tracebacks
@@ -23,6 +24,9 @@ def run_all_tests():
     # print result.failures
     print 'Running test_urlparser...'    
     suite = unittest.makeSuite(test_urlparser.TestHarvestManUrl)
+    suite.run(result)
+    print 'Running test_logger...'    
+    suite = unittest.makeSuite(test_logger.TestHarvestManLogger)
     suite.run(result)
     
     test_base.clean_up()
@@ -40,6 +44,15 @@ def run_test_connector():
 def run_test_urlparser():
     print 'Running test_urlparser...'
     suite = unittest.makeSuite(test_urlparser.TestHarvestManUrl)
+    result = unittest.TestResult()
+    suite.run(result)
+
+    test_base.clean_up()    
+    return result
+
+def run_test_logger():
+    print 'Running test_logger...'
+    suite = unittest.makeSuite(test_logger.TestHarvestManLogger)
     result = unittest.TestResult()
     suite.run(result)
 
