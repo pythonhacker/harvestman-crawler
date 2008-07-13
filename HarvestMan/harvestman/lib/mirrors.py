@@ -459,7 +459,7 @@ class HarvestManMirrorManager(Singleton):
         # print 'New mirrors=>',newmirrors
 
         if newmirrors:
-            moreinfo("Returning from new mirror list...")
+            extrainfo("Returning from new mirror list...")
             # Get a random one out of it...
             new_mirror = newmirrors[0]
             # Remove the old mirror and replace it with new mirror in
@@ -469,7 +469,7 @@ class HarvestManMirrorManager(Singleton):
             self.used_mirrors.append(new_mirror)
 
         elif len(self.mirrors_to_retry)>1:
-            moreinfo("Returning from mirrors_to_retry...")        
+            extrainfo("Returning from mirrors_to_retry...")        
             # We don't want to go back to same mirror!
             new_mirror = self.mirrors_to_retry.pop(0)
             self.current_mirrors.remove(mirror_url)

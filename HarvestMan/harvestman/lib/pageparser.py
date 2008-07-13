@@ -368,7 +368,6 @@ class HarvestManSimpleParser(SGMLParser):
 
         if typ == 'image':
             if not (typ, link) in self.images:
-                # moredebug('Adding image ', link, typ)
                 self.images.append((typ, link))
         elif not (typ, link) in self.links:
                 # print 'Adding link ', link, typ

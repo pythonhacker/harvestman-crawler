@@ -168,17 +168,16 @@ class HarvestManUrlThread(threading.Thread):
         if not url_obj.trymultipart:
             # print 'Gewt URL=>',url,self
             if url_obj.is_image():
-                moreinfo('Downloading image ...', url)
+                extrainfo('Downloading image ...', url)
             else:
-                moreinfo('Downloading url ...', url)
+                extrainfo('Downloading url ...', url)
         else:
             startrange = url_obj.range[0]
             endrange = url_obj.range[-1]
             # print "Got URL",url,self
-            moreinfo('%s: Downloading url %s, byte range(%d - %d)' % (str(self),url,startrange,endrange))
+            extrainfo('%s: Downloading url %s, byte range(%d - %d)' % (str(self),url,startrange,endrange))
 
         # This call will block if we exceed the number of connections
-        # moreinfo("Creating connector for url ", urlobj.get_full_url())
         self._conn = objects.connfactory.create_connector()
         mode = self._conn.get_data_mode()
         
@@ -222,7 +221,7 @@ class HarvestManUrlThread(threading.Thread):
                 endrange = url_obj.range[-1]                            
                 extrainfo('Finished download of byte range(%d - %d) of %s' % (startrange,endrange, url))
         elif self._error.number != 304:
-            extrainfo('Failed to download URL',url)
+            error('Failed to download URL',url)
 
         objects.datamgr.update_url(url_obj)
         
@@ -265,7 +264,7 @@ class HarvestManUrlThread(threading.Thread):
                 self._busyflag = False
             except Exception, e:
                 raise
-                debug('Worker thread Exception',e)
+                error('Worker thread Exception',e)
                 # Now I am dead - so I need to tell the pool
                 # object to migrate my data and produce a new thread.
                 
@@ -286,8 +285,8 @@ class HarvestManUrlThread(threading.Thread):
                 else:
                     self.__class__._lasterror = e
                     # self._pool.dead_thread_callback(self)
-                    extrainfo('Worker thread %s has died due to error: %s' % (str(self), str(e)))
-                    extrainfo('Worker thread was downloading URL %s' % url_obj.get_full_url())
+                    error('Worker thread %s has died due to error: %s' % (str(self), str(e)))
+                    error('Worker thread was downloading URL %s' % url_obj.get_full_url())
 
     def get_url(self):
 
@@ -501,7 +500,7 @@ class HarvestManUrlThreadPool(Queue):
             if urlObj.trymultipart:
                 status = thread.get_status()
                 if status == CONNECT_YES_DOWNLOADED:
-                    moreinfo('Thread %s reported %s' % (thread, urlObj.get_full_url()))
+                    extrainfo('Thread %s reported %s' % (thread, urlObj.get_full_url()))
                     # For flush mode, get the filename
                     # for memory mode, get the data
                     datamode = self._cfg.datamode
@@ -518,8 +517,8 @@ class HarvestManUrlThreadPool(Queue):
                     # See if the data was downloaded fully...,else reschedule this piece
                     expected = (urlObj.range[-1] - urlObj.range[0]) + 1
                     if datalen != expected:
-                        moreinfo("Expected: %d, Got: %d" % (expected, datalen))
-                        moreinfo("Thread %s did only a partial download, rescheduling this piece..." % thread)
+                        extrainfo("Expected: %d, Got: %d" % (expected, datalen))
+                        extrainfo("Thread %s did only a partial download, rescheduling this piece..." % thread)
                         if self._monitor:
                             # print 'Notifying failure',thread
                             self._monitor.notify_failure(urlObj, thread)
@@ -563,7 +562,7 @@ class HarvestManUrlThreadPool(Queue):
                     # Currently when a thread reports an error, we abort the download
                     # In future, we can inspect whether the error is fatal or not
                     # and resume download in another thread etc...
-                    moreinfo('Thread %s reported error => %s' % (str(thread), str(thread.get_error())))
+                    extrainfo('Thread %s reported error => %s' % (str(thread), str(thread.get_error())))
                     if self._monitor:
                         # print 'Notifying failure',thread
                         self._monitor.notify_failure(urlObj, thread)
@@ -665,7 +664,7 @@ class HarvestManUrlThreadPool(Queue):
         # First check if any thread is in the process
         # of downloading this url.
         if self.locate_thread(url):
-            extrainfo('Another thread is downloading %s' % url)
+            debug('Another thread is downloading %s' % url)
             return True
 
         return False
@@ -700,7 +699,7 @@ class HarvestManUrlThreadPool(Queue):
                     t.terminate()
                     t.join()
                 except HarvestManUrlThreadInterrupt, e:
-                    extrainfo(str(e))
+                    debug(str(e))
                     pass
 
             self._threads = []
@@ -835,11 +834,10 @@ class HarvestManUrlThreadPoolMonitor(threading.Thread):
                     # Reset URL to parent and try again...
                     if urlobj.mirrored:
                         # Try getting a new mirror URL
-                        # moreinfo("Trying to get new mirror URL...")
                         new_urlobj = self.mirrormgr.get_different_mirror_url(urlobj, urlerror)
                         
                         if new_urlobj:
-                            moreinfo("New mirror URL=>", new_urlobj.get_full_url())
+                            extrainfo("New mirror URL=>", new_urlobj.get_full_url())
                             items.append((urlobj, urlerror))
                             self._pool.push(new_urlobj)
                         else:

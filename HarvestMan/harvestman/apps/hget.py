@@ -239,7 +239,7 @@ class Hget(HarvestMan):
         objects.config.socktimeout = 30.0
         # objects.config.requests = 2*objects.config.numparts
         if objects.config.hgetverbose:
-            objects.config.verbosity=logger.MOREINFO
+            objects.config.verbosity=logger.EXTRAINFO
         else:
             objects.config.verbosity = 1
 

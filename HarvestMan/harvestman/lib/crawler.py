@@ -246,13 +246,13 @@ class HarvestManBaseUrlCrawler( threading.Thread ):
     def run(self):
         """ The overloaded run method of threading.Thread class """
 
-        try:
-            self.stateobj.set(self, THREAD_STARTED)
-            self.action()
-        except Exception, e:
-            # print 'Exception',e,self
-            self.exception = e
-            self.stateobj.set(self, THREAD_DIED)                
+        #try:
+        self.stateobj.set(self, THREAD_STARTED)
+        self.action()
+        #except Exception, e:
+        #    # print 'Exception',e,self
+        #    self.exception = e
+        #    self.stateobj.set(self, THREAD_DIED)                
 
     def stop(self):
         self.join()
@@ -285,13 +285,10 @@ class HarvestManBaseUrlCrawler( threading.Thread ):
     def push_buffer(self):
         """ Try to push items in local buffer to queue """
 
-        # debug('Pushing buffer',self)
-
         # Try to push the last item
         stuff = self.buffer[-1]
 
         if objects.queuemgr.push(stuff, self._role):
-            # debug('Pushed buffer',self)
             # Remove item
             self.buffer.remove(stuff)
 
@@ -438,7 +435,7 @@ class HarvestManUrlCrawler(HarvestManBaseUrlCrawler):
             return None
 
         self.stateobj.set(self, CRAWLER_CRAWLING)                    
-        moreinfo('Fetching links for url', self.url)
+        info('Fetching links for url', self.url)
         
         priority_indx = 0
 
@@ -615,7 +612,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
             return 
         
         if self.url.qstatus==urlparser.URL_NOT_QUEUED:
-            moreinfo('Downloading file for url', self.url.get_full_url())
+            info('Downloading file for url', self.url.get_full_url())
             # About to fetch
             self._fetchtime = time.time()
             self.stateobj.set(self, FETCHER_DOWNLOADING)
@@ -677,7 +674,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
                         #        data = datatemp
                         #    # print data
                     except JSParserException, e:
-                        extrainfo("Error while parsing Javascript", e)            
+                        error("Javascript parsing error =>", e)            
 
                     # Raise "afterjsparse" event
                     objects.eventmgr.raise_event('afterjsparse', self.url, document, links=links)
@@ -696,7 +693,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
                     if wp.base_url_defined():
                         url = wp.get_base_url()
                         if not self.url.is_equal(url):
-                            extrainfo("Base url defined, replacing",self.url)
+                            debug("Base url defined, replacing",self.url)
                             # Construct a url object
                             url_obj = urlparser.HarvestManUrl(url,
                                                               URL_TYPE_BASE,
@@ -711,8 +708,9 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
                     wp.close()
                     break
                 except (SGMLParseError, IOError), e:
-                    extrainfo('SGML parse error:',str(e))
-                    extrainfo('Error in parsing web-page %s' % self.url)
+                    error('SGML parse error:',str(e))
+                    error('Error in parsing web-page %s' % self.url)
+
                     if wp.typ==0:
                         # Parse error occurred with Python parser
                         debug('Trying to reparse using the HarvestManSGMLOpParser...')
@@ -802,16 +800,14 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
                     # print url, child_urlobj.get_full_url()
                     
                     if objects.datamgr.check_exists(child_urlobj):
-                        # extrainfo("Duplicate => ", child_urlobj)                        
                         continue
                     else:
-                        # extrainfo("Not Duplicate => ", child_urlobj)                                                
                         objects.datamgr.add_url(child_urlobj)
                         coll.addURL(child_urlobj)
                         children.append(child_urlobj)
                     
                 except urlparser.HarvestManUrlError, e:
-                    debug('Error: ', e)
+                    error('URL Error:', e)
                     continue
 
             # objects.queuemgr.endloop(True)
@@ -881,10 +877,8 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
 
 
                     if objects.datamgr.check_exists(child_urlobj):
-                        # extrainfo("Duplicate => ", child_urlobj)
                         continue
                     else:
-                        # extrainfo("Not Duplicate => ", child_urlobj)                        
                         objects.datamgr.add_url(child_urlobj)
                         coll.addURL(child_urlobj)                    
                         children.append(child_urlobj)

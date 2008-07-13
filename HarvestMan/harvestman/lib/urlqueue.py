@@ -495,9 +495,7 @@ class HarvestManCrawlerQueue(object):
             if self.flag: 
                 break
             
-        # extrainfo("Waiting for pool...")
         if pool: pool.wait(10.0, self.configobj.timeout)
-        # extrainfo("Pool is free now...")                
 
         if self.stateobj.abortmsg:
             extrainfo(self.stateobj.abortmsg)
@@ -763,12 +761,12 @@ class HarvestManCrawlerQueue(object):
         up the program. This function is called
         for a normal/abnormal exit of HravestMan """
 
-        moreinfo("Ending threads...")
+        extrainfo("Ending threads...")
         if self.configobj.project:
             if self.forcedexit:
-                moreinfo('Terminating project ',self.configobj.project,'...')
+                info('Terminating project ',self.configobj.project,'...')
             else:
-                moreinfo("Ending Project", self.configobj.project,'...')
+                info("Ending Project", self.configobj.project,'...')
 
         # Stop controller
         if self.controller:

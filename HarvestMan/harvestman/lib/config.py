@@ -67,6 +67,7 @@ import re
 import configparser
 import options
 import urlparser
+import logger
 
 from common.optionparser import *
 from common.macros import *
@@ -297,8 +298,8 @@ class HarvestManStateObject(dict, Singleton):
         self.serverpriority = ''
         self.urlprioritydict = {}
         self.serverprioritydict = {}
-        self.verbosity=2
-        self.verbosity_default=2
+        self.verbosity=logger.INFO
+        self.verbosity_default=logger.INFO
         # timeout for worker threads is a rather
         # large 5 minutes.
         self.timeout=300.00
@@ -447,7 +448,7 @@ class HarvestManStateObject(dict, Singleton):
                          'url' : ('url', 'func:set_project'),
                          'name': ('project', 'func:set_project'),
                          'basedir' : ('basedir', 'func:set_project'),
-                         'verbosity_value' : ('verbosity', 'func:set_project'),
+                         'verbosity_level' : ('verbosity', 'func:set_project'),
 
                          'proxyserver': ('proxy','str'),
                          'proxyuser': ('puser','str'),
@@ -599,7 +600,7 @@ class HarvestManStateObject(dict, Singleton):
                     if funktion:
                         funktion(key, value, kwargs)
         else:
-            debug('Error in option value %s!' % option_val)
+            error('Error in option value %s!' % option_val)
 
     def set_option(self, option, value, negate=0):
         """ Sets the passed option in with its value as the passed value """
@@ -830,9 +831,10 @@ class HarvestManStateObject(dict, Singleton):
             recent[key] = val
         elif key=='verbosity':
             try:
-                recent['verbosity'] = int(prjdict[u'value'])
+                recent['verbosity'] = logger.getLogLevel(prjdict[u'level'])
+                # print 'Verbosity=>',recent['verbosity']
             except KeyError:
-                recent['verbosity'] = int(val)
+                recent['verbosity'] = logger.getLogLevel(prjdict[u'level'])
 
         # If all items are present, put 'done' to True
         if len(recent)==4:
@@ -992,7 +994,7 @@ class HarvestManStateObject(dict, Singleton):
                         if val>=self.connections:
                             self.connections = val + 1
                 elif option=='verbosity':
-                    if SUCCESS(self.check_value(option,value)): self.set_option_xml('verbosity_value', self.process_value(value))
+                    if SUCCESS(self.check_value(option,value)): self.set_option_xml('verbosity_level', self.process_value(value))
                 elif option=='subdomain':
                     if value: self.set_option_xml('subdomain_value', 0)                    
                 #elif option=='savesessions':
@@ -1168,7 +1170,7 @@ class HarvestManStateObject(dict, Singleton):
                 
             # Since we set a URL from outside, we dont want to read
             # URLs from the config file - same for plugins
-            self.items_to_skip = ['url','name','basedir','verbosity_value']
+            self.items_to_skip = ['url','name','basedir','verbosity_level']
 
         # If urlfile option set, read all URLs from a file
         # and load them.
@@ -1195,13 +1197,13 @@ class HarvestManStateObject(dict, Singleton):
                             self.projects.append({'url': url,
                                                   'project': project,
                                                   'basedir': '.',
-                                                  'verbosity': 2})
+                                                  'verbosity': self.verbosity_default})
                         except urlparser.HarvestManUrlError, e:
                             continue
 
                     # We would now want to skip url, project,
                     # basedir etc in the config file
-                    self.items_to_skip = ['url','name','basedir','verbosity_value']
+                    self.items_to_skip = ['url','name','basedir','verbosity_level']
 
             except Exception, e:
                 print e
@@ -1284,7 +1286,7 @@ class HarvestManStateObject(dict, Singleton):
 
         return url
 
-    def add(self, url, name='', basedir='.', verbosity=2):
+    def add(self, url, name='', basedir='.', verbosity=logger.INFO):
         """ Adds a crawl project to the crawler. The arguments
         are the starting URL, and optional name for the project,
         a base directory for saving files and project verbosity """
@@ -1304,7 +1306,6 @@ class HarvestManStateObject(dict, Singleton):
         # combine all the project related
         # variables into a dictionary for easy
         # lookup.
-        
         num=len(self.projects)
         if num==0:
             msg = 'Fatal Error: No URLs given, Aborting.\nFor command-line options run with -h option'
@@ -1333,19 +1334,18 @@ class HarvestManStateObject(dict, Singleton):
                 entry['basedir'] = '.'
 
             if entry.get('verbosity',-1)==-1:
-                entry['verbosity'] = 2
+                entry['verbosity'] = self.verbosity_default
 
         self.plugins = list(set(self.plugins))
             
         if 'swish-e' in self.plugins:
             # Disable any message output for swish-e
-            self.verbosity = 0
+            self.verbosity = logger.DISABLE
             # Set verbosity to zero for all projects
             for entry in self.projects:
-                entry['verbosity'] = 0
+                entry['verbosity'] = logger.DISABLE
 
-        objects.logger.setLogSeverity(self.verbosity)
-                
+        # objects.logger.setLogSeverity(self.verbosity)
 
     def set_system_params(self):
         """ Sets config file/directory parameters for all users """
@@ -1496,14 +1496,14 @@ class HarvestManStateObject(dict, Singleton):
             
             project = entry.get('project')
             url = entry.get('url')
-            verb = entry.get('verbosity')
+            verb = logger.getLogLevelName(entry.get('verbosity'))
             basedir = entry.get('basedir')
             
             projcontent = '<project skip="0">\n'
             projcontent += '<url>' + url + '</url>\n'
             projcontent += '<name>' + project + '</name>\n'
             projcontent += '<basedir>' + basedir + '</basedir>\n'            
-            projcontent += '<verbosity value="' + str(verb) + '"/>\n'
+            projcontent += '<verbosity level="' + str(verb) + '"/>\n'
             projcontent += '</project>\n\n'
 
             content = content + projcontent

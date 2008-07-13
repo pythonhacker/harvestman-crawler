@@ -16,7 +16,7 @@ Copyright (C) 2008 Anand B Pillai.
 import os, sys
 import time
 
-from common.common import objects, moreinfo, logconsole
+from common.common import objects, extrainfo, logconsole
 
 def adapt_datetime(ts):
     return time.mktime(ts.timetuple())
@@ -76,7 +76,7 @@ class HarvestManDbManager(object):
         if sqlite3 is None:
             return
         
-        moreinfo('Writing project record to crawls database...')
+        extrainfo('Writing project record to crawls database...')
         dbfile = os.path.join(objects.config.userdbdir, "crawls.db")
         
         # Get the configuration as a pickled string
@@ -93,7 +93,7 @@ class HarvestManDbManager(object):
         cls.projid = c.fetchone()[0]
         # print 'project id=>',cls.projid
         c.close()
-        moreinfo("Done.")
+        extrainfo("Done.")
 
     @classmethod
     def add_stats_record(cls, statsd):

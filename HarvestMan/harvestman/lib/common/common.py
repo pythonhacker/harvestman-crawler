@@ -430,42 +430,35 @@ def GetMyTempDir():
 
     return tmpdir
 
-# Modified to use the logger object
-def info(arg, *args):
-    """ Print basic information, will print if verbosity is >=1 """
-
-    # Setting verbosity to 1 will print the basic
-    # messages like project info and final download stats.
-    objects.logger.info(arg, *args)
-
-def moreinfo(arg, *args):
-    """ Print more information, will print if verbosity is >=2 """
-
-    # Setting verbosity to 2 will print the basic info
-    # as well as detailed information regarding each downloaded link.
-    objects.logger.moreinfo(arg, *args)    
-
-def extrainfo(arg, *args):
-    """ Print extra information, will print if verbosity is >=3 """
-
-    # Setting verbosity to 3 will print more information on each link
-    # as well as information of each thread downloading the link, as
-    # well as some more extra information.
-    objects.logger.extrainfo(arg, *args)    
-
 def debug(arg, *args):
-    """ Print debug information, will print if verbosity is >=4 """
+    """ Log information, will log if verbosity is equal to DEBUG level """
 
-    # Setting verbosity to 4 will print maximum information
-    # plus extra debugging information.
     objects.logger.debug(arg, *args)    
 
-def moredebug(arg, *args):
-    """ Print more debug information, will print if verbosity is >=5 """
+def info(arg, *args):
+    """ Log information, will log if verbosity is <= INFO level """
 
-    # Setting verbosity to 5 will print maximum information
-    # plus maximum debugging information.
-    objects.logger.moredebug(arg, *args)        
+    objects.logger.info(arg, *args)
+
+def extrainfo(arg, *args):
+    """ Log information, will log if verbosity is <= EXTRAINFO level """
+
+    objects.logger.extrainfo(arg, *args)    
+
+def warning(arg, *args):
+    """ Log information, will log if verbosity is <= WARNING level """
+
+    objects.logger.warning(arg, *args)        
+
+def error(arg, *args):
+    """ Log information, will log if verbosity is <= ERROR level """
+
+    objects.logger.error(arg, *args)        
+
+def critical(arg, *args):
+    """ Log information, will log if verbosity is <= CRITICAL level """
+
+    objects.logger.critical(arg, *args)        
 
 def logconsole(arg, *args):
     """ Log directly to sys.stdout using print """

@@ -210,7 +210,7 @@ class HarvestMan(HarvestManAppBase):
             extrainfo('Saved run-state to file %s.' % fname)
         except (pickle.PicklingError, RuntimeError), e:
             logconsole(e)
-            moreinfo('Could not save run-state !')
+            error('Could not save run-state !')
         
     def welcome_message(self):
         """ Prints a welcome message before start of the program """
@@ -302,7 +302,7 @@ class HarvestMan(HarvestManAppBase):
         """ Performs clean up actions as part of the interrupt handling """
 
         # Shut down logging on file
-        info('Shutting down logging...')
+        extrainfo('Shutting down logging...')
         objects.logger.disableFileLogging()
         objects.queuemgr.endloop()
 

@@ -23,6 +23,7 @@ __author__ = 'Anand B Pillai'
 
 import logging, logging.handlers
 import os, sys
+from types import StringTypes
 
 class HandlerFactory(object):
     """ Factory class to create handlers of different families for use by the logging class """
@@ -59,6 +60,19 @@ INFO=logging.INFO
 EXTRAINFO=(logging.INFO+logging.DEBUG)/2
 DEBUG=logging.DEBUG
 DISABLE=NOTSET=logging.NOTSET
+
+def getLogLevel(levelname):
+    """ Return the loglevel given the level name """
+
+    if type(levelname) in StringTypes:
+        return eval(levelname.upper())
+    elif type(levelname) is int:
+        return levelname
+
+def getLogLevelName(level):
+    """ Return the loglevel name given the level """
+    
+    return HarvestManLogger.getLevelName(level)
 
 class HarvestManLogger(object):
     """ A customizable logging class for HarvestMan with different
@@ -119,6 +133,7 @@ class HarvestManLogger(object):
             except UnicodeDecodeError:
                 return str(arg)
         
+    @classmethod
     def getLevelName(self, level):
         """ Return the level name, given the level value """
         
@@ -264,6 +279,16 @@ class HarvestManLogger(object):
             pass
         except IOError, e:
             pass
+
+    def error(self, msg, *args):
+        """ Perform logging at the ERROR level """
+
+        try:
+            self._logger.error(self._getMessage(msg, *args))
+        except ValueError, e:
+            pass
+        except IOError, e:
+            pass
         
     def critical(self, msg, *args):
         """ Perform logging at the CRITICAL level """
@@ -324,7 +349,8 @@ if __name__=="__main__":
     mylogger.extrainfo("Test message 2",p)
     mylogger.info("Test message 3",p)
     mylogger.warning("Test message 4",p)
-    mylogger.critical("Test message 5",p)
+    mylogger.error("Test message 5",p)
+    mylogger.critical("Test message 6",p)
     
     print mylogger.getLogSeverity()
     print mylogger.getLogLevelName()
@@ -337,7 +363,8 @@ if __name__=="__main__":
     mylogger.extrainfo("Test message 2",p)
     mylogger.info("Test message 3",p)
     mylogger.warning("Test message 4",p)
-    mylogger.critical("Test message 5",p)    
+    mylogger.error("Test message 5",p)    
+    mylogger.critical("Test message 6",p)    
 
     print HandlerFactory.createHandle('StreamHandler', sys.stdout)
     print HandlerFactory.createHandle('FileHandler', 'my.txt')
@@ -352,7 +379,11 @@ if __name__=="__main__":
     mylogger.extrainfo("Test message 2",p)
     mylogger.info("Test message 3",p)
     mylogger.warning("Test message 4",p)
-    mylogger.critical("Test message 5",p)
+    mylogger.error("Test message 5",p)    
+    mylogger.critical("Test message 6",p)
     
     print HarvestManLogger.getDefaultLogger()==mylogger
     print HarvestManLogger._instances
+    
+    print getLogLevel('info')
+    print getLogLevelName(EXTRAINFO)

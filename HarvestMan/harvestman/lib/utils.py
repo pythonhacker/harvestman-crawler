@@ -274,7 +274,7 @@ class HarvestManCacheReaderWriter(object):
 
         # Get cache filename
         if not os.path.exists(self._cachefilename):
-            moreinfo("Project cache not found")
+            info("Project cache not found")
 
         cache_obj = Base(self._cachefilename)
 
@@ -312,7 +312,7 @@ class HarvestManProjectManager(object):
     def write_project(self):
         """ Write project files """
 
-        moreinfo('Writing Project Files...')
+        info('Writing Project Files...')
 
         cfg = objects.config.copy()
 
@@ -332,7 +332,7 @@ class HarvestManProjectManager(object):
             logconsole(str(e))
             return PROJECT_FILE_WRITE_ERROR
 
-        moreinfo('Done.')
+        extrainfo('Done.')
         
         return PROJECT_FILE_WRITE_OK
 
@@ -390,7 +390,7 @@ class HarvestManBrowser(object):
         browsefile=os.path.join(self._cfg.basedir, 'index.html')
         try:
             webbrowser.open(browsefile)
-            moreinfo('Done.')
+            extrainfo('Done.')
         except webbrowser.Error, e:
             logconsole(e)
         return 

@@ -5,18 +5,18 @@
   <config version="3.0" xmlversion="1.0">
     <projects>
       
-      <project ignore="0">
+      <project ignore="1">
 
         <url>http://www.python.org/doc/current/tut/tut.html</url>
         <name>pytut</name>
-        <verbosity value="3"/>
+        <verbosity level="extrainfo"/>
       </project>
 
       <project ignore="1">
 
         <url>http://docs.python.org/lib/lib.html</url>
         <name>pydoc</name>
-
+        <verbosity level="info"/>
       </project>
 
       <project ignore="1">
@@ -25,25 +25,23 @@
         <name>foo</name>
 
         <basedir>/tmp/sites</basedir>
-        <verbosity value="2"/>
+        <verbosity level="info"/>
       </project>
       
       <project ignore="1">
 
         <url>www.automotive.com</url>
         <name>auto</name>
-        <verbosity value="3"/>
+        <verbosity level="extrainfo"/>
       </project>
 
 
-      <project ignore="1">
+      <project ignore="0">
 
         <url>http://swish-e.org/docs</url>
         <name>swish-docs</name>
-        <verbosity value="2"/>
+        <verbosity level="20"/>
       </project>
-      
-
     </projects>
     
     <network>
@@ -64,7 +62,7 @@
         <querylinks value="1"/>
       </types> 
       <cache status="1">
-        <datacache value="1"/>
+        <datacache value="0"/>
       </cache>
       <protocol>
         <http compress="1" />
@@ -93,7 +91,7 @@
         <maxfiles value="0"/>
         <maxfilesize value="5242880"/>
         <maxbytes value="5 MB" />
-        <maxbandwidth value="5 k" factor="1.5" />
+        <maxbandwidth value="40 k" factor="1.5" />
         <maxconnections value="10"/>
         <timelimit value="-1"/>
       </limits>

@@ -224,7 +224,6 @@ class HarvestManRulesChecker(object):
             if self.compare_no_tld(domain1, domain2):
                 return True
             
-        # extrainfo('Comparing domains %s and %s...' % (domain1, domain2))
         if not self._configobj.subdomain:
             # Checks whether the domain names belong to
             # the same base server, if the above config
@@ -374,7 +373,7 @@ class HarvestManRulesChecker(object):
             for f in inclfilter:
                 m=f.search(url)
                 if m:
-                    extrainfo('Go-through filter for url ', url, 'found')
+                    debug('Go-through filter for url ', url, 'found')
                     matchincl=True
                     inclcheck=0
                     break
@@ -385,7 +384,7 @@ class HarvestManRulesChecker(object):
             for f in exclfilter:
                 m=f.search(url)
                 if m:
-                    extrainfo('No-pass filter for url ', url, 'found')
+                    debug('No-pass filter for url ', url, 'found')
                     matchexcl=True
                     exclcheck=1
                     break
@@ -463,7 +462,7 @@ class HarvestManRulesChecker(object):
                 m=re.search(re.compile(f,re.IGNORECASE), server)
 
                 if m:
-                    extrainfo('Go-through filter for url ', url, 'found')
+                    debug('Go-through filter for url ', url, 'found')
                     matchincl=f
                     inclcheck=0
                     break
@@ -475,7 +474,7 @@ class HarvestManRulesChecker(object):
                 m=re.search(re.compile(f,re.IGNORECASE), server)
 
                 if m:
-                    extrainfo('No-pass filter for url ', url, 'found')
+                    debug('No-pass filter for url ', url, 'found')
                     matchexcl=f
                     exclcheck=1
                     break

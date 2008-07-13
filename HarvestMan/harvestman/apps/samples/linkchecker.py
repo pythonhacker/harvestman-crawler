@@ -15,7 +15,7 @@ import __init__
 import sys
 
 from apps.harvestmanimp import HarvestMan
-from lib.common.common import objects
+from lib.common.common import objects, logconsole
 
 class LinkChecker(HarvestMan):
     """ A crawler which checks a website/directory for broken links """
@@ -35,7 +35,7 @@ class LinkChecker(HarvestMan):
         # Write to a file
         baseurl = objects.queuemgr.get_base_url()
         fname = '404#' + str(hash(baseurl)) + '.txt'
-        print 'Writing broken links to',fname
+        logconsole('Writing broken links to',fname)
         f = open(fname, 'w')
         f.write("Broken links for crawl starting with URL %s\n\n" % baseurl)
         for link in self.broken:

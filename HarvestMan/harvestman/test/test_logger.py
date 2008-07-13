@@ -35,13 +35,14 @@ class TestHarvestManLogger(unittest.TestCase):
         mylogger.extrainfo("Test message 2",p)
         mylogger.info("Test message 3",p)
         mylogger.warning("Test message 4",p)
-        mylogger.critical("Test message 5",p)
+        mylogger.error("Test message 5",p)
+        mylogger.critical("Test message 6",p)
     
         # Verify file exists
         assert(os.path.isfile('test.log'))
-        # Check it has only 3 lines
+        # Check it has only 4 lines
         lines = open('test.log').readlines()
-        assert(len(lines)==3)
+        assert(len(lines)==4)
         # Check that line 1 has 'INFO' in it
         assert(lines[0].find('INFO') != -1)
         
@@ -60,13 +61,14 @@ class TestHarvestManLogger(unittest.TestCase):
         mylogger.extrainfo("Test message 2",p)
         mylogger.info("Test message 3",p)
         mylogger.warning("Test message 4",p)
-        mylogger.critical("Test message 5",p)
+        mylogger.error("Test message 5",p)
+        mylogger.critical("Test message 6",p)
 
         # Verify file exists
         assert(os.path.isfile('test2.log'))
-        # Check it has only 4 lines
+        # Check it has only 5 lines
         lines = open('test2.log').readlines()
-        assert(len(lines)==4)        
+        assert(len(lines)==5)        
 
         # Check that line 1 has 'EXTRAINFO' in it
         assert(lines[0].find('EXTRAINFO') != -1)

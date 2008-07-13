@@ -220,7 +220,7 @@ class HarvestManDataManager(object):
         """ Try to read the project cache file """
 
         # Get cache filename
-        moreinfo('Reading Project Cache...')
+        info('Reading Project Cache...')
         cachereader = utils.HarvestManCacheReaderWriter(self.get_proj_cache_directory())
         obj, found = cachereader.read_project_cache()
         self._cfg.cachefound = found
@@ -264,8 +264,7 @@ class HarvestManDataManager(object):
                             f.close()
                             ret = True
                     except (IOError, zlib.error), e:
-                        moreinfo("Error:",e)
-                        debug('IO Exception', e)
+                        error("Error:",e)
                                 
         return ret
 
@@ -324,7 +323,7 @@ class HarvestManDataManager(object):
                 try:
                     return zlib.decompress(data)
                 except zlib.error, e:
-                    extrainfo('Error:',e)
+                    error('Error:',e)
                     return ''
 
         return ''
@@ -471,16 +470,16 @@ class HarvestManDataManager(object):
         # print 'BROKEN=>', nbroken
         
         if self._cfg.retryfailed:
-            moreinfo(' ')
+            info(' ')
 
             # try downloading again
             if self._numfailed:
-                moreinfo('Redownloading failed links...',)
+                info('Redownloading failed links...',)
                 self._redownload=True
                 
                 for urlobj in failed:
                     if urlobj.fatal or urlobj.starturl: continue
-                    moreinfo('Re-downloading',urlobj.get_full_url())
+                    extrainfo('Re-downloading',urlobj.get_full_url())
                     self._numretried += 1
                     self.thread_download(urlobj)
                     
@@ -674,8 +673,9 @@ class HarvestManDataManager(object):
                 os.makedirs( directory )
                 extrainfo("Created => ", directory)
             return CREATE_DIRECTORY_OK
-        except OSError:
-            moreinfo("Error in creating directory", directory)
+        except OSError, e:
+            error("Error in creating directory", directory)
+            error(str(e))
             return CREATE_DIRECTORY_NOT_OK
 
         return CREATE_DIRECTORY_OK
@@ -749,14 +749,15 @@ class HarvestManDataManager(object):
             if res != CONNECT_NO_ERROR:
                 filename = url.get_full_filename()
 
-                if res==DOWNLOAD_YES_OK:
-                    moreinfo("Saved to",filename)
-
                 self.update_file_stats( url, res )
+
+                if res==DOWNLOAD_YES_OK:
+                    info("Saved to",filename)
+
                 if url.is_webpage():
                     if self._cfg.datamode==CONNECTOR_DATA_MODE_INMEM: 
                         data = conn.get_data()
-                    else:
+                    elif os.path.isfile(filename):
                         # Need to read data from the file...
                         data = open(filename, 'rb').read()
 
@@ -767,10 +768,8 @@ class HarvestManDataManager(object):
             self._urldb.update(url.index, url)
             
         else:
-            # debug("Scheduling %s for thread download: %s..." % (urlobj.get_full_url(), caller))
             # Set status to queued
             self.thread_download( url )
-            # debug("Scheduled %s for thread download: %s" % (urlobj.get_full_url(), caller))
 
         return data
 
@@ -799,7 +798,7 @@ class HarvestManDataManager(object):
         elif self._cfg.archformat=='gzip':
             format='gz'
         else:
-            extrainfo("Archive Error: Archive format not recognized")
+            error("Archive Error: Archive format not recognized")
             return INVALID_ARCHIVE_FORMAT
 
         # Create tarfile name
@@ -830,7 +829,7 @@ class HarvestManDataManager(object):
             extrainfo("Wrote archive file",ptarf)
             return FILE_WRITE_OK
         else:
-            extrainfo("Error in writing archive file",ptarf)
+            error("Error in writing archive file",ptarf)
             return FILE_WRITE_ERROR
             
     def add_headers_to_cache(self):
@@ -901,12 +900,12 @@ class HarvestManDataManager(object):
             filename = sourceurl.get_full_filename()
 
             if (not filename in localized) and os.path.exists(filename):
-                info('Localizing links for',filename)
+                extrainfo('Localizing links for',filename)
                 if SUCCESS(self.localise_file_links(filename, childurls)):
                     count += 1
                     localized.append(filename)
 
-        extrainfo('Localised links of',count,'web pages.')
+        info('Localised links of',count,'web pages.')
 
     def localise_file_links(self, filename, links):
         """ Localise links for this file """
@@ -957,8 +956,6 @@ class HarvestManDataManager(object):
                     continue
                 
                 fullfilename = os.path.abspath( url_object.get_full_filename() )
-                #extrainfo('Url=>',url_object.get_full_url())
-                #extrainfo('Full filename=>',fullfilename)
                 urlfilename=''
 
                 # Modification: localisation w.r.t relative pathnames
@@ -1001,16 +998,15 @@ class HarvestManDataManager(object):
                 try:
                     oldurlre = re.compile("".join((http_str,'=','\\"?',v,'\\"?')))
                 except Exception, e:
-                    debug(str(e))
+                    debug("Error:",str(e))
                     continue
                     
                 # Get the location of the link in the file
                 try:
                     if oldurl != newurl:
-                        # info('Replacing %s with %s...' % (oldurl, newurl))
                         data = re.sub(oldurlre, newurl, data,1)
                 except Exception, e:
-                    debug(str(e))
+                    debug("Error:",str(e))
                     continue
             else:
                 try:
@@ -1018,7 +1014,7 @@ class HarvestManDataManager(object):
                     oldurlre2 = "".join(('href','=','\\"?',v,'\\"?'))
                     oldurlre = re.compile("".join(('(',oldurlre1,'|',oldurlre2,')')))
                 except Exception, e:
-                    debug(str(e))
+                    debug("Error:",str(e))
                     continue
                 
                 http_strs=('href','src')
@@ -1027,7 +1023,6 @@ class HarvestManDataManager(object):
                     try:
                         oldurl = "".join((item, "=\"", v, "\""))
                         if oldurl != newurl:
-                            info('Replacing %s with %s...' % (oldurl, newurl))                            
                             data = re.sub(oldurlre, newurl, data,1)
                     except:
                         pass
@@ -1068,7 +1063,6 @@ class HarvestManDataManager(object):
 
         fns = map(plural, strings)
         info(' ')
-
 
         bytes = self.bytes
         savedbytes = self.savedbytes
@@ -1164,7 +1158,7 @@ class HarvestManDataManager(object):
         except OSError, e:
             logconsole(e)
 
-        moreinfo('Dumping url tree to file', urlfile)
+        info('Dumping url tree to file', urlfile)
         fextn = ((os.path.splitext(urlfile))[1]).lower()        
         
         try:
@@ -1327,7 +1321,7 @@ class HarvestManController(threading.Thread):
         timemax = self._cfg.timelimit
         
         if timediff >= timemax -1:
-            moreinfo('Specified time limit of',timemax ,'seconds reached!')            
+            info('Specified time limit of',timemax ,'seconds reached!')            
             self.terminator()
             return CONTROLLER_EXIT
         
@@ -1340,7 +1334,7 @@ class HarvestManController(threading.Thread):
         lmax = self._cfg.maxfiles
 
         if lsaved >= lmax:
-            moreinfo('Specified file limit of',lmax ,'reached!')
+            info('Specified file limit of',lmax ,'reached!')
             self.terminator()
             return CONTROLLER_EXIT
         
@@ -1354,7 +1348,7 @@ class HarvestManController(threading.Thread):
 
         # Let us check for a closer hit of 90%...
         if (lsaved >=0.90*lmax):
-            moreinfo('Specified maxbytes limit of',lmax ,'reached!')
+            info('Specified maxbytes limit of',lmax ,'reached!')
             self.terminator()   
             return CONTROLLER_EXIT
         
