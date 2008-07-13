@@ -284,11 +284,9 @@ class HarvestManFileObject(threading.Thread):
                     self.flush()
 
         except socket.error, e:
-            print 'Error=>',error
             self._fobj.close()
             raise HarvestManFileObjectException, str(e)
         except Exception, e:
-            print 'Error=>',error
             self._fobj.close()            
             raise HarvestManFileObjectException, str(e)               
 
