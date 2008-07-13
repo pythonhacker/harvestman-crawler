@@ -13,6 +13,9 @@ import sys, os
 test_base.setUp()
 from lib import logger
 
+filename1='harvestman-test1.log'
+filename2='harvestman-test1.log'
+
 class TestHarvestManLogger(unittest.TestCase):
     """ Unit test class for HarvestManLogger class """
 
@@ -25,10 +28,10 @@ class TestHarvestManLogger(unittest.TestCase):
         mylogger = self.mylogger
 
         # Remove file if exists
-        if os.path.isfile('test.log'):
-            os.remove('test.log')
+        if os.path.isfile(filename1):
+            os.remove(filename1)
             
-        mylogger.addLogFile('test.log')
+        mylogger.addLogFile(filename1)
         
         p='HarvestMan'
         mylogger.debug("Test message 1",p)
@@ -39,23 +42,23 @@ class TestHarvestManLogger(unittest.TestCase):
         mylogger.critical("Test message 6",p)
     
         # Verify file exists
-        assert(os.path.isfile('test.log'))
+        assert(os.path.isfile(filename1))
         # Check it has only 4 lines
-        lines = open('test.log').readlines()
+        lines = open(filename1).readlines()
         assert(len(lines)==4)
         # Check that line 1 has 'INFO' in it
         assert(lines[0].find('INFO') != -1)
         
         # Remove this handler
-        os.remove('test.log')
-        mylogger.removeLogFile('test.log')
+        os.remove(filename1)
+        mylogger.removeLogFile(filename1)
         
         # Add a new log file
         # Remove file if exists
-        if os.path.isfile('test2.log'):
-            os.remove('test2.log')
+        if os.path.isfile(filename2):
+            os.remove(filename2)
             
-        mylogger.addLogFile('test2.log')
+        mylogger.addLogFile(filename2)
         mylogger.setLogSeverity(logger.EXTRAINFO)
         mylogger.debug("Test message 1",p)
         mylogger.extrainfo("Test message 2",p)
@@ -65,25 +68,25 @@ class TestHarvestManLogger(unittest.TestCase):
         mylogger.critical("Test message 6",p)
 
         # Verify file exists
-        assert(os.path.isfile('test2.log'))
+        assert(os.path.isfile(filename2))
         # Check it has only 5 lines
-        lines = open('test2.log').readlines()
+        lines = open(filename2).readlines()
         assert(len(lines)==5)        
 
         # Check that line 1 has 'EXTRAINFO' in it
         assert(lines[0].find('EXTRAINFO') != -1)
-        mylogger.removeLogFile('test2.log')
-        os.remove('test2.log')
+        mylogger.removeLogFile(filename2)
+        os.remove(filename2)
         
     def test_others(self):
 
         mylogger = self.mylogger
         # Test other things
          # Remove file if exists
-        if os.path.isfile('test.log'):
-            os.remove('test.log')
+        if os.path.isfile(filename1):
+            os.remove(filename1)
             
-        mylogger.addLogFile('test.log')
+        mylogger.addLogFile(filename1)
         mylogger.setPlainFormat()
         
         msg = "Test message"
@@ -91,15 +94,15 @@ class TestHarvestManLogger(unittest.TestCase):
         # Verify that the log file contains nothing more than
         # the message
         # Verify file exists
-        assert(os.path.isfile('test.log'))
-        lines = open('test.log').readlines()
+        assert(os.path.isfile(filename1))
+        lines = open(filename1).readlines()
         assert(lines[0].strip()==msg)
         # Revert formatting
         mylogger.revertFormatting()
         mylogger.info(msg)
-        lines = open('test.log').readlines()
+        lines = open(filename1).readlines()
         assert(lines[-1].strip()!=msg)
-        os.remove('test.log')
+        os.remove(filename1)
         
 if __name__=="__main__":
     s = unittest.makeSuite(TestHarvestManLogger)
