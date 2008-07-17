@@ -196,7 +196,7 @@ class HarvestManMirrorSearch(object):
 
     def search_findfiles(self, filename):
 
-        print 'Searching site http://www.findfiles.com for mirror URLs...'
+        print 'Searching http://www.findfiles.com for mirrors of file %s...' % filename
 
         # Note: this grammar could change if the site changes its templates        
         content1 = Literal("<h1") + SkipTo(Literal("Advanced Search"))
@@ -345,10 +345,12 @@ class HarvestManMirrorManager(Singleton):
         
         if self.searcher.can_search():
             mirror_urls = self.searcher.search(urlobj)
-        
+            
             if mirror_urls:
                 print '%d mirror URLs found, queuing them for multipart downloads...' % len(mirror_urls)
                 return mirror_urls
+            else:
+                return []
         else:
             print 'Cannot search for new mirrors'
             return []

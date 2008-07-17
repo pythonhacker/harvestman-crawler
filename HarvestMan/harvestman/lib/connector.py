@@ -1539,8 +1539,11 @@ class HarvestManUrlConnector(object):
                     if self._cfg.forcesplit and not self._cfg.mirrorsearch:
                         logconsole('Forcing download into %d parts' % self._cfg.numparts)
                         
-                    if (not self._headers.get('accept-ranges', '').lower() == 'bytes') and (not self._cfg.mirrorfile) and \
-                           not mirrors.is_multipart_download_supported(urlobj) and not (self._cfg.mirrorsearch):
+                    if (not self._headers.get('accept-ranges', '').lower() == 'bytes') and \
+                           (not self._cfg.mirrorfile) and \
+                           not mirrors.is_multipart_download_supported(urlobj) and \
+                           not (self._cfg.mirrorsearch):
+                        
                         logconsole('Checking whether server supports multipart downloads...')
                         # See if the server supports 'Range' header
                         # by requesting half the length
@@ -1552,6 +1555,7 @@ class HarvestManUrlConnector(object):
                         # Set http headers
                         self.set_http_headers()
                         range_result = self._headers.get('accept-ranges', '')
+                        print 'Range Result',range_result
                         if range_result.lower()=='bytes':
                             logconsole('Server supports multipart downloads')
                             self._freq.close()
@@ -2338,7 +2342,7 @@ class HarvestManUrlConnector(object):
 
             if catcommand != '':
                 # Create the command line
-                cmdline = 'cat ' + ' '.join(tmpflist) + '>' + filename
+                cmdline = 'cat ' + ''.join((' '.join(['"' + item + '"' for item in tmpflist]),'>','"',filename,'"'))
                 ret = os.system(cmdline)
             else:
                 # Do this in Python...
@@ -2390,11 +2394,11 @@ class HarvestManUrlConnector(object):
                 if printmsg:
                     print '\nSaved to %s' % filename
             
-                for f in tmpflist:
-                    try:
-                        os.remove(f)
-                    except OSError, e:
-                        pass
+                #for f in tmpflist:
+                #    try:
+                #        os.remove(f)
+                #    except OSError, e:
+                #        pass
                 
                 return FILE_WRITE_OK
             else:
