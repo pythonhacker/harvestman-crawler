@@ -52,7 +52,10 @@ class TestHarvestManUrlConnector(unittest.TestCase):
         assert(conn._error.number==304)
         assert(res==CONNECT_NO_UPTODATE)
         assert(conn.get_content_length()==0)
-    
+
+def run(result):
+    return test_base.run_test(TestHarvestManUrlConnector, result)
+
 if __name__=="__main__":
     s = unittest.makeSuite(TestHarvestManUrlConnector)
     unittest.TextTestRunner(verbosity=2).run(s)

@@ -128,6 +128,7 @@ class HarvestManSimpleParser(SGMLParser):
         self.description = ''
         # Title of page
         self.title = ''
+        self.title_flag = True
         # Fix for <base href="..."> links
         self.base_href = False
         # Base url for above
@@ -354,11 +355,15 @@ class HarvestManSimpleParser(SGMLParser):
                     self.check_add_link(typ, link)
 
     def unknown_endtag(self, tag):
+            
         self._tag = ''
-        
+        if tag=='title':
+            self.title_flag = False
+            self.title = self.title.strip()
+            
     def handle_data(self, data):
 
-        if self._tag.lower()=='title':
+        if self._tag.lower()=='title' and self.title_flag:
             self.title += data
 
     def check_add_link(self, typ, link):
@@ -433,6 +438,7 @@ class HarvestManSimpleParser(SGMLParser):
         self.can_index = True
         self.can_follow = True
         self.title = ''
+        self.title_flag = True
         self.description = ''
         self.keywords = []
         

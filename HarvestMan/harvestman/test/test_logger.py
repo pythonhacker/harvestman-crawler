@@ -103,7 +103,10 @@ class TestHarvestManLogger(unittest.TestCase):
         lines = open(filename1).readlines()
         assert(lines[-1].strip()!=msg)
         os.remove(filename1)
-        
+
+def run(result):
+    return test_base.run_test(TestHarvestManLogger, result)
+
 if __name__=="__main__":
     s = unittest.makeSuite(TestHarvestManLogger)
     unittest.TextTestRunner(verbosity=2).run(s)

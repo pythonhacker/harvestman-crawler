@@ -7,6 +7,7 @@ Copyright (C) 2007, Anand B Pillai.
 """
 
 import sys, os
+import unittest
 
 flag = False
 
@@ -69,4 +70,7 @@ def setUp():
 def clean_up():
     from lib.common.common import objects
     objects.datamgr.clean_up()
-    
+
+def run_test(testklass, result):
+    suite = unittest.makeSuite(testklass)
+    return suite.run(result)

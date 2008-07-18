@@ -779,9 +779,9 @@ class HarvestManDataManager(object):
 
         # Reset byte count
         if self._urldb and self._urldb.size:
-            self._urldb.clear()
+            del self._urldb
         if self.collections and self.collections.size:
-            self.collections.clear()
+            del self.collections
         self.reset()
 
     def archive_project(self):

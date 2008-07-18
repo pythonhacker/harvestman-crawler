@@ -158,3 +158,5 @@ class DictCache(object):
                  'time': self.t,
                  'average' : average }
         
+    def __del__(self):
+        self.clear()

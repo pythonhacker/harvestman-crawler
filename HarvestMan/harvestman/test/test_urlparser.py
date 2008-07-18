@@ -220,7 +220,10 @@ class TestHarvestManUrl(unittest.TestCase):
 
     def test_canonical_url(self):
         assert(self.l[21].get_canonical_url()=='http://example.com/display%3C%5D%2F?article=fred&country=in&lang=en&size=100&weight=1.0')
-        
+
+def run(result):
+    return test_base.run_test(TestHarvestManUrl, result)
+
 if __name__=="__main__":
     s = unittest.makeSuite(TestHarvestManUrl)
     unittest.TextTestRunner(verbosity=2).run(s)

@@ -14,6 +14,7 @@ import math
 import sys
 import os
 import shutil
+import weakref
 
 from dictcache import DictCache
 
@@ -34,7 +35,7 @@ class BSTNode(dict):
         # Number of loads
         self.cloads = 0
         # Link back to the tree
-        self.tree = tree
+        self.tree = weakref.proxy(tree)
         
     def __getitem__(self, key):
 
@@ -144,7 +145,6 @@ class BSTNode(dict):
 
         super(BSTNode, self).clear()
 
-        
 class BST(object):
     """ BST class with automated disk caching of node values """
 
@@ -180,6 +180,9 @@ class BST(object):
             self.root = self.insert(key, val)
         self.bdir = ''
         self.diskcache = None
+
+    def __del__(self):
+        self.clear()
 
     def to_cache(self, key, val):
         self.diskcache[key] = val
@@ -435,7 +438,7 @@ class BST(object):
         self.ngets = 0
         self.nloads = 0
         self.root = None
-            
+        
     def clear(self):
 
         if self.root:
@@ -475,8 +478,6 @@ class BST(object):
         
 if __name__ == "__main__":
     b = BST()
-    b.init()
-
     b.set_auto(3)
     print b.root
     b.insert(4,[4])
@@ -519,13 +520,10 @@ if __name__ == "__main__":
     root = b.root
     print root.is_balanced()    
     print root.is_balanced(2)
-    b.clear()
     
     del b
 
     b= BST()
-    b.init()
-
     b.insert(10,[4])
     b.insert(5,[2])
     b.insert(2,[6])
@@ -542,4 +540,3 @@ if __name__ == "__main__":
     print 'LHS=>',b.size_lhs()
     print 'RHS=>',b.size_rhs()    
     
-    b.clear()
