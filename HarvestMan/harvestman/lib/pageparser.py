@@ -524,7 +524,8 @@ class HarvestManCSSParser(object):
         for item in l3:
             if not item: continue
             url = item[1].replace("'",'').replace('"','')
-            self.links.append(url)
+            if url not in self.links:
+                self.links.append(url)
 
 if __name__=="__main__":
     import os

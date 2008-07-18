@@ -12,7 +12,7 @@ import sys, os
 import time
 
 test_base.setUp()
-from lib.pageparser import HarvestManSimpleParser, HarvestManSGMLOpParser
+from lib.pageparser import HarvestManSimpleParser, HarvestManSGMLOpParser, HarvestManCSSParser
 from lib.urlparser import HarvestManUrl    
 from lib.common.macros import *
 from lib.urltypes import *
@@ -87,6 +87,14 @@ class TestHarvestManPageParser(unittest.TestCase):
         except Exception:
             assert()
             pass
+
+
+    def test_cssparser(self):
+
+        p = HarvestManCSSParser()
+        p.feed(open(os.path.join(curdir, 'pass.css')).read())
+        assert(p.links==['css1.css','css2.css','fancybullet.gif'])
+        assert(p.csslinks==['css1.css','css2.css'])
         
 def run(result):
     return test_base.run_test(TestHarvestManPageParser, result)

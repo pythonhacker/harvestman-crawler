@@ -81,6 +81,17 @@ def run_test_urltypes():
     test_base.clean_up()    
     return result
 
+def run_test_urlcollections():
+    import test_urlcollections
+    
+    print 'Running test_urlcollections...'
+    suite = unittest.makeSuite(test_urlcollections.HarvestManUrlCollections)
+    result = unittest.TestResult()
+    suite.run(result)
+
+    test_base.clean_up()    
+    return result
+
 def run_test_pageparser():
     import test_pageparser
     

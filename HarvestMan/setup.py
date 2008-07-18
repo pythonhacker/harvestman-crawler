@@ -393,7 +393,7 @@ def main():
                       'harvestman.test',
                       'harvestman.dev',
                       'harvestman.tools'],
-          package_data = {'harvestman' : ['ui/templates/*.html', 'ui/templates/content/*','test/*.html']}
+          package_data = {'harvestman' : ['ui/templates/*.html', 'ui/templates/content/*','test/*.html','test/*.css']}
           )
 
     from harvestman.lib.config import HarvestManStateObject
