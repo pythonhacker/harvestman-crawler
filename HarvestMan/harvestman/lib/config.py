@@ -332,7 +332,6 @@ class HarvestManStateObject(dict, Singleton):
         self.cachefileformat='pickled' 
         self.testing = 0
         self.testnocrawl = 0
-        self.nocrawl = 0
         self.ignoreinterrupts = 0
         # Set to true when a kb interrupt is caught
         self.keyboardinterrupt = 0
@@ -408,6 +407,8 @@ class HarvestManStateObject(dict, Singleton):
         # Cache size for 
         # Current progress object
         self.progressobj = TextProgress()
+        # Internal flag - show progress obj ?
+        self.showprogress = True
         # Flag for forcing multipart downloads
         self.forcesplit = 0
         # Data save mode for connectors
@@ -1151,17 +1152,6 @@ class HarvestManStateObject(dict, Singleton):
                 print 'Ignoring mirror path index param because no mirror file is loaded'
             if not self.mirroruserelpath and not self.mirrorfile:
                 print 'Ignoring relpath flag because no mirror file is loaded'
-                
-                    
-        # print self.subdomain
-        if self.nocrawl:
-            self.pagecache = False
-            self.rawsave = True
-            self.localise = 0
-            # Set project name to ''
-            self.set_option_xml('name','')
-            # Set basedir to dot
-            self.set_option_xml('basedir','.')
         
         if args:
             # Any option without an argument is assumed to be a URL

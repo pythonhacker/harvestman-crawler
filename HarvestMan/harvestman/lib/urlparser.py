@@ -323,6 +323,14 @@ class HarvestManUrl(object):
                 self.protocol = 'http://'
                 self.url =  "".join((self.protocol, self.url))
                 return True
+
+            # We accept FTP urls beginning with just
+            # ftp.<server>, and consider it as FTP over HTTP
+            if url2.startswith('ftp.'):
+                # FTP over HTTP
+                self.protocol = 'http://'
+                self.url = ''.join((self.protocol, self.url))
+                return True
             
             # Urls relative to server might
             # begin with a //. Then prefix the protocol
@@ -1165,10 +1173,7 @@ class HarvestManUrl(object):
             return self.get_full_filename_old()
         
         if not self.__class__.TEST:
-            if objects.config and objects.config.rawsave:
-                return self.get_filename()
-            else:
-                return os.path.join(self.get_local_directory(), self.get_filename())
+            return os.path.join(self.get_local_directory(), self.get_filename())
         else:
             return os.path.join(self.get_local_directory(), self.get_filename())            
 
@@ -1178,10 +1183,7 @@ class HarvestManUrl(object):
         the url data """
 
         if not self.__class__.TEST:
-            if objects.config and objects.config.rawsave:
-                return self.get_filename_old()
-            else:
-                return os.path.join(self.get_local_directory_old(), self.get_filename_old())
+            return os.path.join(self.get_local_directory_old(), self.get_filename_old())
         else:
             return os.path.join(self.get_local_directory_old(), self.get_filename_old())            
 
@@ -1552,7 +1554,7 @@ def test():
                HarvestManUrl('http://cwc2003.rediffblogs.com'),
                HarvestManUrl('/sports/2003/jun/25beck1.htm',
                                    'generic', 0, 'http://www.rediff.com', ''),
-               HarvestManUrl('ftp://ftp.gnu.org/pub/lpf.README'),
+               HarvestManUrl('http://ftp.gnu.org/pub/lpf.README'),
                HarvestManUrl('http://www.python.org/doc/2.3b2/'),
                HarvestManUrl('//images.sourceforge.net/div.png',
                                    'image', 0, 'http://sourceforge.net', ''),

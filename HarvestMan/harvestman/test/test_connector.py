@@ -10,11 +10,15 @@ import test_base
 import unittest
 import sys, os
 import time
+import random
 
 test_base.setUp()
 from lib.connector import HarvestManUrlConnector
 from lib.urlparser import HarvestManUrl    
 from lib.common.macros import *
+from lib.common.common import objects
+
+urls = ['http://www.google.com','http://www.yahoo.com','http://www.python.org', 'ftp.gnu.org']
 
 class TestHarvestManUrlConnector(unittest.TestCase):
     """ Unit test class for HarvestManUrlConnector class """
@@ -22,36 +26,75 @@ class TestHarvestManUrlConnector(unittest.TestCase):
     etag = ''
     lmt = ''
 
+    # Turn caching etc off
+    objects.config.pagecache = 0
+    objects.config.rawsave = True
+    
     def test_connect(self):
-        print 'test_connect...'
         conn = HarvestManUrlConnector()
-        res = conn.connect(HarvestManUrl("http://www.python.org"))
-        assert(res > 0)
-        assert(conn.get_content_length()>0)
-        self.__class__.etag = conn.get_etag()
-        assert(self.__class__.etag != '')
-        self.__class__.lmt = conn.get_last_modified_time()
-        assert(self.__class__.lmt != '')
+        url = random.choice(urls)
+        res = conn.connect(HarvestManUrl(url))
+        error = conn.get_error()
+        if error.number==0:        
+            assert(res == CONNECT_YES_DOWNLOADED)
+            assert(conn.get_content_length()>0)
+            content_type = conn.get_content_type()
+            assert(content_type == 'text/html')
+            fo = conn.get_fileobj()
+            assert(fo != None)
+            assert(fo.get_data() == '')        
+            # Since default is flushing to file, the file
+            # object should not be None
+            assert(fo.get_tmpfile() != None)
+        else:
+            print 'Error in fetching data, skipping tests...'
+            
+        # Now set connector to in-mem mode and test again
+        objects.config.datamode = CONNECTOR_DATA_MODE_INMEM
 
-    def test_connect_etag(self):
-        print 'test_connect_etag...'
         conn = HarvestManUrlConnector()
-        res = conn.connect(HarvestManUrl("http://www.python.org"), etag=self.__class__.etag)
-        # This should produce a 304 error
-        assert(conn._error.number==304)
-        assert(res==CONNECT_NO_UPTODATE)
-        assert(conn.get_content_length()==0)
+        url = random.choice(urls)
+        res = conn.connect(HarvestManUrl(url))
+        # There could be an error...
+        error = conn.get_error()
+        if error.number==0:
+            assert(res == CONNECT_YES_DOWNLOADED)
+            assert(conn.get_content_length()>0)
+            content_type = conn.get_content_type()
+            assert(content_type == 'text/html')
+            fo = conn.get_fileobj()
+            assert(fo != None)
+            assert(fo.get_data() != '')
+            assert(fo.get_tmpfile() == None)
+        else:
+            print 'Error in fetching data, skipping tests...'
 
-
-    def test_connect_lmt(self):
-        print 'test_connect_lmt...'
+    def test_saveurl(self):
         conn = HarvestManUrlConnector()
-        lmt = time.mktime( time.strptime(self.__class__.lmt, "%a, %d %b %Y %H:%M:%S GMT"))
-        res = conn.connect(HarvestManUrl("http://www.python.org"), lastmodified=lmt)
-        # This should produce a 304 error
-        assert(conn._error.number==304)
-        assert(res==CONNECT_NO_UPTODATE)
-        assert(conn.get_content_length()==0)
+        url = random.choice(urls)
+        res = conn.save_url(HarvestManUrl(url))
+        if conn.get_error().number==0:
+            assert(res==DOWNLOAD_YES_OK)
+            if os.path.isfile('index.html'):
+                os.remove('index.html')
+        else:
+            print 'Error in fetching data, skipping tests...'                
+
+    def test_urltofile(self):
+        
+        objects.config.showprogress = False
+        conn = HarvestManUrlConnector()
+        url = random.choice(urls)
+        res = conn.url_to_file(HarvestManUrl(url))
+        if conn.get_error().number==0:
+            assert(res==URL_DOWNLOAD_OK)
+            if os.path.isfile('index.html'):
+                os.remove('index.html')
+        else:
+            print 'Error in fetching data, skipping tests...'                
+        
+    def test_connfactory(self):
+        pass
 
 def run(result):
     return test_base.run_test(TestHarvestManUrlConnector, result)

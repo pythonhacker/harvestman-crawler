@@ -238,8 +238,8 @@ class HarvestManFileObject(threading.Thread):
                     reads += 1
                     self._data = self._data + block
                     self._contentlen += len(block)
-                    if self._bwlimit:
-                        self.throttle(dmgr.bytes, start_time, tfactor)
+                    #if self._bwlimit:
+                    #    self.throttle(dmgr.bytes, start_time, tfactor)
                     
                     # Flush data to disk
                     if self._mode==CONNECTOR_DATA_MODE_FLUSH:
@@ -301,6 +301,10 @@ class HarvestManFileObject(threading.Thread):
         
         self._tmpf.close()
 
+    def get_tmpfile(self):
+
+        return self._tmpf
+    
     def get_lasterror(self):
         """ Returns the last error object """
         
@@ -1420,7 +1424,7 @@ class HarvestManUrlConnector(object):
         except urlparser.HarvestManUrlError, e:
             error("URL Error: ",e)
         
-    def connect2(self, urlobj, showprogress=True, resuming=False):
+    def connect2(self, urlobj, resuming=False):
         """ Connects to the Internet and fetches data for the URL encapsulated
         in the object 'urlobj'. This is the method used by Hget """
         
@@ -1436,6 +1440,7 @@ class HarvestManUrlConnector(object):
 
         dmgr = objects.datamgr
         rulesmgr = objects.rulesmgr
+        showprogress = self._cfg.showprogress
         
         # print self, urltofetch
         while self._numtries <= retries and not self._error.fatal:
@@ -1508,7 +1513,7 @@ class HarvestManUrlConnector(object):
                 else:
                     clength_str = '%d bytes' % clength
 
-                if resuming or (not urlobj.range):
+                if showprogress and (resuming or (not urlobj.range)):
                     if clength:
                         logconsole('Length: %d (%s) Type: %s' % (clength, clength_str, ctype))
                         nolengthmode = False
@@ -1555,7 +1560,6 @@ class HarvestManUrlConnector(object):
                         # Set http headers
                         self.set_http_headers()
                         range_result = self._headers.get('accept-ranges', '')
-                        print 'Range Result',range_result
                         if range_result.lower()=='bytes':
                             logconsole('Server supports multipart downloads')
                             self._freq.close()
@@ -1909,8 +1913,6 @@ class HarvestManUrlConnector(object):
         for key,val in dict(self._freq.headers).iteritems():
             self._headers[key] = val
 
-        # print self._headers
-
     def print_http_headers(self):
         """ Prints the HTTP headers for this connection """
 
@@ -1987,7 +1989,14 @@ class HarvestManUrlConnector(object):
             return WRITE_URL_BLOCKED
         
         dmgr = objects.datamgr
-        
+        # For raw-saves, i.e saving without any directory structure, a simple
+        # logic is sufficient.
+        if self._cfg.rawsave:
+            if SUCCESS(self._write_url_filename( urlobj.get_filename())):
+                return WRITE_URL_OK
+            else:
+                return WRITE_URL_FAILED
+                
         # If the file does not exist...
         fname = urlobj.get_full_filename()
         if not os.path.isfile(fname):
@@ -2161,7 +2170,12 @@ class HarvestManUrlConnector(object):
         # we will not have any data to parse...
         lmt, cached_data, etag, filefound = '', '', '', ''
 
-        filefound = os.path.isfile(urlobj.get_full_filename())
+        if self._cfg.rawsave:
+            filename = urlobj.get_filename()
+        else:
+            filename = urlobj.get_full_filename()
+
+        filefound = os.path.isfile(filename)
         
         if self._cfg.datacache:
             cached_data = objects.datamgr.get_url_cache_data(urlobj)
@@ -2218,7 +2232,6 @@ class HarvestManUrlConnector(object):
             except ValueError, e:
                 pass
         
-        filename = urlobj.get_full_filename()
         update, fileverified = False, False
 
         datalen = self.get_content_length()
@@ -2280,7 +2293,8 @@ class HarvestManUrlConnector(object):
         # will be split!
         fs = self._cfg.forcesplit
         self._cfg.forcesplit = False
-        ret = self.connect2(urlobj, showprogress=False)
+        self._cfg.showprogress = False
+        ret = self.connect2(urlobj)
         # Reset verbosity
         self._cfg.verbosity = self._cfg.verbosity_default
         logobj.setLogSeverity(self._cfg.verbosity)
@@ -2504,7 +2518,6 @@ class HarvestManUrlConnector(object):
                                 resuming = True
                                 # print 'Fize=>',totsz,clength
                                 urlobj.range = (totsz, clength+1)
-                                # self._cfg.multipart = True                                    
                                 print 'Resuming download...'
                     except SyntaxError, e:
                         print 'Error reading URL info file, cannot resume previous download...'
@@ -2814,25 +2827,5 @@ class HarvestManUrlConnectorFactory(object):
     
 # test code
 if __name__=="__main__":
-    set_aliases()
-    
-    conn = HarvestManUrlConnector()
-
-    # Note: this test works only for a client
-    # directly connected to the internet. If
-    # you are behind a proxy, add proxy code of
-    # harvestManUrlConnectorUrl class here.
-
-    # FIXME: I need to move this initialize to somewhere else!
-    # Check for http connections
-    print 'Testing HTTP connections...'
-    conn.url_to_file(urlparser.HarvestManUrl('http://www.python.org/index.html'))
-    # print the HTTP headers
-    conn.print_http_headers()
-
-    # Check for ftp connections
-    print 'Testing FTP connections...'  
-    conn.url_to_file(urlparser.HarvestManUrl('ftp://ftp.gnu.org'))
-    # print the HTTP headers
-    conn.print_http_headers()   
+    pass
 

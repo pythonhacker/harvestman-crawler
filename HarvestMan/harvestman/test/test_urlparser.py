@@ -22,7 +22,7 @@ class TestHarvestManUrl(unittest.TestCase):
           HarvestManUrl('http://cwc2003.rediffblogs.com'),
           HarvestManUrl('/sports/2003/jun/25beck1.htm',
                               'generic', 0, 'http://www.rediff.com', ''),
-          HarvestManUrl('ftp://ftp.gnu.org/pub/lpf.README'),
+          HarvestManUrl('http://ftp.gnu.org/pub/lpf.README'),
           HarvestManUrl('http://www.python.org/doc/2.3b2'),
           HarvestManUrl('//images.sourceforge.net/div.png',
                               'image', 0, 'http://sourceforge.net', ''),
@@ -142,7 +142,7 @@ class TestHarvestManUrl(unittest.TestCase):
         assert(self.l[1].get_full_url()=='http://www.rediff.com/r/r/tn2/2003/jun/25usfed.htm')
         assert(self.l[2].get_full_url()=='http://cwc2003.rediffblogs.com/')
         assert(self.l[3].get_full_url()=='http://www.rediff.com/sports/2003/jun/25beck1.htm')
-        assert(self.l[4].get_full_url()=='ftp://ftp.gnu.org/pub/lpf.README')
+        assert(self.l[4].get_full_url()=='http://ftp.gnu.org/pub/lpf.README')
         assert(self.l[5].get_full_url()=='http://www.python.org/doc/2.3b2')
         assert(self.l[6].get_full_url()=='http://images.sourceforge.net/div.png')
         assert(self.l[7].get_full_url()=='http://pyro.sourceforge.net/manual/LICENSE')
