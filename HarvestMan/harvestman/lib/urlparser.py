@@ -104,9 +104,6 @@ class HarvestManUrl(object):
         # modified
         self.origurl = url
         
-        #if url[-1] == URLSEP:
-        #    self.url = url[:-1]
-        #else:
         self.url = url
         self.url = urlproc.modify_url(self.url)
         
@@ -181,24 +178,19 @@ class HarvestManUrl(object):
         # content.
         self.clength = 0
         self.dirpath = []
-        # Archive for self.dirpath
-        self.dirpathold = []
-        # Archive for self.filename
-        self.filenameold = 'index.html'
-        self.validfilenameold = 'index.html'
-        # Archive for self.rpath
-        self.rpathold = []
-        # Archive for self.domain
-        self.domainold = ''
         # Re-computation flag
         self.reresolved = False
         # URL redirected flag
         self.redirected = False
+        # Flag indicating we are using an old URL
+        # which was redirected, again for producing
+        # further redirections. This is used in Hget
+        # for automatic split-mirror downloading
+        # for URLs that auto-forward to mirrors.
+        self.redirected_old = False
         self.baseurl = None
         # Hash of page data
         self.pagehash = ''
-        # Flag for using old filename
-        self.useoldfilename = False
         # Flag to decide whether to recalculate get_full_url(...)
         # if flag is False, recalculate...
         self.urlflag = False
@@ -236,16 +228,18 @@ class HarvestManUrl(object):
             self.index = 0
         except KeyError:
             pass
-        
-    def re_init(self):
-        """ Reinitialize some of the attributes """
 
-        # Used by wrapper_resolveurl
-        #if self.url[-1] == URLSEP:
-        #    self.url = self.url[:-1]
-        #else:
-        #    self.url = self.url
-        # Process URL
+        # Copy of myself, this will be saved if
+        # a re-resolving is requested so that old
+        # parameters can be requested if needed
+        self.orig_state = None
+        
+    def reset(self):
+        """ Reset all the key attributes """
+
+        # Archive previous state
+        self.orig_state = copy.copy(self)
+
         self.url = urlproc.modify_url(self.url)
         self.lastpath = ''
         self.protocol = ''
@@ -270,21 +264,13 @@ class HarvestManUrl(object):
         return self.absurl
     
     def wrapper_resolveurl(self):
-        """ Called forcefully to re-resolve a URL """
+        """ Called forcefully to re-resolve a URL, typically after a re-direction
+        or change in URL has been detected """
 
-        extrainfo("Re-resolving URL: Current is %s..." % self.get_full_url())
-        # Make archives of everything
-        self.dirpathold = self.dirpath[:]
-        self.rpathold = self.rpath[:]
-        self.filenameold = self.filename[:]
-        self.validfilenameold = self.validfilename[:]
-        self.domainold = self.domain[:]
-        self.re_init()
-        
+        self.reset()
         self.anchorcheck()
         self.resolveurl()
         self.reresolved = True
-        extrainfo("Re-resolving URL: New is %s..." % self.get_full_url())
         
     def anchorcheck(self):
         """ Checking for anchor tags and processing accordingly """
@@ -849,20 +835,6 @@ class HarvestManUrl(object):
         
         return self.baseurl
 
-    def get_original_url_directory(self):
-        """ Return the directory path (url minus its filename if any) of the original URL """
-
-        # Return only if this was recomputer
-        # get the directory path of the url
-        fulldom = self.get_full_domain()
-        urldir = fulldom
-
-        if self.dirpathold:
-            newpath = "".join((URLSEP, "".join([ x+'/' for x in self.dirpathold])))
-            urldir = "".join((fulldom, newpath))
-
-        return urldir
-    
     def get_url_directory(self):
         """ Return the directory path (url minus its filename if any) of the url """
         
@@ -1169,39 +1141,14 @@ class HarvestManUrl(object):
         This is created w.r.t the local directory where we save
         the url data """
 
-        if self.useoldfilename:
-            return self.get_full_filename_old()
-        
-        if not self.__class__.TEST:
-            return os.path.join(self.get_local_directory(), self.get_filename())
-        else:
-            return os.path.join(self.get_local_directory(), self.get_filename())            
-
-    def get_full_filename_old(self):
-        """ Return the old full filename of this url on the disk.
-        This is created w.r.t the local directory where we save
-        the url data """
-
-        if not self.__class__.TEST:
-            return os.path.join(self.get_local_directory_old(), self.get_filename_old())
-        else:
-            return os.path.join(self.get_local_directory_old(), self.get_filename_old())            
+        return os.path.join(self.get_local_directory(), self.get_filename())
 
     def get_filename(self):
         """ Return the filename of this url on the disk. """
 
-        if self.useoldfilename:
-            return self.validfilenameold
-        
         # NOTE: This is just the filename, not the absolute filename path
         return self.validfilename
 
-    def get_filename_old(self):
-        """ Return the old filename of this url on the disk. """
-
-        # NOTE: This is just the filename, not the absolute filename path
-        return self.validfilenameold
-    
     def get_relative_filename(self, filename=''):
 
         # NOTE: Rewrote this method completely
@@ -1399,19 +1346,14 @@ class HarvestManUrl(object):
                     
         return os.path.normpath(rval)
 
-    def get_local_directory_old(self):
-        """ Return the old local directory path of this url w.r.t
-        the directory on the disk where we save the files of this url """
+    def get_original_state(self):
+        """ Return the original state of this URL object. This is useful
+        to obtain earlier attributes of a URL after it's state was
+        changed by a URL modification """
+
+        # It is up to the caller to check this value
+        return self.orig_state
         
-        # Gives Local Direcory path equivalent to URL Path in server
-        rval = os.path.join(self.rootdir, self.domainold)
-
-        for diry in self.dirpathold:
-            if not diry: continue
-            rval = os.path.abspath( os.path.join(rval, self.make_valid_filename(diry)))
-
-        return os.path.normpath(rval)    
-
     # ============ Begin - Set Methods =========== #
 
     def set_directory_url(self):

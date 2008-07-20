@@ -116,6 +116,8 @@ URL_GENERAL_ERROR = 101
 
 FILEOBJECT_EXCEPTION = 111
 
+TEST = False
+
 class HeadRequest(urllib2.Request):
     """ A request class which performs a HEAD request """
 
@@ -141,7 +143,7 @@ class HarvestManFileObject(threading.Thread):
     
     def __init__(self, fobj, filename, clength, mode = 0, bwlimit = 0):
         """ Overloaded __init__ method """
-        
+
         self._fobj = fobj
         self._data = ''
         self._clength = int(clength)
@@ -150,6 +152,7 @@ class HarvestManFileObject(threading.Thread):
         # Mode: 0 => flush data to file (default)
         #     : 1 => keep data in memory
         self._mode = mode
+        self._filename = filename
         if self._mode == CONNECTOR_DATA_MODE_FLUSH:
             self._tmpf = open(filename, 'wb')
         else:
@@ -166,7 +169,7 @@ class HarvestManFileObject(threading.Thread):
         self._bs = 4096
 
         threading.Thread.__init__(self, None, None, 'data reader')
-
+        
     def initialize(self):
         """ Initialize before using an instance of this class.
         This methods sets the start time and the init flag """
@@ -178,7 +181,7 @@ class HarvestManFileObject(threading.Thread):
         """ Returns the init flag """
         
         return self._init
-    
+
     def set_fileobject(self, fileobj):
         """ Setter method for the encapsulated file object """
         
@@ -238,13 +241,12 @@ class HarvestManFileObject(threading.Thread):
                     reads += 1
                     self._data = self._data + block
                     self._contentlen += len(block)
-                    #if self._bwlimit:
-                    #    self.throttle(dmgr.bytes, start_time, tfactor)
+                    if self._bwlimit:
+                        self.throttle(dmgr.bytes, start_time, tfactor)
                     
                     # Flush data to disk
                     if self._mode==CONNECTOR_DATA_MODE_FLUSH:
                         self.flush()
-            
             except socket.error, e:
                 self._flag = True
                 self._lasterror = e
@@ -384,7 +386,7 @@ class HarvestManFileObject(threading.Thread):
         self._flag = True
 
     @classmethod
-    def reset(cls):
+    def reset_klass(cls):
         """ Resets all class attributes (classmethod) """
         
         cls.ORIGLENGTH = 0
@@ -1024,7 +1026,10 @@ class HarvestManUrlConnector(object):
                             urlobj.redirected = True                            
                             urlobj.url = actual_url
                             debug('Actual URL=>',actual_url)
+                            debug("Re-resolving URL: Current is %s..." % urlobj.get_full_url())
                             urlobj.wrapper_resolveurl()
+                            debug("Re-resolving URL: New is %s..." % urlobj.get_full_url())
+                            urltofetch = urlobj.get_full_url()
                     
                 # Find the actual type... if type was assumed
                 # as wrong, correct it.
@@ -1432,7 +1437,7 @@ class HarvestManUrlConnector(object):
         
         # Reset the http headers
         self._headers.clear()
-        retries = 1
+        retries = self._cfg.retryfailed
         self._numtries = 0
 
         urltofetch = urlobj.get_full_url()
@@ -1441,13 +1446,24 @@ class HarvestManUrlConnector(object):
         dmgr = objects.datamgr
         rulesmgr = objects.rulesmgr
         showprogress = self._cfg.showprogress
-        
+
+        # Flag indicating we are reusing a previously redirected URL
+        # to produce automatic mirror split
+        automirror = urlobj.redirected and urlobj.redirected_old
+
         # print self, urltofetch
-        while self._numtries <= retries and not self._error.fatal:
+        while self._numtries <= retries:
+
+            # If automirror we don't exit on even fatal errors since
+            # a new request on the old URL can lead to a new mirror
+            # which can work. If automirror we exit only after number
+            # of retries are completed.
+            if not automirror and self._error.fatal:
+                break
 
             # Reset status
             self._status = 0
-
+            
             errnum = 0
             try:
                 # Reset error
@@ -1466,9 +1482,14 @@ class HarvestManUrlConnector(object):
                     if self._fo:
                         datasofar = self._fo.get_datalen()
                         if datasofar: range1 += datasofar
-                        
-                    request.add_header('Range','bytes=%d-%d' % (range1,range2))
 
+                    # If this was a redirected old URL which we are re-using for
+                    # producing further redirections for auto-mirror downloads
+                    # don't add this header now, but add it later, after the
+                    # redirection has happened.
+                    if not automirror:
+                        request.add_header('Range','bytes=%d-%d' % (range1,range2))
+                        
                 self._freq = urllib2.urlopen(request)
 
                 # Set status to 1
@@ -1479,6 +1500,8 @@ class HarvestManUrlConnector(object):
                     # Don't do this for mirrors...
                     if not urlobj.trymultipart:
                         logconsole('Redirected to %s...' % actual_url)
+                    else:
+                        extrainfo('Redirected to %s...' % actual_url)                        
                 
                     if actual_url.replace(urltofetch, '') != '/':
                         no_change = False
@@ -1493,9 +1516,25 @@ class HarvestManUrlConnector(object):
                         # Considerable change
                         urlobj.redirected = True
                         urlobj.url = actual_url
+                        debug("Re-resolving URL: Current is %s..." % urlobj.get_full_url())                        
                         urlobj.wrapper_resolveurl()
+                        debug("Re-resolving URL: New is %s..." % urlobj.get_full_url())                        
                         # Get filename again
                         filename = urlobj.get_filename()
+                        # Get URL again
+
+                        if byterange and automirror:
+                            # print 'Automirror URL...!'
+                            range1, range2 = byterange
+                            # For a repeat connection, don't redownload already downloaded data.
+                            if self._fo:
+                                datasofar = self._fo.get_datalen()
+                                if datasofar: range1 += datasofar
+
+                            request = self.create_request(urlobj.get_full_url())                            
+                            request.add_header('Range','bytes=%d-%d' % (range1,range2))
+                            self._freq.close()
+                            self._freq = urllib2.urlopen(request)
                         
                 # Set http headers
                 self.set_http_headers()
@@ -1553,6 +1592,9 @@ class HarvestManUrlConnector(object):
                         # See if the server supports 'Range' header
                         # by requesting half the length
                         self._headers.clear()
+
+                        # Need to re-create request in case URL has changed
+                        request = self.create_request(urlobj.get_full_url())                        
                         request.add_header('Range','bytes=%d-%d' % (0,clength/2))
                         self._freq.close()                        
                         self._freq = urllib2.urlopen(request)
@@ -1572,10 +1614,10 @@ class HarvestManUrlConnector(object):
                             else:
                                 # Create a fresh request object
                                 self._freq.close()
-                                request = self.create_request(urltofetch)
+                                request = self.create_request(urlobj.get_full_url())
                                 self._freq = urllib2.urlopen(request)
 
-                                logconsole('Downloading URL %s...' % urltofetch)
+                                logconsole('Downloading URL %s...' % urlobj.get_full_url())
                                 trynormal = True
                     else:
                         logconsole('Server supports multipart downloads')
@@ -1599,7 +1641,7 @@ class HarvestManUrlConnector(object):
                     
                 # if this is the not the first attempt, print a success msg
                 if self._numtries>1:
-                    extrainfo("Reconnect succeeded => ", urltofetch)
+                    extrainfo("Reconnect succeeded => ", urlobj.get_full_url())
 
                 try:
                     # Don't set progress object if multipart download - it
@@ -1733,9 +1775,9 @@ class HarvestManUrlConnector(object):
                     pass
 
                 if self._error.msg:
-                    error(self._error.msg, '=> ',urltofetch)
+                    extrainfo(self._error.msg, '=> ',urltofetch)
                 else:
-                    error('HTTPError:',urltofetch)
+                    extrainfo('HTTPError:',urltofetch)
 
                 try:
                     errnum = int(self._error.number)
@@ -1823,9 +1865,9 @@ class HarvestManUrlConnector(object):
                     self._error.msg = errdescn
 
                 if self._error.msg:
-                    error(self._error.msg, '=> ',urltofetch)
+                    extrainfo(self._error.msg, '=> ',urltofetch)
                 else:
-                    error('URLError:',urltofetch)
+                    extrainfo('URLError:',urltofetch)
 
                 errnum = self._error.number
 
@@ -1843,19 +1885,19 @@ class HarvestManUrlConnector(object):
                 # Generated by invalid ftp hosts and
                 # other reasons,
                 # bug(url: http://www.gnu.org/software/emacs/emacs-paper.html)
-                error(e,'=>',urltofetch)
+                extrainfo(e,'=>',urltofetch)
 
             except BadStatusLine, e:
                 self._error.number = URL_BADSTATUSLINE
                 self._error.msg = str(e)
                 self._error.errclass = "BadStatusLine"                                    
-                error(e, '=> ',urltofetch)
+                extrainfo(e, '=> ',urltofetch)
 
             except TypeError, e:
                 self._error.number = URL_TYPE_ERROR
                 self._error.msg = str(e)
                 self._error.errclass = "TypeError"                                    
-                error(e, '=> ',urltofetch)
+                extrainfo(e, '=> ',urltofetch)
                 
             except ValueError, e:
                 self._error.number = URL_VALUE_ERROR
@@ -1867,7 +1909,7 @@ class HarvestManUrlConnector(object):
                 self._error.number = URL_ASSERTION_ERROR
                 self._error.msg = str(e)
                 self._error.errclass = "AssertionError"                                    
-                error(e ,'=> ',urltofetch)
+                extrainfo(e ,'=> ',urltofetch)
 
             except socket.error, e:
                 self._error.number = URL_SOCKET_ERROR                
@@ -1875,7 +1917,7 @@ class HarvestManUrlConnector(object):
                 self._error.errclass = "SocketError"                                    
                 errmsg = self._error.msg
 
-                error('Socket Error: ',errmsg,'=> ',urltofetch)
+                extrainfo('Socket Error: ',errmsg,'=> ',urltofetch)
 
             except HarvestManFileObjectException, e:
                 self._error.number = FILEOBJECT_EXCEPTION
@@ -1883,7 +1925,7 @@ class HarvestManUrlConnector(object):
                 self._error.errclass = "HarvestManFileObjectException"                                    
                 errmsg = self._error.msg
 
-                error('HarvestManFileObjectException: ',errmsg,'=> ',urltofetch)
+                extrainfo('HarvestManFileObjectException: ',errmsg,'=> ',urltofetch)
                 
             # attempt reconnect after some time
             # self.evnt.sleep()
@@ -2026,11 +2068,11 @@ class HarvestManUrlConnector(object):
             # URL.
             if urlobj.reresolved:
                 # Get old filename and save in it
-                urlobj.useoldfilename = True
-                directory = urlobj.get_local_directory_old()
+                old_urlobj = urlobj.get_original_state()
+                directory = old_urlobj.get_local_directory()
 
                 if SUCCESS(dmgr.create_local_directory(directory)):
-                    if SUCCESS(self._write_url_filename( urlobj.get_full_filename_old())):
+                    if SUCCESS(self._write_url_filename( old_urlobj.get_full_filename())):
                         return WRITE_URL_OK
                     else:
                         return WRITE_URL_FAILED
@@ -2425,8 +2467,8 @@ class HarvestManUrlConnector(object):
         """ Downloads the URL encapsulated in 'urlobj' to disk. This method is
         the main method used by the Hget application to download files """
 
-        # Reset counters on data reader class...
-        HarvestManFileObject.reset()
+        # Reset state on data reader class...
+        HarvestManFileObject.reset_klass()
         
         if self._cfg.hgetoutfile:
             n, filename = 1, self._cfg.hgetoutfile

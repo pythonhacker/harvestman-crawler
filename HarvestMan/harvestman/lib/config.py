@@ -1091,7 +1091,7 @@ class HarvestManStateObject(dict, Singleton):
                         print 'Warning: Enabling in-memory flag, data will be stored in memory!'
                         self.datamode = CONNECTOR_DATA_MODE_INMEM
                         self.datamodename = "mem"
-                elif option=='notempdir':
+                elif option=='currentdir':
                     if value:
                         print 'Temporary files will be saved to current directory'
                         # Do not use temporary directory for saving intermediate files
@@ -1115,10 +1115,6 @@ class HarvestManStateObject(dict, Singleton):
                     if SUCCESS(self.check_value(option,value)): self.set_option_xml('passwd', self.process_value(value))
                 elif option=='username':
                     if SUCCESS(self.check_value(option,value)): self.set_option_xml('username', self.process_value(value))
-                elif option == 'single':
-                    if value:
-                        print "Single thread option set, disabling multipart downloads..."
-                        self.nomultipart = True
                 elif option == 'mirrorfile':
                     filename = value.strip()
                     if os.path.isfile(filename):
@@ -1129,7 +1125,7 @@ class HarvestManStateObject(dict, Singleton):
                 elif option == 'mirrorsearch':
                     if value:
                         print  'Mirror search turned on'
-                        print 'Warning: This is an experimental feature and may not work well at all...'
+                        print 'Warning: This is an experimental feature...'
                         self.mirrorsearch = True
                 elif option == 'relpathidx':
                     idx = int(value.strip())
@@ -1142,6 +1138,8 @@ class HarvestManStateObject(dict, Singleton):
                     if value:
                         print 'Resume mode set to off, partial downloads will not be resumed!'
                         self.canresume = False
+                elif option == 'retries':
+                    self.retryfailed = int(value)
 
             # If both mirror search and mirror file specified, mirror file is used
             # Print some information regarding mismatch of options...

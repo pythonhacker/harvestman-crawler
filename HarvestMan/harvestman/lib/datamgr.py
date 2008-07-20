@@ -688,7 +688,24 @@ class HarvestManDataManager(object):
         # dictionary, if not there
         domain = urlobj.get_full_domain()
         orig_url = urlobj.get_full_url()
+        old_urlobj = urlobj.get_original_state()
+
+        domain_changed_a_lot = False
         
+        # If this was a re-directed URL, check if there is a
+        # considerable change in the domains. If there is,
+        # there is a very good chance that the original URL
+        # is redirecting to mirrors, so we can split on
+        # the original URL and this would automatically
+        # produce a split-mirror download without us having
+        # to do any extra work!
+        if urlobj.redirected and old_urlobj != None:
+            old_domain = old_urlobj.get_domain()
+            if old_domain != domain:
+                # Check if it is somewhat similar
+                # if domain.find(old_domain) == -1:
+                domain_changed_a_lot = True
+
         try:
             self._serversdict[domain]
         except KeyError:
@@ -696,7 +713,12 @@ class HarvestManDataManager(object):
 
         if self.mirrormgr.mirrors_available(urlobj):
             return self.mirrormgr.download_multipart_url(urlobj, clength, self._cfg.numparts, self._urlThreadPool)
-        
+        else:
+            if domain_changed_a_lot:
+                urlobj = old_urlobj
+                # Set a flag to indicate this
+                urlobj.redirected_old = True
+                
         parts = self._cfg.numparts
         # Calculate size of each piece
         piecesz = clength/parts
@@ -708,7 +730,7 @@ class HarvestManDataManager(object):
         # Create a URL object for each and set range
         urlobjects = []
         for x in range(parts):
-            urlobjects.append(copy.deepcopy(urlobj))
+            urlobjects.append(copy.copy(urlobj))
 
         prev = 0
         for x in range(parts):

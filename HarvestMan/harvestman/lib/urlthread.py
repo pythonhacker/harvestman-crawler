@@ -219,7 +219,7 @@ class HarvestManUrlThread(threading.Thread):
             else:
                 startrange = url_obj.range[0]
                 endrange = url_obj.range[-1]                            
-                extrainfo('Finished download of byte range(%d - %d) of %s' % (startrange,endrange, url))
+                debug('Finished download of byte range(%d - %d) of %s' % (startrange,endrange, url))
         elif self._error.number != 304:
             error('Failed to download URL',url)
 
@@ -495,7 +495,7 @@ class HarvestManUrlThreadPool(Queue):
             self._ltrt = time.time()
 
             urlObj = thread.get_urlobject()
-
+            
             # See if this was a multi-part download
             if urlObj.trymultipart:
                 status = thread.get_status()

@@ -337,6 +337,7 @@ class HarvestManMirrorManager(Singleton):
     
     def mirrors_available(self, urlobj):
         return (is_sourceforge_url(urlobj) or len(self.filemirrors) or self.mirrorsearch)
+        # return len(self.filemirrors) or (self.mirrorsearch)    
     
     def search_for_mirrors(self, urlobj, find_new = True):
 
