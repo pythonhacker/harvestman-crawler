@@ -285,15 +285,18 @@ class HarvestManStateObject(dict, Singleton):
         self.retryfailed=1
         self.extdepth=0
         self.maxtrackers=4
-        self.urlfilter=''
-        self.wordfilter=''
+        # Url filter object
+        self.urlfilter = None
+        self.regexurlfilters = []
+        self.pathurlfilters = []
+        self.extnurlfilters = []
+        # Text filter object
+        self.textfilter = None
+        self.contentfilters = []
+        self.metafilters = []
         self.inclfilter=[]
         self.exclfilter=[]
         self.allfilters=[]
-        self.serverfilter=''
-        self.serverinclfilter=[]
-        self.serverexclfilter=[]
-        self.allserverfilters=[]
         self.urlpriority = ''
         self.serverpriority = ''
         self.urlprioritydict = {}
@@ -459,9 +462,6 @@ class HarvestManStateObject(dict, Singleton):
                          'username': ('username','str'),
                          'passwd' : ('passwd','str'),
                          
-                         'urlhost' : ('urlhost','str'),
-                         'urlport_value' : ('urlport','int'),
-
                          'html_value' : ('html','int'),
                          'images_value' : ('images','int'),
                          'movies_value' : ('movies','int'),
@@ -504,7 +504,6 @@ class HarvestManStateObject(dict, Singleton):
                          'timelimit_value' : ('timelimit','float'),
                          'urlpriority' : ('urlpriority','str'),
                          'serverpriority' : ('serverpriority','str'),
-                         'urlfilter': ('urlfilter','str'),
                          'serverfilter' : ('serverfilter','str'),
                          'wordfilter' : ('wordfilter','str'),
                          'junkfilter_value' : ('junkfilter','int'),
@@ -527,12 +526,14 @@ class HarvestManStateObject(dict, Singleton):
                          'configfile_value': ('configfile', 'str'),
                          'projectfile_value': ('projectfile', 'str'),
 
+                         'regexp_value' : ('regexp', 'func:set_urlfilter'),
+                         'path_value': ('path', 'func:set_urlfilter'),
+                         'extension_value': ('extension', 'func:set_urlfilter'),
+                         'content_value': ('content', 'func:set_textfilter'),
+                         'meta_value': ('meta', 'func:set_textfilter'),
                          'urlfilterre_value': (('inclfilter', 'list'),
                                                ('exclfilter', 'list'),
                                                ('allfilters', 'list')),
-                         'serverfilterre_value':(('serverinclfilter', 'list'),
-                                                 ('serverexclfilter', 'list'),
-                                                 ('allserverfilters', 'list')),
                          'urlprioritydict_value': ('urlprioritydict', 'dict'),
                          'serverprioritydict_value': ('serverprioritydict', 'dict'),
                          'http_compress' : ('httpcompress', 'int'),
@@ -796,7 +797,40 @@ class HarvestManStateObject(dict, Singleton):
 
             # Set maxbandwidth
             self.bandwidthlimit = float(limit)
-                    
+
+    def set_urlfilter(self, key, val, filterdict):
+
+        enable = int(filterdict.get(u'enable', 1))
+        if not enable:
+            return
+        
+        casing = int(filterdict.get(u'case',0))
+        flags = filterdict.get(u'flags','')
+
+        # Append a tuple of value, casing, flags
+        if key=='regexp':
+            self.regexurlfilters.append((val,casing,flags))
+        elif key=='path':
+            self.pathurlfilters.append((val,casing,flags))
+        elif key=='extension':
+            self.extnurlfilters.append((val,casing,flags))
+
+    def set_textfilter(self, key, val, filterdict):
+
+        enable = int(filterdict.get(u'enable', 1))
+        if not enable:
+            return
+        
+        casing = int(filterdict.get(u'case',0))
+        flags = filterdict.get(u'flags','')
+
+        # Append a tuple of value, casing, flags
+        if key=='content':
+            self.contentfilters.append((val,casing,flags))
+        elif key=='meta':
+            tags = filterdict.get(u'tags','all')
+            self.metafilters.append((val,casing,flags,tags))
+
     def set_project(self, key, val, prjdict):
         # Same function is called for url, basedir, name
         # and verbosity
@@ -1290,6 +1324,7 @@ class HarvestManStateObject(dict, Singleton):
         after fixing any errors in key config variables such as
         URL, project directory, project names etc """
 
+        
         # If there is more than one url, we
         # combine all the project related
         # variables into a dictionary for easy

@@ -10,6 +10,7 @@ Created by Anand B Pillai <abpillai at gmail dot com> Feb 26 2008
 Copyright (C) 2008 Anand B Pillai.
 """
 
+import bz2
 from common.common import *
 
 class HarvestManDocument(object):
@@ -65,8 +66,8 @@ class HarvestManDocument(object):
         pass
 
     def get_bzipped_content(self):
-        # Return the content, bzipped
-        pass
+        return bz2.compress(self.content)
+
 
     
 

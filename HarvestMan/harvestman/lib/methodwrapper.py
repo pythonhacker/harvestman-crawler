@@ -15,11 +15,9 @@ sets a given method as a pre or post callback method on a class.
 This module is part of the HarvestMan program. For licensing
 information see the file LICENSE.txt that is included in this distribution.
 
-Author: Anand B Pillai <abpillai at gmail dot com>
-    
-Created Anand B Pillai Feb 17 2007
+Created Anand B Pillai <abpillai at gmail dot com> Feb 17 2007
 
-Copyright (C) 2007 Anand B Pillai.
+Copyright (C) 2003-2008 Anand B Pillai.
 """
 
 __version__ = '2.0 b1'
@@ -138,42 +136,6 @@ def set_wrapper_method(klass, method, callback, where='post'):
         l.append(callback)
         setattr(klass, attr, l)            
 
-def test():
-    class MyClass(object):
-        __metaclass__ = MethodWrapperMetaClass
-        
-        def f(self):
-            x = 10
-            y = 20
-            z = x + y
-            print 'F called'
-            return z
-
-    def myfunc1(self):
-        print 'Myfunc#1 called'
-
-    def myfunc2(self, x):
-        print 'Myfunc#2 called'
-
-    def myfunc3(self, x):
-        print 'Myfunc#3 called!'
-
-    class MyClass2(MyClass):
-        pass
-    
-    set_wrapper_method(MyClass, 'f', myfunc1, 'pre')    
-    set_wrapper_method(MyClass, 'f', myfunc2, 'post')
-    set_wrapper_method(MyClass, 'f', myfunc3, 'post')    
-
-    c = MyClass()
-    d = MyClass()
-    e = MyClass()
-    c.f()
-
-    g = MyClass2()
-    print 'hi'
-    g.f()
-    
-if __name__=="__main__":
-    test()
+if __name__ == "__main__":
+    pass
     
