@@ -836,7 +836,7 @@ class HarvestManRulesChecker(object):
                                                 self._configobj.extnurlfilters)
 
         self._configobj.urlfilter =  urlfilter
-        sys.exit(0)
+        # sys.exit(0)
         
    ##  def make_filters(self):
 ##         """ This function creates the filter regexps

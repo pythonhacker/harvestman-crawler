@@ -32,6 +32,8 @@ class HarvestManMacroVariable(type):
         cls.macrodict[name] = item
         return item
 
+    def __init__(cls, name, bases=(), dct={}):
+	pass
     def __str__(self):
         return '%d' % (self.index)
 

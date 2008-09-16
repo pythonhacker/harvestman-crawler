@@ -57,6 +57,7 @@ class HarvestManConfigParser(object):
                 xmlkey = "".join((name, "_", key))
                 # Set value
                 if self.cfg:
+                    # print 'Setting option for',xmlkey,value,attrs                    
                     self.cfg.set_option_xml_attr(xmlkey, value, attrs)
                 else:
                    print key, value
@@ -81,7 +82,7 @@ class HarvestManConfigParser(object):
         if self._data != '':
             # This was an element with data between an opening and closing tag
             # ... now that we're guaranteed to have it all, lets add it to the config
-            # print 'Setting option for %s %s ' % (self._node, char_data)
+            # print 'Setting option for %s %s ' % (self._node, self._data)
             if self.cfg:
                 self.cfg.set_option_xml(self._node, self._data)
             else:
