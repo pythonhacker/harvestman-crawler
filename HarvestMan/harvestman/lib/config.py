@@ -287,6 +287,9 @@ class HarvestManStateObject(dict, Singleton):
         self.maxtrackers=4
         # Url filter object
         self.urlfilter = None
+        # To prevent config from breaking...
+        self.serverfilter=''
+        self.wordfilter=''
         self.regexurlfilters = []
         self.pathurlfilters = []
         self.extnurlfilters = []

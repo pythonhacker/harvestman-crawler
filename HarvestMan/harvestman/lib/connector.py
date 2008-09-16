@@ -647,7 +647,7 @@ class HarvestManNetworkConnector(object):
                                               httphandler,
                                               urllib2.HTTPDefaultErrorHandler,
                                               urllib2.FTPHandler,
-                                              urllib2.GopherHandler,
+                                              #urllib2.GopherHandler,
                                               httpshandler,
                                               urllib2.FileHandler,
                                               cookiehandler)
@@ -658,7 +658,7 @@ class HarvestManNetworkConnector(object):
                                               httphandler,
                                               urllib2.HTTPDefaultErrorHandler,
                                               urllib2.FTPHandler,
-                                              urllib2.GopherHandler,
+                                              #urllib2.GopherHandler,
                                               urllib2.FileHandler,
                                               cookiehandler)
 
@@ -670,7 +670,7 @@ class HarvestManNetworkConnector(object):
                                               httphandler,
                                               urllib2.FTPHandler,
                                               httpshandler,
-                                              urllib2.GopherHandler,
+                                              #urllib2.GopherHandler,
                                               urllib2.FileHandler,
                                               urllib2.HTTPDefaultErrorHandler,
                                               cookiehandler)
@@ -679,7 +679,7 @@ class HarvestManNetworkConnector(object):
                                                urllib2.HTTPRedirectHandler,
                                                httphandler,
                                                urllib2.FTPHandler,
-                                               urllib2.GopherHandler,
+                                               #urllib2.GopherHandler,
                                                urllib2.FileHandler,
                                                urllib2.HTTPDefaultErrorHandler,
                                                cookiehandler)

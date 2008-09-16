@@ -96,6 +96,9 @@ class HarvestManThreadState(type):
         dct['index'] = cls.IDX
         return type.__new__(cls, name, bases, dct)
 
+    def __init__(self, name, bases=(), dct={}):
+        type.__init__(self, name, bases, dct)
+        
     def __repr__(self):
         return '%d: %s' % (self.index, self.about)
 
