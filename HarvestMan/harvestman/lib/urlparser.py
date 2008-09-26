@@ -376,6 +376,7 @@ class HarvestManUrl(object):
             # Only reduce if the URL itself does not start with
             # .. - if it does our rpath algorithm takes
             # care of it.
+            print 'Relpaths=>',relpaths
             if idx > 0:
                 relpaths = self.reduce_url(relpaths)
 
@@ -449,8 +450,15 @@ class HarvestManUrl(object):
             if extn in default_directory_extns:
                 self.set_directory_url()
 
+        # print self.dirpath, self.domain
+        
     def reduce_url(self, paths):
         """ Remove nonsense .. and . chars from URL paths """
+
+        print 'Paths=>',paths
+        if paths[0]=='?':
+            # Don't reduce if URL has ? in the beginning
+            return paths
         
         for x in range(len(paths)):
             path = paths[x]
@@ -520,12 +528,28 @@ class HarvestManUrl(object):
             # Otherwise, the url is a plain domain
             # path like www.python.org .
             self.compute_file_and_dir_paths()
-
+            print 'Dirpath1=>',self.dirpath
+            # print 'Rpath=>',self.rpath
+            
             # Interprets relative path
             # ../../. Nonsense relative paths are graciously ignored,
             self.rpath.reverse()
+            # print 'Base url dirpath=>',self.baseurl.dirpath
+            # print 'Rindex=>',self.rindex
+            
             if len(self.rpath) == 0 :
+                print '1'
                 if not self.rindex:
+                    # This simple logic is fine for most paths except
+                    # when a base URL has a "?" as part of its dirpath.
+                    # Example: http://razor.occams.info/code/repo/?/govtrack/sec .
+                    # In that case, any pieces of the base URL after the
+                    # ? is to be omitted.
+                    if '?' in self.baseurl.dirpath:
+                        # Trim base url to the part before ?
+                        qindex = self.baseurl.dirpath.index('?')
+                        self.baseurl.dirpath = self.baseurl.dirpath[:qindex]
+                    
                     self.dirpath = self.baseurl.dirpath + self.dirpath
             else:
                 pathstack = self.baseurl.dirpath[0:]
@@ -538,7 +562,9 @@ class HarvestManUrl(object):
                             pathstack.pop()
             
                 self.dirpath  = pathstack + self.dirpath 
-                
+
+            # print 'Dirpath2=>',self.dirpath
+            
             # Support for NONSENSE relative paths such as
             # g/../foo and g/./foo 
             # consider base = http:\\bar.com\bar1
