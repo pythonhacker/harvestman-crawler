@@ -253,7 +253,6 @@ class HarvestManUrl(object):
         # Recursion depth
         self.rdepth = 0
         self.dirpath = []
-        self.rpath = []
         self.filename = 'index.html'
         self.validfilename = 'index.html'
         # Set urlflag to False
@@ -376,9 +375,13 @@ class HarvestManUrl(object):
             # Only reduce if the URL itself does not start with
             # .. - if it does our rpath algorithm takes
             # care of it.
-            print 'Relpaths=>',relpaths
-            if idx > 0:
-                relpaths = self.reduce_url(relpaths)
+
+            # Mod: This is commented out now, since it looks
+            # like there is no harm in allowing to reduce, even
+            # if the path starts with '..'
+            #if idx > 0:
+            
+            relpaths = self.reduce_url(relpaths)
 
             # Build relative path by checking for "." and ".." strings
             self.rindex = 0
@@ -436,10 +439,6 @@ class HarvestManUrl(object):
                 
         # Now compute local directory/file paths
 
-        # For cgi paths, add a url separator at the end 
-        #if self.cgi:
-        #    paths = "".join((paths, URLSEP))
-
         self.compute_dirpaths(paths)
         if not self.protocol.startswith('file:'):
             self.compute_domain_and_port()
@@ -451,20 +450,27 @@ class HarvestManUrl(object):
                 self.set_directory_url()
 
         # print self.dirpath, self.domain
+
         
     def reduce_url(self, paths):
         """ Remove nonsense .. and . chars from URL paths """
 
-        print 'Paths=>',paths
-        if paths[0]=='?':
-            # Don't reduce if URL has ? in the beginning
-            return paths
-        
         for x in range(len(paths)):
             path = paths[x]
             try:
                 nextpath = paths[x+1]
-                if nextpath == '..':
+                if nextpath in (DOT, DOTDOT):
+                    # Check if a ? occurs anywhere earlier in path.
+                    # If a ? occurs in the path, don't reduce
+                    # any paths coming after it.
+                    try:
+                        qindex = paths.index('?')
+                        if qindex < x+1:
+                            continue
+                    except ValueError:
+                        pass
+                    
+                if nextpath == DOTDOT:
                     paths.pop(x+1)
                     # Do not allow to remove the domain for
                     # stupid URLs like 'http://www.foo.com/../bar' or
@@ -478,7 +484,7 @@ class HarvestManUrl(object):
                     if self.isrel or x>0:
                         paths.remove(path)
                     return self.reduce_url(paths)
-                elif nextpath=='.':
+                elif nextpath==DOT:
                     paths.pop(x+1)
                     return self.reduce_url(paths)                    
             except IndexError:
@@ -528,7 +534,6 @@ class HarvestManUrl(object):
             # Otherwise, the url is a plain domain
             # path like www.python.org .
             self.compute_file_and_dir_paths()
-            print 'Dirpath1=>',self.dirpath
             # print 'Rpath=>',self.rpath
             
             # Interprets relative path
@@ -536,47 +541,49 @@ class HarvestManUrl(object):
             self.rpath.reverse()
             # print 'Base url dirpath=>',self.baseurl.dirpath
             # print 'Rindex=>',self.rindex
+
+            # This simple logic is fine for most paths except
+            # when a base URL has a "?" as part of its dirpath.
+            # Example: http://razor.occams.info/code/repo/?/govtrack/sec .
+            # In that case, any pieces of the base URL after the
+            # ? is to be omitted.
+            if '?' in self.baseurl.dirpath:
+                # Trim base url to the part before ?
+                qindex = self.baseurl.dirpath.index('?')
+                self.baseurl.dirpath = self.baseurl.dirpath[:qindex]
             
             if len(self.rpath) == 0 :
-                print '1'
                 if not self.rindex:
-                    # This simple logic is fine for most paths except
-                    # when a base URL has a "?" as part of its dirpath.
-                    # Example: http://razor.occams.info/code/repo/?/govtrack/sec .
-                    # In that case, any pieces of the base URL after the
-                    # ? is to be omitted.
-                    if '?' in self.baseurl.dirpath:
-                        # Trim base url to the part before ?
-                        qindex = self.baseurl.dirpath.index('?')
-                        self.baseurl.dirpath = self.baseurl.dirpath[:qindex]
-                    
                     self.dirpath = self.baseurl.dirpath + self.dirpath
             else:
                 pathstack = self.baseurl.dirpath[0:]
-                
+
                 for ritem in self.rpath:
                     if ritem == DOT:
                         pathstack = self.baseurl.dirpath[0:]
                     elif ritem == DOTDOT:
                         if len(pathstack) !=0:
-                            pathstack.pop()
+                                pathstack.pop()
             
                 self.dirpath  = pathstack + self.dirpath 
 
             # print 'Dirpath2=>',self.dirpath
+
+            #if self.noreduce:
+            #    return
             
             # Support for NONSENSE relative paths such as
             # g/../foo and g/./foo 
             # consider base = http:\\bar.com\bar1
             # then g/../foo => http:\\bar.com\bar1\..\foo => http:\\bar.com\foo
             # g/./foo  is utter nonsense and we feel free to ignore that.
-            index = 0
-            for item in self.dirpath:
-                if item in (DOT, DOTDOT):
-                    self.dirpath.remove(item)
-                if item == DOTDOT:
-                    self.dirpath.remove(self.dirpath[index - 1])
-                index += 1
+            #index = 0
+            #for item in self.dirpath:
+            #    if item in (DOT, DOTDOT):
+            #        self.dirpath.remove(item)
+            #    if item == DOTDOT:
+            #        self.dirpath.remove(self.dirpath[index - 1])
+            #    index += 1
         else:
             if len(self.dirpath) > 1:
                 self.compute_file_and_dir_paths()
