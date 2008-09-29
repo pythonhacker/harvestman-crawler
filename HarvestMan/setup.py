@@ -70,24 +70,16 @@ def site_packages_dir():
     
     for p in sys.path:
         if p.endswith('site-packages') or p.endswith('site-packages/'):
+            # On 64 bit this returns <prefix>/lib64, but distutils copies to
+            # <prefix>/lib, so we also do the same thing here.
+            paths = p.split(os.sep)
+            for x in range(len(paths)):
+                if paths[x] == 'lib64':
+                    paths[x] = 'lib'
+            p = os.sep.join(paths)
+            
             return p
     
-def make_data_files():
-    data_files = []
-    # Get the install directory
-    sitedir = site_packages_dir()
-    data_list = []
-    
-    # Create list for doc directory first.
-    # harvestman doc dir
-    if os.path.isdir("doc"):
-        hdir = os.path.join(sitedir, "HarvestMan", "doc")
-        for f in os.listdir("doc"):
-            data_list.append("".join(("doc/",f)))
-        data_files.append((hdir, data_list))
-
-    return data_files
-
 def locate_executable(name):
 
     path = os.environ.get('PATH')
@@ -187,7 +179,7 @@ def create_shortcut(app):
 
     print 'Creating application link for %s...' % app
     
-    sitedir = os.path.join(os.path.dirname(os.__file__), 'site-packages')
+    sitedir = site_packages_dir()
     prefix = sys.prefix
     exe_prefix = os.path.join(prefix, 'bin')
     
