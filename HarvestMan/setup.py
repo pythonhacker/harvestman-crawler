@@ -67,18 +67,22 @@ if not hasattr(tarfile.TarFile, 'extractall'):
     setattr(tarfile.ExtractError, 'ExtractError', ExtractError)
     
 def site_packages_dir():
+
+    import site
     
-    for p in sys.path:
-        if p.endswith('site-packages') or p.endswith('site-packages/'):
-            # On 64 bit this returns <prefix>/lib64, but distutils copies to
-            # <prefix>/lib, so we also do the same thing here.
-            paths = p.split(os.sep)
-            for x in range(len(paths)):
-                if paths[x] == 'lib64':
-                    paths[x] = 'lib'
-            p = os.sep.join(paths)
+    modpath = site.os.__file__
+    moddir = os.path.dirname(modpath)
+    sitedir = os.path.join(moddir, 'site-packages')
+    
+    # On 64 bit this returns <prefix>/lib64, but distutils copies to
+    # <prefix>/lib, so we also do the same thing here.
+    paths = sitedir.split(os.sep)
+    for x in range(len(paths)):
+        if paths[x] == 'lib64':
+            paths[x] = 'lib'
+    sitedir = os.sep.join(paths)
             
-            return p
+    return sitedir
     
 def locate_executable(name):
 
@@ -180,6 +184,7 @@ def create_shortcut(app):
     print 'Creating application link for %s...' % app
     
     sitedir = site_packages_dir()
+    print 'Sitedir=>',sitedir
     prefix = sys.prefix
     exe_prefix = os.path.join(prefix, 'bin')
     

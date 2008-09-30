@@ -83,10 +83,6 @@ class TestHarvestManUrl(unittest.TestCase):
            HarvestManUrl('../gotrack2/../sec/?/../?/./sec/coderef15.c', baseurl=h2)
            ]
 
-    # Third test set - For relative URLs and stupid URLs containing
-    # .. and . as part of path.
-    l3 = [
-    
     def test_filename(self):
         d = os.path.abspath(os.curdir)
         

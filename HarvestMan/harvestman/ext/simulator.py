@@ -27,7 +27,7 @@ def save_url(self, urlobj):
     # be the same.
 
     url = urlobj.get_full_url()
-    self.connect(url, urlobj, True, self._cfg.retryfailed)
+    self.connect(urlobj, True, self._cfg.retryfailed)
 
     return 6
 
