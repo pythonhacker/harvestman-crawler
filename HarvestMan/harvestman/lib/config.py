@@ -710,7 +710,8 @@ class HarvestManStateObject(dict, Singleton):
         option_val = self.xml_map.get(option, None)
         
         if option_val:
-            try:
+            #try:
+            if 1:
                 if type(option_val) is tuple:
                     self.assign_option(option_val, value)
                 elif type(option_val) is list:
@@ -721,13 +722,13 @@ class HarvestManStateObject(dict, Singleton):
                         if type(item) is tuple:
                             # Set it
                             self.assign_option(item, value)
-            except Exception, e:
-                print 'Error assigning option \"',option,'\"'
-                # If this is a ValueError, mostly the wrong argument was passed
-                if e.__class__==ValueError:
-                    print '(Perhaps you invoked the wrong argument ?)'
-                print 'Pass option -h for command line usage.'
-                hexit(1)
+            #except Exception, e:
+            #    print 'Error assigning option \"',option,'\"'
+            #    # If this is a ValueError, mostly the wrong argument was passed
+            #    if e.__class__==ValueError:
+            #        print '(Perhaps you invoked the wrong argument ?)'
+            #    print 'Pass option -h for command line usage.'
+            #    hexit(1)
         else:
             return CONFIG_OPTION_NOT_DEFINED
 
@@ -865,7 +866,7 @@ class HarvestManStateObject(dict, Singleton):
                     self.projects[-1] = recent
                     recent = {}
                     new_entry = True
-            
+
         if key in ('url','basedir','project'):
             recent[key] = val
         elif key=='verbosity':
@@ -873,7 +874,7 @@ class HarvestManStateObject(dict, Singleton):
                 recent['verbosity'] = logger.getLogLevel(prjdict[u'level'])
                 # print 'Verbosity=>',recent['verbosity']
             except KeyError:
-                recent['verbosity'] = logger.getLogLevel(prjdict[u'level'])
+                recent['verbosity'] = logger.getLogLevel(val)
 
         # If all items are present, put 'done' to True
         if len(recent)==4:

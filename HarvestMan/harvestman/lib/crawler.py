@@ -620,7 +620,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
             self._fetchtime = time.time()
             self.stateobj.set(self, FETCHER_DOWNLOADING)
             data = objects.datamgr.download_url(self, self.url)
-            
+                
         # Add webpage links in datamgr, if we managed to
         # download the url
         url_obj = self.url
