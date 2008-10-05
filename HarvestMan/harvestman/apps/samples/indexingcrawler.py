@@ -13,8 +13,9 @@ Copyright (C) 2008 Anand B Pillai
 import __init__
 import sys, os
 import PyLucene
-from apps.harvestmanimp import HarvestMan
-from lib.common.common import *
+
+from harvestman.apps.spider import HarvestMan
+from harvestman.lib.common.common import *
 from types import StringTypes
 
 # You can write pretty crazy custom crawlers by combining

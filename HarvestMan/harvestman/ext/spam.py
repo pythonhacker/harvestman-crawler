@@ -13,8 +13,8 @@ Copyright (C) 2007 Anand B Pillai
 __version__ = '2.0 b1'
 __author__ = 'Anand B Pillai'
 
-from lib import hooks
-from lib.common.common import *
+from harvestman.lib import hooks
+from harvestman.lib.common.common import *
 
 def func(self):
     print 'Before running projects...'

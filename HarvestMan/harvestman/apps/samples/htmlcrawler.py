@@ -12,7 +12,7 @@ Copyright (C) 2008 Anand B Pillai
 
 import sys
 import __init__
-from apps.harvestmanimp import HarvestMan
+from harvestman.apps.spider import HarvestMan
 
 class HtmlCrawler(HarvestMan):
     """ A crawler which fetches only HTML (webpage) pages """

@@ -17,7 +17,7 @@ test_base.setUp()
 class TestHarvestManUrl(unittest.TestCase):
     """ Unit test class for HarvestManUrl class """
 
-    from lib.urlparser import HarvestManUrl
+    from harvestman.lib.urlparser import HarvestManUrl
 
     # Basic test set
     l = [ HarvestManUrl('http://www.yahoo.com/photos/my photo.gif'),

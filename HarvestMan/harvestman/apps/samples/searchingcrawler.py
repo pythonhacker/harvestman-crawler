@@ -13,7 +13,7 @@ Copyright (C) 2008 Anand B Pillai
 import sys
 import re
 import __init__
-from apps.harvestmanimp import HarvestMan
+from harvestman.apps.spider import HarvestMan
 
 class SearchingCrawler(HarvestMan):
     """ A crawler which fetches pages by searching for specific data

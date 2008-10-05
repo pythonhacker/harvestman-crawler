@@ -16,8 +16,7 @@ def setUpPaths():
 
     f = globals()['__file__']
     parentdir = os.path.dirname(os.path.dirname(f))
-    # Add modules in prev directory
-    sys.path.append(parentdir)
+    sys.path.append(os.path.dirname(parentdir))
 
 def setUp():
     """ Set up """
@@ -27,17 +26,17 @@ def setUp():
     
     setUpPaths()
 
-    from lib.common.common import SetAlias
+    from harvestman.lib.common.common import SetAlias
     
-    from lib import config
+    from harvestman.lib import config
     SetAlias(config.HarvestManStateObject())
 
-    from lib import datamgr
-    from lib import rules
-    from lib import connector
-    from lib import urlqueue
-    from lib import logger
-    from lib import event
+    from harvestman.lib import datamgr
+    from harvestman.lib import rules
+    from harvestman.lib import connector
+    from harvestman.lib import urlqueue
+    from harvestman.lib import logger
+    from harvestman.lib import event
 
     log=logger.HarvestManLogger()
     log.make_logger()
@@ -68,7 +67,7 @@ def setUp():
     flag = True
     
 def clean_up():
-    from lib.common.common import objects
+    from harvestman.lib.common.common import objects
     objects.datamgr.clean_up()
 
 def run_test(testklass, result):

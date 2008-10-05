@@ -18,8 +18,8 @@ import PyLucene
 import sys, os
 import time
 
-from lib import hooks
-from lib.common.common import *
+from harvestman.lib import hooks
+from harvestman.lib.common.common import *
 
 class PorterStemmerAnalyzer(object):
 

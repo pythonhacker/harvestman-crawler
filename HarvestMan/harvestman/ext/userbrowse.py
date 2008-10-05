@@ -15,8 +15,8 @@ Copyright (C) 2007 Anand B Pillai
 __version__ = '2.0 b1'
 __author__ = 'Anand B Pillai'
 
-from lib import hooks
-from lib.common.common import *
+from harvestman.lib import hooks
+from harvestman.lib.common.common import *
 
 # User browsing plugin approximates how a webpage
 # presents itself to a user. This means a few things

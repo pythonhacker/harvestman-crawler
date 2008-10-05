@@ -11,7 +11,8 @@ Created by Anand B Pillai <abpillai at gmail dot com>
 Copyright (C) 2008 Anand B Pillai
 """
 import __init__
-from apps.harvestmanimp import HarvestMan
+from harvestman.apps.spider import HarvestMan
+
 import sys
 import blogger
 import getpass

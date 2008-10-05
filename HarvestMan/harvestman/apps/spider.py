@@ -87,21 +87,20 @@ import copy
 import signal
 import locale
 
-from event import HarvestManEvent
+from harvestman.lib.event import HarvestManEvent
+from harvestman.lib.common.common import *
+from harvestman.lib.common.macros import *
+from harvestman.lib import urlqueue
+from harvestman.lib import connector
+from harvestman.lib import rules
+from harvestman.lib import datamgr
+from harvestman.lib import utils
+from harvestman.lib import urlparser
+from harvestman.lib.db import HarvestManDbManager
+from harvestman.lib.methodwrapper import MethodWrapperMetaClass
+
+# Current folder - okay
 from appbase import HarvestManAppBase
-
-from lib.common.common import *
-from lib.common.macros import *
-
-from lib import urlqueue
-from lib import connector
-from lib import rules
-from lib import datamgr
-from lib import utils
-from lib import urlparser
-from lib.db import HarvestManDbManager
-
-from lib.methodwrapper import MethodWrapperMetaClass
 
 # Defining callback points
 __callbacks__ = { 'run_saved_state_callback':'HarvestMan:run_saved_state',

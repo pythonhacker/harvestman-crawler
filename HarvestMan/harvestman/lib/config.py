@@ -69,6 +69,7 @@ import options
 import urlparser
 import logger
 
+# Current dir - okay
 from common.optionparser import *
 from common.macros import *
 from common.common import hexit, test_sgmlop, logconsole, objects

@@ -179,19 +179,18 @@ def install_package_from_source(name, url, try_easy_install=True):
 
     return -1
 
-def create_shortcut(app):
+def create_shortcut(module, app):
 
     print 'Creating application link for %s...' % app
     
     sitedir = site_packages_dir()
-    print 'Sitedir=>',sitedir
     prefix = sys.prefix
     exe_prefix = os.path.join(prefix, 'bin')
     
     app_path = os.path.join(exe_prefix, app)
     try:
         envp = "env" # os.path.join(exe_prefix, 'env')
-        modpath = os.path.join(sitedir, 'harvestman', 'apps', app + '.py')
+        modpath = os.path.join(sitedir, 'harvestman', 'apps', module + '.py')
         string = '#!/bin/sh\n%s python %s $*' % (envp, modpath)
         open(app_path, 'w').write(string)
         # Make it executable...
@@ -452,8 +451,8 @@ def main():
     if os.name == 'posix':
         # Create short-cuts
         print 'Creating application links...'
-        create_shortcut("harvestman")
-        create_shortcut("hget")
+        create_shortcut("spider", "harvestman")
+        create_shortcut("hget", "hget")
 
         
 if __name__ == "__main__":

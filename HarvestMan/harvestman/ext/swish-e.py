@@ -23,10 +23,10 @@ __author__ = 'Anand B Pillai'
 
 import sys, os
 import time
-
-from lib import hooks
-from lib.common.common import *
 from types import StringTypes
+
+from harvestman.lib import hooks
+from harvestman.lib.common.common import *
 
 urllist = []
 

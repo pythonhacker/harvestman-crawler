@@ -7,7 +7,7 @@
       
       <project ignore="0">
 
-        <url>http://www.python.org/doc/current/tut/tut.html</url>
+        <url>http://docs.python.org/tutorial/index.html</url>
         <name>pytut</name>
         <verbosity level="extrainfo"/>
       </project>
@@ -36,7 +36,7 @@
       </project>
 
 
-      <project ignore="1">
+      <project ignore="0">
 
         <url>http://swish-e.org/docs</url>
         <name>swish-docs</name>

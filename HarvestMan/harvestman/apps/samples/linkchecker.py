@@ -14,8 +14,8 @@ Copyright (C) 2008 Anand B Pillai
 import __init__
 import sys
 
-from apps.harvestmanimp import HarvestMan
-from lib.common.common import objects, logconsole
+from harvestman.apps.spider import HarvestMan
+from harvestman.lib.common.common import objects, logconsole
 
 class LinkChecker(HarvestMan):
     """ A crawler which checks a website/directory for broken links """

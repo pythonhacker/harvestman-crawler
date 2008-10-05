@@ -85,15 +85,13 @@ import weakref
 import document
 import mirrors
 import urlparser
-from methodwrapper import MethodWrapperMetaClass
+from httplib import BadStatusLine
 
+from methodwrapper import MethodWrapperMetaClass
 from common.common import *
 from common.macros import *
 
 from common.spincursor import InfiniteSpinCursor
-
-
-from httplib import BadStatusLine
 from common import keepalive
 
 # Defining pluggable functions

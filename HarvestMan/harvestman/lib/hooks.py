@@ -23,6 +23,7 @@ __version__ = '2.0 b1'
 __author__ = 'Anand B Pillai'
 
 import sys, os
+import imp
 import __init__
 
 from common.common import *
@@ -49,8 +50,8 @@ class HarvestManHooks:
 
         dirname = os.path.dirname(os.path.dirname(os.path.abspath(__init__.__file__)))
         # Append app path
-        appath = os.path.join(dirname, 'apps')
-        sys.path.append(appath)
+        libpath = os.path.join(dirname, 'lib')
+        sys.path.append(libpath)
         
         for module in cls.supported_modules:
             # Get __plugins__ attribute from the module
@@ -62,11 +63,6 @@ class HarvestManHooks:
     @classmethod
     def add_all_callbacks(cls):
 
-        dirname = os.path.dirname(os.path.dirname(os.path.abspath(__init__.__file__)))
-        # Append app path
-        appath = os.path.join(dirname, 'apps')
-        sys.path.append(appath)
-        
         for module in cls.supported_modules:
             # Get __plugins__ attribute from the module
             M = __import__(module)

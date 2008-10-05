@@ -15,10 +15,10 @@ import sys, os
 import __init__
 import atexit
 
-from lib import config
-from lib import logger
+from harvestman.lib import config
+from harvestman.lib import logger
 
-from lib.common.common import *
+from harvestman.lib.common.common import *
 
 class HarvestManAppBase(object):
     """ Base application class for applications using the HarvestMan framework """
@@ -42,8 +42,10 @@ class HarvestManAppBase(object):
     def process_plugins(self):
         """ Loads any plugin modules specified in configuration and process them """
 
-        from lib import hooks
-        
+        import harvestman.lib
+        sys.path.append(harvestman.lib.__path__)
+        from harvestman.lib import hooks
+
         plugin_dir = os.path.abspath(os.path.join(os.path.dirname(__init__.__file__), '..', 'ext'))
         # print plugin_dir
 
@@ -70,7 +72,6 @@ class HarvestManAppBase(object):
                     logconsole('Error is:',str(e))
                     logconsole('Invalid plugin: %s !' % plugin)
                     hexit(0)
-
 
     def get_options(self):
         """ Reads program options from command line or configuration files """

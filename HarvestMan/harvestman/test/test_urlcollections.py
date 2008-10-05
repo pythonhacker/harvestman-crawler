@@ -10,9 +10,9 @@ import test_base
 import unittest
 
 test_base.setUp()
-from lib.urltypes import *
-from lib.urlcollections import *
-from lib.urlparser import *
+from harvestman.lib.urltypes import *
+from harvestman.lib.urlcollections import *
+from harvestman.lib.urlparser import *
 
 class TestHarvestManUrlCollections(unittest.TestCase):
     """ Unit test class for all classes in urltypes module """

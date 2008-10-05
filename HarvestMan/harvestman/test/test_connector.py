@@ -13,10 +13,11 @@ import time
 import random
 
 test_base.setUp()
-from lib.connector import HarvestManUrlConnector
-from lib.urlparser import HarvestManUrl    
-from lib.common.macros import *
-from lib.common.common import objects
+
+from harvestman.lib.connector import HarvestManUrlConnector
+from harvestman.lib.urlparser import HarvestManUrl    
+from harvestman.lib.common.macros import *
+from harvestman.lib.common.common import objects
 
 urls = ['http://www.google.com','http://www.yahoo.com','http://www.python.org', 'ftp.gnu.org']
 

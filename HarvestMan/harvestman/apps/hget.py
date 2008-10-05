@@ -45,20 +45,20 @@ import sys, os
 import re
 import shutil
 
+from harvestman.lib import connector
+from harvestman.lib import urlparser
+from harvestman.lib import config
+from harvestman.lib import logger
+from harvestman.lib import datamgr
+from harvestman.lib import urlthread
+from harvestman.lib import mirrors
+from harvestman.lib.methodwrapper import MethodWrapperMetaClass
 
-from lib import connector
-from lib import urlparser
-from lib import config
-from lib import logger
-from lib import datamgr
-from lib import urlthread
-from lib import mirrors
-from lib.methodwrapper import MethodWrapperMetaClass
+from harvestman.lib.common.common import *
+from harvestman.lib.common.macros import *
 
-from lib.common.common import *
-from lib.common.macros import *
-
-from harvestman import HarvestMan
+# Current dir - okay
+from spider import HarvestMan
 
 VERSION='0.1'
 MATURITY='beta 1'

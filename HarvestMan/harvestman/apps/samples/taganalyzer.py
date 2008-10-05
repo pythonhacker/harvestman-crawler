@@ -14,8 +14,8 @@ Copyright (C) 2008 Anand B Pillai
 import sys
 import __init__
 
-from apps.harvestmanimp import HarvestMan
-from lib.common.common import CaselessDict
+from harvestman.apps.spider import HarvestMan
+from harvestman.lib.common.common import CaselessDict
 
 class TagAnalyzingCrawler(HarvestMan):
     """ A crawler which can perform custom tag analysis """

@@ -11,7 +11,7 @@ import unittest
 import sys, os
 
 test_base.setUp()
-from lib import logger
+from harvestman.lib import logger
 
 filename1='harvestman-test1.log'
 filename2='harvestman-test1.log'

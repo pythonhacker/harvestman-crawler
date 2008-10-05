@@ -12,10 +12,10 @@ import sys, os
 import time
 
 test_base.setUp()
-from lib.pageparser import HarvestManSimpleParser, HarvestManSGMLOpParser, HarvestManCSSParser
-from lib.urlparser import HarvestManUrl    
-from lib.common.macros import *
-from lib.urltypes import *
+from harvestman.lib.pageparser import HarvestManSimpleParser, HarvestManSGMLOpParser, HarvestManCSSParser
+from harvestman.lib.urlparser import HarvestManUrl    
+from harvestman.lib.common.macros import *
+from harvestman.lib.urltypes import *
 from sgmllib import SGMLParseError
 
 curdir = os.path.abspath(os.path.dirname(test_base.__file__))
