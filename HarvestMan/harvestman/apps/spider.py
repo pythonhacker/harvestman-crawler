@@ -677,14 +677,19 @@ def callgraph_filter(call_stack, module_name, class_name, func_name, full_name):
         return True
     else:
         return False
-    
-if __name__=="__main__":
+
+def main():
+    """ Main routine """
+
     spider = HarvestMan()
     spider.initialize()
     #import pycallgraph
     #pycallgraph.start_trace(filter_func=callgraph_filter)
     spider.main()
     #pycallgraph.make_dot_graph('harvestman.png')
+    
+if __name__=="__main__":
+    main()
     
 
                

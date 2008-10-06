@@ -1,0 +1,293 @@
+Paste setup:
+HarvestMan
+|-- HarvestMan.egg-info
+|   |-- PKG-INFO
+|   |-- SOURCES.txt
+|   |-- dependency_links.txt
+|   |-- entry_points.txt
+|   |-- not-zip-safe
+|   |-- paster_plugins.txt
+|   |-- requires.txt
+|   `-- top_level.txt
+|-- LICENSE.txt
+|-- MANIFEST
+|-- PKG-INFO
+|-- README.paste
+|-- Readme.hget
+|-- Readme.txt
+|-- deps
+|   `-- sgmlop-1.1.1-20040207.zip
+|-- doc
+|   |-- Changelog.txt
+|   |-- Changes.txt
+|   |-- Datastructures.txt
+|   |-- PLAN.txt
+|   |-- STATUS.txt
+|   |-- events.HOWTO
+|   |-- harvestman-epydoc.sh
+|   |-- plugins.HOWTO
+|   `-- state_machine.txt
+|-- harvestman
+|   |-- __init__.py
+|   |-- apps
+|   |   |-- __init__.py
+|   |   |-- appbase.py
+|   |   |-- config-nltk-book.xml
+|   |   |-- config-sample.xml
+|   |   |-- config-template.xml
+|   |   |-- config.xml
+|   |   |-- hget.py
+|   |   |-- pytut
+|   |   |   |-- docs.python.org
+|   |   |   |   |-- _static
+|   |   |   |   |   |-- default.css
+|   |   |   |   |   |-- py.png
+|   |   |   |   |   `-- pygments.css
+|   |   |   |   `-- tutorial
+|   |   |   |       |-- appetite.html
+|   |   |   |       |-- classes.html
+|   |   |   |       |-- controlflow.html
+|   |   |   |       |-- datastructures.html
+|   |   |   |       |-- errors.html
+|   |   |   |       |-- floatingpoint.html
+|   |   |   |       |-- index.html
+|   |   |   |       |-- inputoutput.html
+|   |   |   |       |-- interactive.html
+|   |   |   |       |-- interpreter.html
+|   |   |   |       |-- introduction.html
+|   |   |   |       |-- modules.html
+|   |   |   |       |-- stdlib.html
+|   |   |   |       |-- stdlib2.html
+|   |   |   |       `-- whatnow.html
+|   |   |   |-- hm-cache
+|   |   |   |   |-- Readme.txt
+|   |   |   |   |-- cache
+|   |   |   |   `-- urlheaders.db
+|   |   |   |-- pytut.log
+|   |   |   `-- urltree.html
+|   |   |-- pytut.hpf
+|   |   |-- samples
+|   |   |   |-- Readme.txt
+|   |   |   |-- __init__.py
+|   |   |   |-- blogger.py
+|   |   |   |-- htmlcrawler.py
+|   |   |   |-- imagecrawler.py
+|   |   |   |-- indexingcrawler.py
+|   |   |   |-- linkchecker.py
+|   |   |   |-- postingcrawler.py
+|   |   |   |-- searchingcrawler.py
+|   |   |   `-- taganalyzer.py
+|   |   |-- spider.py
+|   |   |-- swish-docs
+|   |   |   |-- hm-cache
+|   |   |   |   |-- Readme.txt
+|   |   |   |   |-- cache
+|   |   |   |   `-- urlheaders.db
+|   |   |   |-- swish-docs.log
+|   |   |   |-- swish-e.org
+|   |   |   |   |-- docs
+|   |   |   |   |   |-- api.html
+|   |   |   |   |   |-- changes.html
+|   |   |   |   |   |-- filter.html
+|   |   |   |   |   |-- index.html
+|   |   |   |   |   |-- index.html.1
+|   |   |   |   |   |-- install.html
+|   |   |   |   |   |-- readme.html
+|   |   |   |   |   |-- search.cgi.html
+|   |   |   |   |   |-- spider.html
+|   |   |   |   |   |-- swish-3.0.html
+|   |   |   |   |   |-- swish-bugs.html
+|   |   |   |   |   |-- swish-config.html
+|   |   |   |   |   |-- swish-faq.html
+|   |   |   |   |   |-- swish-library.html
+|   |   |   |   |   |-- swish-run.html
+|   |   |   |   |   |-- swish-search.html
+|   |   |   |   |   `-- swish.cgi.html
+|   |   |   |   `-- swish.css
+|   |   |   `-- urltree.html
+|   |   `-- swish-docs.hpf
+|   |-- bugs
+|   |   |-- Readme.txt
+|   |   |-- s_municipaux.htm
+|   |   |-- soskut_hu_index.html
+|   |   |-- test_808.py
+|   |   `-- test_812.py
+|   |-- dev
+|   |   |-- __init__.py
+|   |   |-- filethread.py
+|   |   |-- sqlite_test.py
+|   |   |-- sqlite_test2.py
+|   |   |-- sqlite_test3.py
+|   |   `-- sqlite_test4.py
+|   |-- ext
+|   |   |-- __init__.py
+|   |   |-- datafilter.py
+|   |   |-- lucene
+|   |   |   |-- IndexFiles.py
+|   |   |   `-- SearchFiles.py
+|   |   |-- lucene.py
+|   |   |-- simulator.py
+|   |   |-- spam.py
+|   |   |-- swish-e
+|   |   |   |-- HOWTO.swish-e
+|   |   |   |-- README.txt
+|   |   |   `-- swish-config.conf
+|   |   |-- swish-e.py
+|   |   `-- userbrowse.py
+|   |-- lib
+|   |   |-- __init__.py
+|   |   |-- common
+|   |   |   |-- __init__.py
+|   |   |   |-- bst.py
+|   |   |   |-- bst_orig.py
+|   |   |   |-- common.py
+|   |   |   |-- dictcache.py
+|   |   |   |-- feedparser.py
+|   |   |   |-- keepalive.py
+|   |   |   |-- lrucache.py
+|   |   |   |-- macros.py
+|   |   |   |-- netinfo.py
+|   |   |   |-- optionparser.py
+|   |   |   |-- progress.py
+|   |   |   |-- properties.py
+|   |   |   |-- pydblite.py
+|   |   |   |-- singleton.py
+|   |   |   `-- spincursor.py
+|   |   |-- config.py
+|   |   |-- configparser.py
+|   |   |-- connector.py
+|   |   |-- crawler.py
+|   |   |-- datamgr.py
+|   |   |-- db.py
+|   |   |-- document.py
+|   |   |-- event.py
+|   |   |-- filters.py
+|   |   |-- gui.py
+|   |   |-- hooks.py
+|   |   |-- js
+|   |   |   |-- Parser.rb
+|   |   |   |-- README.txt
+|   |   |   |-- __init__.py
+|   |   |   |-- jsdom.py
+|   |   |   |-- jsparse.py
+|   |   |   |-- jsparser.py
+|   |   |   |-- narcissus.py
+|   |   |   |-- parse.rb
+|   |   |   |-- samples
+|   |   |   |   |-- Banco de Portugal.html
+|   |   |   |   |-- addbookmark.js
+|   |   |   |   |-- addrowstotable.js
+|   |   |   |   |-- arrayintersect.js
+|   |   |   |   |-- bportugal.html
+|   |   |   |   |-- bportugal_dom.html
+|   |   |   |   |-- breadcrumbs.js
+|   |   |   |   |-- colsameheight.js
+|   |   |   |   |-- combinations.js
+|   |   |   |   |-- dblkeypress.js
+|   |   |   |   |-- derive.js
+|   |   |   |   |-- domcss.js
+|   |   |   |   |-- domrollover.js
+|   |   |   |   |-- dzone.js
+|   |   |   |   |-- extlinks.js
+|   |   |   |   |-- fail
+|   |   |   |   |   |-- aim.js
+|   |   |   |   |   |-- ajaxobject.js
+|   |   |   |   |   |-- arrayfind.js
+|   |   |   |   |   |-- bportugal.js
+|   |   |   |   |   |-- cookiehandler.js
+|   |   |   |   |   |-- createcss.js
+|   |   |   |   |   |-- draghandler.js
+|   |   |   |   |   |-- editor_main.js
+|   |   |   |   |   |-- functreebuilder.js
+|   |   |   |   |   |-- int2word.js
+|   |   |   |   |   |-- openwindow.js
+|   |   |   |   |   |-- openwindow2.js
+|   |   |   |   |   |-- pluralize.js
+|   |   |   |   |   |-- selform.js
+|   |   |   |   |   |-- twitter.js
+|   |   |   |   |   |-- typedtooltip.js
+|   |   |   |   |   |-- vardump.js
+|   |   |   |   |   `-- xpath.js
+|   |   |   |   |-- formatnums.js
+|   |   |   |   |-- formatpaper.js
+|   |   |   |   |-- getelems.js
+|   |   |   |   |-- gmxpath.js
+|   |   |   |   |-- hotkey.js
+|   |   |   |   |-- htmlselect.js
+|   |   |   |   |-- imgsrc.js
+|   |   |   |   |-- incljsbydom.js
+|   |   |   |   |-- incljsbyxhr.js
+|   |   |   |   |-- jsnodom.html
+|   |   |   |   |-- jsredirect.html
+|   |   |   |   |-- jsredirect4.html
+|   |   |   |   |-- jsredirect5.html
+|   |   |   |   |-- jstest.html
+|   |   |   |   |-- jstest2.html
+|   |   |   |   |-- jstest2_dom.html
+|   |   |   |   |-- jstest3.html
+|   |   |   |   |-- jstest3_dom.html
+|   |   |   |   |-- jstest_dom.html
+|   |   |   |   |-- mouseposn.js
+|   |   |   |   |-- mysqltimestamp.js
+|   |   |   |   |-- progress.js
+|   |   |   |   |-- redirect.js
+|   |   |   |   |-- selectlist.js
+|   |   |   |   |-- showformvalues.js
+|   |   |   |   |-- strcmp.js
+|   |   |   |   |-- submitags.js
+|   |   |   |   |-- switchexample.js
+|   |   |   |   |-- syncajax.js
+|   |   |   |   |-- test.html
+|   |   |   |   |-- test.js
+|   |   |   |   |-- trim.js
+|   |   |   |   |-- trim2.js
+|   |   |   |   `-- xpathstring.js
+|   |   |   `-- testnarcissus.py
+|   |   |-- logger.py
+|   |   |-- logger_old.py
+|   |   |-- methodwrapper.py
+|   |   |-- mirrors.py
+|   |   |-- options.py
+|   |   |-- pageparser.py
+|   |   |-- robotparser.py
+|   |   |-- rules.py
+|   |   |-- test.html
+|   |   |-- test_urlparser.py
+|   |   |-- urlcollections.py
+|   |   |-- urlparser.py
+|   |   |-- urlproc.py
+|   |   |-- urlqueue.py
+|   |   |-- urlthread.py
+|   |   |-- urltypes.py
+|   |   `-- utils.py
+|   |-- test
+|   |   |-- __init__.py
+|   |   |-- fail.html
+|   |   |-- pass.css
+|   |   |-- pass.html
+|   |   |-- run_tests.py
+|   |   |-- test_base.py
+|   |   |-- test_connector.py
+|   |   |-- test_logger.py
+|   |   |-- test_pageparser.py
+|   |   |-- test_urlcollections.py
+|   |   |-- test_urlparser.py
+|   |   `-- test_urltypes.py
+|   |-- tools
+|   |   |-- __init__.py
+|   |   |-- genconfig.py
+|   |   `-- printstats.py
+|   `-- ui
+|       `-- templates
+|           |-- content
+|           |   |-- example-print.css
+|           |   |-- example.css
+|           |   `-- tabber.js
+|           `-- form.html
+|-- pydocgen.sh
+|-- schema
+|   `-- HarvestMan.xsd
+|-- setup.py
+|-- setup_paste.py
+`-- tarhm.py
+

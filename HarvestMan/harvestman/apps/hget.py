@@ -311,7 +311,11 @@ class Hget(HarvestMan):
         self.hget()
         return 0
 
+def main():
+    """ Main routine """
+
+    Hget().main()
+    
 if __name__ == "__main__":
-    h = Hget()
-    h.main()
+    main()
     

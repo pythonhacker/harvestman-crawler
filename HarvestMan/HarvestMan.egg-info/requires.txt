@@ -1,0 +1,3 @@
+sgmlop >= 1.1.1
+pyparsing >= 1.4.8
+web.py >= 0.23
