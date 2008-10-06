@@ -1,11 +1,13 @@
 LICENSE.txt
 MANIFEST
 PKG-INFO
+README.paste
 Readme.hget
 Readme.txt
 pydocgen.sh
+setup.cfg
 setup.py
-setup_virtualenv.py
+setup_paste.py
 tarhm.py
 HarvestMan.egg-info/PKG-INFO
 HarvestMan.egg-info/SOURCES.txt
