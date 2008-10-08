@@ -3,8 +3,6 @@
 
 Created: Anand B Pillai <abpillai@gmail.com> Apr 17 2007
 
-Mod   Anand         Sep 29 08      Fix for issue #24.
-
 Copyright (C) 2007, Anand B Pillai.
 """
 
@@ -18,8 +16,7 @@ class TestHarvestManUrl(unittest.TestCase):
     """ Unit test class for HarvestManUrl class """
 
     from harvestman.lib.urlparser import HarvestManUrl
-
-    # Basic test set
+    
     l = [ HarvestManUrl('http://www.yahoo.com/photos/my photo.gif'),
           HarvestManUrl('http://www.rediff.com:80/r/r/tn2/2003/jun/25usfed.htm'),
           HarvestManUrl('http://cwc2003.rediffblogs.com'),
@@ -60,29 +57,8 @@ class TestHarvestManUrl(unittest.TestCase):
           HarvestManUrl('file:/home/anand/style.css'),
           HarvestManUrl('file:/home/anand/'),
           HarvestManUrl('file://home/anand/'),
-          HarvestManUrl('/bar/',baseurl='http://www.foo.com')]
-
-    # Second test set - For base URL containing a '?' in path
-    h = HarvestManUrl('http://razor.occams.info/code/repo/?/govtrack/sec/')
-    h2 = HarvestManUrl('http://razor.occams.info/code/repo/?/govtrack/sec/?')
+          HarvestManUrl('/bar/',baseurl='http://www.foo.com')]          
     
-    l2 = [ HarvestManUrl('coderef.c', baseurl=h),
-           HarvestManUrl('?/govtrack/sec/coderef2.c',baseurl=h),
-           HarvestManUrl("?/sec/coderef3.c", baseurl=h),
-           HarvestManUrl("?sec/coderef4.c", baseurl=h),
-           HarvestManUrl("sec/coderef5.c", baseurl=h),
-           HarvestManUrl("/sec/coderef6.c", baseurl=h),
-           HarvestManUrl("govtrack/sec/coderef7.c", baseurl=h),
-           HarvestManUrl("govtrack/?/sec/../coderef8.c", baseurl=h),
-           HarvestManUrl("http://www.foo.com/govtrack/./sec/?/id/../coderef9.c"),
-           HarvestManUrl("../repo2/govtrack/./sec/?/id/../coderef10.c", baseurl=h),
-           HarvestManUrl('../coderef11.c', baseurl=h),
-           HarvestManUrl('govtrack/?/sec/coderef12.c', baseurl=h),
-           HarvestManUrl('../govtrack2/?/../sec/.././sec/coderef13.c', baseurl=h),
-           HarvestManUrl('?/govtrack/?/sec/coderef14.c', baseurl=h2),
-           HarvestManUrl('../gotrack2/../sec/?/../?/./sec/coderef15.c', baseurl=h2)
-           ]
-
     def test_filename(self):
         d = os.path.abspath(os.curdir)
         
@@ -192,25 +168,6 @@ class TestHarvestManUrl(unittest.TestCase):
         assert(self.l[27].get_full_url()=='file://home/anand')
         assert(self.l[28].get_full_url()=='http://www.foo.com/bar/')        
 
-        # Second set
-        assert(self.l2[0].get_full_url()=='http://razor.occams.info/code/repo/coderef.c')
-        assert(self.l2[1].get_full_url()=='http://razor.occams.info/code/repo/?/govtrack/sec/coderef2.c')
-        assert(self.l2[2].get_full_url()=='http://razor.occams.info/code/repo/?/sec/coderef3.c')
-        assert(self.l2[3].get_full_url()=='http://razor.occams.info/code/repo/?sec/coderef4.c')
-        assert(self.l2[4].get_full_url()=='http://razor.occams.info/code/repo/sec/coderef5.c')
-        assert(self.l2[5].get_full_url()=='http://razor.occams.info/sec/coderef6.c')
-        assert(self.l2[6].get_full_url()=='http://razor.occams.info/code/repo/govtrack/sec/coderef7.c')
-        assert(self.l2[7].get_full_url()=='http://razor.occams.info/code/repo/govtrack/?/sec/../coderef8.c')
-        assert(self.l2[8].get_full_url()=='http://www.foo.com/govtrack/sec/?/id/../coderef9.c')
-        assert(self.l2[9].get_full_url()=='http://razor.occams.info/code/repo2/govtrack/sec/?/id/../coderef10.c')
-        assert(self.l2[10].get_full_url()=='http://razor.occams.info/code/coderef11.c')
-        assert(self.l2[11].get_full_url()=='http://razor.occams.info/code/repo/govtrack/?/sec/coderef12.c')
-        assert(self.l2[12].get_full_url()=='http://razor.occams.info/code/govtrack2/?/../sec/.././sec/coderef13.c')
-        assert(self.l2[13].get_full_url()=='http://razor.occams.info/code/repo/?/govtrack/?/sec/coderef14.c')
-        assert(self.l2[14].get_full_url()=='http://razor.occams.info/code/sec/?/../?/./sec/coderef15.c')                
-        
-        
-               
     def test_is_file_like(self):
 
         assert(self.l[0].filelike==True)

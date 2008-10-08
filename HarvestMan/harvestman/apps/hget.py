@@ -318,4 +318,8 @@ def main():
     
 if __name__ == "__main__":
     main()
+
+def run():
+    h = Hget()
+    h.main()
     

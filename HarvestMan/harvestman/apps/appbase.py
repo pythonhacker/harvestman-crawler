@@ -43,7 +43,8 @@ class HarvestManAppBase(object):
         """ Loads any plugin modules specified in configuration and process them """
 
         import harvestman.lib
-        sys.path.append(harvestman.lib.__path__)
+        #Why are we adding a path here? It should know where hooks is
+        #sys.path.append(harvestman.lib.__path__)
         from harvestman.lib import hooks
 
         plugin_dir = os.path.abspath(os.path.join(os.path.dirname(__init__.__file__), '..', 'ext'))

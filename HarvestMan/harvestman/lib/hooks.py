@@ -26,7 +26,7 @@ import sys, os
 import imp
 import __init__
 
-from common.common import *
+from harvestman.lib.common.common import *
 from methodwrapper import MethodWrapperMetaClass, set_wrapper_method
 
 class HarvestManHooksException(Exception):
@@ -36,7 +36,7 @@ class HarvestManHooksException(Exception):
 class HarvestManHooks:
     """ Class which manages pluggable hooks and callbacks for HarvestMan """
     
-    supported_modules = ('crawler','harvestman', 'urlqueue', 'datamgr', 'connector', 'rules')
+    supported_modules = ('harvestman.lib.crawler','harvestman_run', 'harvestman.lib.urlqueue', 'harvestman.lib.datamgr', 'harvestman.lib.connector', 'harvestman.lib.rules')
     module_plugins = {}
     module_callbacks = {}
     run_plugins = {}

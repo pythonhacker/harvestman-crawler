@@ -53,10 +53,10 @@ import exceptions
 import sha
 from sgmllib import SGMLParseError
 
-from common.common import *
-from common.macros import *
-from urltypes import *
-from urlcollections import *
+from harvestman.lib.common.common import *
+from harvestman.lib.common.macros import *
+from harvestman.lib.urltypes import *
+from harvestman.lib.urlcollections import *
 
 from methodwrapper import MethodWrapperMetaClass
 from js.jsparser import JSParser, JSParserException

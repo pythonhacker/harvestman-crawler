@@ -30,10 +30,10 @@ import bisect
 from Queue import *
 import time
 
-import crawler
-import urlparser
-import document
-import datamgr
+from harvestman.lib import crawler
+from harvestman.lib import urlparser
+from harvestman.lib import document
+from harvestman.lib import datamgr
 
 import threading
 import sys, os

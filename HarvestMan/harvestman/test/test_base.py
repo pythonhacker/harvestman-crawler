@@ -3,6 +3,9 @@
 
 Created: Anand B Pillai <abpillai@gmail.com> Apr 17 2007
 
+20080925- Lukasz - Setup path should no longer be required with the paste tools.
+
+
 Copyright (C) 2007, Anand B Pillai.
 """
 
@@ -16,7 +19,8 @@ def setUpPaths():
 
     f = globals()['__file__']
     parentdir = os.path.dirname(os.path.dirname(f))
-    sys.path.append(os.path.dirname(parentdir))
+    # Add modules in prev directory
+    sys.path.append(parentdir)
 
 def setUp():
     """ Set up """
@@ -24,7 +28,8 @@ def setUp():
     global flag
     if flag: return
     
-    setUpPaths()
+    #With new paster we don't need to setup path. it should know where harvestman is.
+    #setUpPaths()
 
     from harvestman.lib.common.common import SetAlias
     
