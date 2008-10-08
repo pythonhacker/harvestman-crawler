@@ -1382,7 +1382,10 @@ class HarvestManStateObject(dict, Singleton):
         if os.name == 'posix':
             #We might have to use find_packager() if somebody will use py2app py2exe
             #print os.path.split(os.path.dirname(__main__.__file__))[0]
-            basefolder = os.path.dirname(sys.prefix)
+            if os.path.isdir(sys.prefix):
+                basefolder = os.path.abspath(sys.prefix)
+            else:
+                basefolder = os.path.dirname(sys.prefix)
             #print os.path.join(basefolder, 'etc', 'harvestman', 'config.xml')
             self.etcdir=os.path.join(basefolder, 'etc', 'harvestman')
             #self.etcdir = '/etc/harvestman'            

@@ -7,7 +7,7 @@ __init__.py
 pydocgen.sh
 setup.cfg
 setup.py
-setup.py.org
+setup.py.original
 setup_paste.py
 tarhm.py
 HarvestMan.egg-info/PKG-INFO
@@ -35,7 +35,6 @@ harvestman/apps/config-nltk-book.xml
 harvestman/apps/config-sample.xml
 harvestman/apps/config-template.xml
 harvestman/apps/config.xml
-harvestman/apps/harvestman_run.py
 harvestman/apps/hget.py
 harvestman/apps/spider.py
 harvestman/apps/samples/Readme.txt
