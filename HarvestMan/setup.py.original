@@ -67,27 +67,23 @@ if not hasattr(tarfile.TarFile, 'extractall'):
     setattr(tarfile.ExtractError, 'ExtractError', ExtractError)
     
 def site_packages_dir():
-    
-    for p in sys.path:
-        if p.endswith('site-packages') or p.endswith('site-packages/'):
-            return p
-    
-def make_data_files():
-    data_files = []
-    # Get the install directory
-    sitedir = site_packages_dir()
-    data_list = []
-    
-    # Create list for doc directory first.
-    # harvestman doc dir
-    if os.path.isdir("doc"):
-        hdir = os.path.join(sitedir, "HarvestMan", "doc")
-        for f in os.listdir("doc"):
-            data_list.append("".join(("doc/",f)))
-        data_files.append((hdir, data_list))
 
-    return data_files
-
+    import site
+    
+    modpath = site.os.__file__
+    moddir = os.path.dirname(modpath)
+    sitedir = os.path.join(moddir, 'site-packages')
+    
+    # On 64 bit this returns <prefix>/lib64, but distutils copies to
+    # <prefix>/lib, so we also do the same thing here.
+    paths = sitedir.split(os.sep)
+    for x in range(len(paths)):
+        if paths[x] == 'lib64':
+            paths[x] = 'lib'
+    sitedir = os.sep.join(paths)
+            
+    return sitedir
+    
 def locate_executable(name):
 
     path = os.environ.get('PATH')
@@ -183,18 +179,18 @@ def install_package_from_source(name, url, try_easy_install=True):
 
     return -1
 
-def create_shortcut(app):
+def create_shortcut(module, app):
 
     print 'Creating application link for %s...' % app
     
-    sitedir = os.path.join(os.path.dirname(os.__file__), 'site-packages')
+    sitedir = site_packages_dir()
     prefix = sys.prefix
     exe_prefix = os.path.join(prefix, 'bin')
     
     app_path = os.path.join(exe_prefix, app)
     try:
         envp = "env" # os.path.join(exe_prefix, 'env')
-        modpath = os.path.join(sitedir, 'harvestman', 'apps', app + '.py')
+        modpath = os.path.join(sitedir, 'harvestman', 'apps', module + '.py')
         string = '#!/bin/sh\n%s python %s $*' % (envp, modpath)
         open(app_path, 'w').write(string)
         # Make it executable...
@@ -336,7 +332,7 @@ def main():
         use_sgmlop = True
             
     if use_sgmlop:
-        print 'sgmlop will be used as the default HTML parser...'
+        print 'sgmlop found, will be used as fall-back HTML parser...'
 
     try:
         print 'Checking for pyparsing...'
@@ -393,7 +389,7 @@ def main():
                       'harvestman.test',
                       'harvestman.dev',
                       'harvestman.tools'],
-          package_data = {'harvestman' : ['ui/templates/*.html', 'ui/templates/content/*']}
+          package_data = {'harvestman' : ['ui/templates/*.html', 'ui/templates/content/*','test/*.html','test/*.css']}
           )
 
     from harvestman.lib.config import HarvestManStateObject
@@ -455,8 +451,8 @@ def main():
     if os.name == 'posix':
         # Create short-cuts
         print 'Creating application links...'
-        create_shortcut("harvestman")
-        create_shortcut("hget")
+        create_shortcut("spider", "harvestman")
+        create_shortcut("hget", "hget")
 
         
 if __name__ == "__main__":
