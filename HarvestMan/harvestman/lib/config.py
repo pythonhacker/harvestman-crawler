@@ -1393,6 +1393,10 @@ class HarvestManStateObject(dict, Singleton):
     def set_system_params(self):
         """ Sets config file/directory parameters for all users """
 
+        # Need to reload sys to get setdefaultencoding attribute
+        reload(sys)
+        sys.setdefaultencoding('utf8')
+        
         # Directory for system wide configuration files...
         if os.name == 'posix':
             #We might have to use find_packager() if somebody will use py2app py2exe
