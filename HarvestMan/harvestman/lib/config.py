@@ -1379,9 +1379,11 @@ class HarvestManStateObject(dict, Singleton):
 
             if entry.get('verbosity',-1)==-1:
                 if self.verbosity_override:
-                    entry['verbosity'] = self.verbosity
+                    entry['verbosity'] = logger.getLogLevel(self.verbosity)
                 else:
-                    entry['verbosity'] = self.verbosity_default
+                    entry['verbosity'] = logger.getLogLevel(self.verbosity_default)
+            else:
+                entry['verbosity'] = logger.getLogLevel(entry['verbosity'])
 
         self.plugins = list(set(self.plugins))
             

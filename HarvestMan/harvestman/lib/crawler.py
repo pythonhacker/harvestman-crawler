@@ -681,8 +681,12 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
                     # Raise "afterjsparse" event
                     objects.eventmgr.raise_event('afterjsparse', self.url, document, links=links)
 
+            parsecount = 0
+            
             while True:
                 try:
+                    parsecount += 1
+
                     self.wp.reset()
                     self.wp.set_url(self.url)
                     self.wp.feed(data)
@@ -706,6 +710,10 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
                             document.set_url(url_obj)
 
                     self.wp.close()
+                    # Related to issue #25 - Print a message if parsing went through
+                    # in a 2nd attempt
+                    if parsecount>1:
+                        extrainfo('Parsed web page successfully in second attempt',self.url) 
                     break
                 except (SGMLParseError, IOError), e:
                     error('SGML parse error:',str(e))
@@ -717,10 +725,11 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
                         self.make_html_parser(choice=1)
                     else:
                         break
-                except ValueError, e:
-                    break
-                except Exception, e:
-                    break
+                #except ValueError, e:
+                #    break
+                #except Exception, e:
+                #    
+                #    break
 
             if self._configobj.robots:
                 # Check for NOFOLLOW tag
