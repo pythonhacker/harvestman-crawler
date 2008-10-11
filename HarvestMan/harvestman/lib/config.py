@@ -1082,6 +1082,10 @@ class HarvestManStateObject(dict, Singleton):
                     # Start the web UI
                     import gui
                     gui.run()
+                elif option == 'genconfig' and value:
+                    #Generate configuration File
+                    from harvestman.tools import genconfig
+                    genconfig.main()
                 elif option == 'selftest' and value:
                     # Run the unit-tests as self-tests
                     print 'Running self-test...'

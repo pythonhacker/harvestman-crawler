@@ -42,6 +42,7 @@ hman_options=\
   ('plugins', 'short=g','long=plugins',"help=Load the set of plugins PLUGINS (Specified as plugin1+plugin2+...)",'meta=PLUGINS'),
   ('option','short=o','long=option','meta=<name=value>','help=Pass a configuration param using <name=value> syntax'),
   ('ui','long=ui','help=Start HarvestMan in Web UI mode','meta=UI','type=bool','default=False'),
+  ('genconfig','long=genconfig','help=Create Configuration File Using GenConfig Web UI mode','meta=genconfig','type=bool','default=False'),
   ('selftest','long=selftest','help=Run a self test','meta=SELFTEST','type=bool','default=False')]
 
 hget_options=\
