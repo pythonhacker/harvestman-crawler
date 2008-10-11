@@ -451,7 +451,7 @@ class BST(object):
         # Remvoe the directory
         if self.bdir and os.path.isdir(self.bdir):
             try:
-                # print 'Removing folder',self.bdir
+                print 'Removing folder',self.bdir
                 shutil.rmtree(self.bdir)
             except Exception, e:
                 print e
@@ -469,6 +469,7 @@ class BST(object):
         self.bdir = '.bidx' + str(hash(self))        
         if not os.path.isdir(self.bdir):
             try:
+                print 'Making folder',self.bdir
                 os.makedirs(self.bdir)
             except Exception, e:
                 raise

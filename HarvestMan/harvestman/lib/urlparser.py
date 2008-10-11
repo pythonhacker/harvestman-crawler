@@ -48,14 +48,13 @@ import urlproc
 import md5
 import itertools
 import random
-import document
 
 from types import StringTypes
 
-from common.common import *
-from common.netinfo import *
-from urltypes import *
-
+from harvestman.lib import document
+from harvestman.lib.common.common import *
+from harvestman.lib.common.netinfo import *
+from harvestman.lib.urltypes import *
 
 # URL queueing status macros
 

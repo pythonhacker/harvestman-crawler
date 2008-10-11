@@ -76,8 +76,8 @@ __author__ = 'Anand B Pillai'
 import __init__
 import os, sys
 
-from shutil import copy
-import cPickle, pickle
+import cPickle
+import pickle
 import time
 import threading
 import shutil
@@ -86,6 +86,8 @@ import re
 import copy
 import signal
 import locale
+
+from shutil import copy
 
 from harvestman.lib.event import HarvestManEvent
 from harvestman.lib.common.common import *

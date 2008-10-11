@@ -34,17 +34,16 @@ import re
 import os
 import time
 import copy
-from event import HarvestManEvent
 
-import robotparser
-from methodwrapper import MethodWrapperMetaClass
+from harvestman.lib.event import HarvestManEvent
+from harvestman.lib import robotparser
+from harvestman.lib.methodwrapper import MethodWrapperMetaClass
+from harvestman.lib import urlparser
+from harvestman.lib import filters
 
-from common.common import *
-from common.netinfo import tlds
-from common.lrucache import LRU
-
-import urlparser
-import filters
+from harvestman.lib.common.common import *
+from harvestman.lib.common.netinfo import tlds
+from harvestman.lib.common.lrucache import LRU
 
 # Defining pluggable functions
 __plugins__ = {'violates_rules_plugin': 'HarvestManRulesChecker:violates_rules'}

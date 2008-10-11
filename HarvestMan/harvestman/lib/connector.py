@@ -81,18 +81,19 @@ import random
 import base64
 import sha
 import weakref
+import getpass
+import cookielib
 
-import document
-import mirrors
-import urlparser
 from httplib import BadStatusLine
 
-from methodwrapper import MethodWrapperMetaClass
-from common.common import *
-from common.macros import *
+from harvestman.lib import document
+from harvestman.lib import urlparser
+from harvestman.lib.methodwrapper import MethodWrapperMetaClass
 
-from common.spincursor import InfiniteSpinCursor
-from common import keepalive
+from harvestman.lib.common.common import *
+from harvestman.lib.common.macros import *
+from harvestman.lib.common.spincursor import InfiniteSpinCursor
+from harvestman.lib.common import keepalive
 
 # Defining pluggable functions
 __plugins__ = { 'save_url_plugin': 'HarvestManUrlConnector:save_url' }
@@ -532,12 +533,11 @@ class HarvestManNetworkConnector(object):
     def configure(self):
         """ Wrapper method for configuring network and protocols """
 
-        import common.keepalive
         log = objects.logger
 
-        common.keepalive.DEBUG = common.keepalive.FakeLogger()
-        common.keepalive.DEBUG.info = log.debug
-        common.keepalive.DEBUG.error = log.debug
+        keepalive.DEBUG = keepalive.FakeLogger()
+        keepalive.DEBUG.info = log.debug
+        keepalive.DEBUG.error = log.debug
         
         self.configure_network()
         self.configure_protocols()
@@ -581,19 +581,12 @@ class HarvestManNetworkConnector(object):
         # TODO: Verify gopher protocol
         authhandler = urllib2.HTTPBasicAuthHandler()
         cookiehandler = None
-        
-        # set timeout for sockets to thread timeout, for Python 2.3
-        # and greater. 
-        minor_version = sys.version_info[1]
-        if minor_version>=3:
-            socket.setdefaulttimeout( self._cfg.socktimeout )
-            # For Python 2.4, use cookielib support
-            # To fix HTTP cookie errors such as those
-            # produced by http://www.eidsvoll.kommune.no/
-            if minor_version>=4:
-                import cookielib
-                cj = cookielib.MozillaCookieJar()
-                cookiehandler = urllib2.HTTPCookieProcessor(cj)
+
+        # No need for version checks since HarvestMan install
+        # works for Python >=2.4 anyway
+        socket.setdefaulttimeout( self._cfg.socktimeout )
+        cj = cookielib.MozillaCookieJar()
+        cookiehandler = urllib2.HTTPCookieProcessor(cj)
 
         # HTTP/HTTPS handlers
         if self._cfg.appname == 'Hget':
@@ -827,7 +820,6 @@ class HarvestManUrlConnector(object):
                 user=bin_crypt(raw_input('Enter username for your proxy server: '))
                 # Ask for password only if a valid user is given.
                 if user:
-                    import getpass
                     passwd=bin_crypt(getpass.getpass('Enter password for your proxy server: '))
                     # Set it on myself and re-configure
                     self.network_conn.set_authinfo(user,passwd)
@@ -1578,9 +1570,13 @@ class HarvestManUrlConnector(object):
 
                 # Check constraint on file size
                 if (not byterange) and (not trynormal) and (not self._cfg.nomultipart) and self._cfg.forcesplit:
+                    # I hate local imports, but there is no other way to do this
+                    # except moving the function to this module.
+                    from harvestman.lib import mirrors
+                    
                     if self._cfg.forcesplit and not self._cfg.mirrorsearch:
                         logconsole('Forcing download into %d parts' % self._cfg.numparts)
-                        
+
                     if (not self._headers.get('accept-ranges', '').lower() == 'bytes') and \
                            (not self._cfg.mirrorfile) and \
                            not mirrors.is_multipart_download_supported(urlobj) and \

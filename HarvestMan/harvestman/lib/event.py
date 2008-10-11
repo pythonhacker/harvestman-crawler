@@ -7,11 +7,8 @@ Created Anand B Pillai <abpillai at gmail dot com> Feb 28 2008
 Copyright (C) 2008 Anand B Pillai.
 """
 
-#from common.common import *
-#from common.singleton import Singleton
-
-from common.common import *
-from common.singleton import Singleton
+from harvestman.lib.common.common import *
+from harvestman.lib.common.singleton import Singleton
 
 class Event(object):
     """ Event class for HarvestMan """

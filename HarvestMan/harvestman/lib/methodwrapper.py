@@ -24,7 +24,7 @@ __version__ = '2.0 b1'
 __author__ = 'Anand B Pillai'
 
 from new import function
-from common.common import objects
+from harvestman.lib.common.common import objects
 
 class MethodWrapperBaseMetaClass(type):
     """ A base meta class for method wrappers """

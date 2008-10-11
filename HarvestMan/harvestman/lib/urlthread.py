@@ -32,13 +32,14 @@ import threading
 import copy
 import random
 import sha
-import urlparser
-
-from mirrors import HarvestManMirrorManager
 from collections import deque
 from Queue import Queue, Full, Empty
-from common.common import *
-from common.macros import *
+
+from harvestman.lib import urlparser
+
+from harvestman.lib.mirrors import HarvestManMirrorManager
+from harvestman.lib.common.common import *
+from harvestman.lib.common.macros import *
 
 class HarvestManUrlThreadInterrupt(Exception):
     """ Interrupt raised to kill a harvestManUrlThread class's object """

@@ -27,24 +27,23 @@ __version__ = '2.0 b1'
 __author__ = 'Anand B Pillai'
 
 import bisect
-from Queue import *
 import time
+import threading
+import sys, os
+import copy
+
+from collections import deque
+from Queue import *
 
 from harvestman.lib import crawler
 from harvestman.lib import urlparser
 from harvestman.lib import document
 from harvestman.lib import datamgr
+from harvestman.lib import urltypes
 
-import threading
-import sys, os
-import copy
-import urltypes
-from collections import deque
-
-from common.common import *
-from common.macros import *
-
-from common.singleton import Singleton
+from harvestman.lib.common.common import *
+from harvestman.lib.common.macros import *
+from harvestman.lib.common.singleton import Singleton
 
 class HarvestManCrawlerState(Singleton):
     """ State machine for signalling crawler end condition

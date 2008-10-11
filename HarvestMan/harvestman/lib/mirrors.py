@@ -19,14 +19,15 @@ Copyright (C) 2007 Anand B Pillai.
 """
 
 import random
-import urlparser
-import connector
 import re
-
-from common.common import *
-from common.macros import *
-from common.singleton import Singleton
 from pyparsing import *
+
+from harvestman.lib import urlparser
+from harvestman.lib import connector
+
+from harvestman.lib.common.common import *
+from harvestman.lib.common.macros import *
+from harvestman.lib.common.singleton import Singleton
 
 def test_parse():
     print urls

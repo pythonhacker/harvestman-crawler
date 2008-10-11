@@ -29,11 +29,11 @@ import cPickle, pickle
 import zlib
 import shelve
 import glob
-
 from shutil import copy
-from common.common import *
-from common.macros import *
-from common.pydblite import Base
+
+from harvestman.lib.common.common import *
+from harvestman.lib.common.macros import *
+from harvestman.lib.common.pydblite import Base
 
 HARVESTMAN_XML_HEAD1="""<?xml version=\"1.0\" encoding=\"UTF-8\"?>"""
 HARVESTMAN_XML_HEAD2="""<!DOCTYPE HarvestManProject SYSTEM \"HarvestManProject.dtd\">"""

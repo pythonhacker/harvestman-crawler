@@ -27,7 +27,7 @@ __author__ = 'Anand B Pillai'
 
 import os
 import xml.parsers.expat
-from common.macros import *
+from harvestman.lib.common.macros import *
 
 class HarvestManConfigParser(object):
     """ Class whose function is used to parse the XML configuration

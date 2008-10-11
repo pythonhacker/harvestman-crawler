@@ -43,12 +43,12 @@
 __version__ = '2.0 b1'
 __author__ = 'Anand B Pillai'
 
-from sgmllib import SGMLParser
-from urltypes import *
-from common.common import *
-from common.macros import *
-
 import re
+from sgmllib import SGMLParser
+
+from harvestman.lib.urltypes import *
+from harvestman.lib.common.common import *
+from harvestman.lib.common.macros import *
 
 class ParseTag(object):
     """ Class representing a tag which is parsed by the HTML parser(s) """

@@ -58,12 +58,12 @@ from harvestman.lib.common.macros import *
 from harvestman.lib.urltypes import *
 from harvestman.lib.urlcollections import *
 
-from methodwrapper import MethodWrapperMetaClass
-from js.jsparser import JSParser, JSParserException
+from harvestman.lib.methodwrapper import MethodWrapperMetaClass
+from harvestman.lib.js.jsparser import JSParser, JSParserException
 
-import urlparser
-import pageparser
-import common.netinfo as netinfo
+from harvestman.lib import urlparser
+from harvestman.lib import pageparser
+from harvestman.lib.common import netinfo
 
 
 # Defining pluggable functions

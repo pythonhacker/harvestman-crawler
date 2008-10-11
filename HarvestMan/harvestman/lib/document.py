@@ -11,7 +11,7 @@ Copyright (C) 2008 Anand B Pillai.
 """
 
 import bz2
-from common.common import *
+from harvestman.lib.common.common import *
 
 class HarvestManDocument(object):
     """ Web document class """

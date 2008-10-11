@@ -64,17 +64,18 @@ Mail bug reports and suggestions to <abpillai at gmail dot com>."""
 
 import os, sys
 import re
-import configparser
-import options
-import urlparser
-import logger
 
-# Current dir - okay
-from common.optionparser import *
-from common.macros import *
-from common.common import hexit, test_sgmlop, logconsole, objects
-from common.singleton import Singleton
-from common.progress import TextProgress
+from harvestman.lib import configparser
+from harvestman.lib import options
+from harvestman.lib import urlparser
+from harvestman.lib import logger
+from harvestman.lib import utils
+
+from harvestman.lib.common.optionparser import *
+from harvestman.lib.common.macros import *
+from harvestman.lib.common.common import hexit, test_sgmlop, logconsole, objects
+from harvestman.lib.common.singleton import Singleton
+from harvestman.lib.common.progress import TextProgress
 
 CONFIG_XML_TEMPLATE="""\
 <?xml version="1.0" encoding="utf-8"?>
@@ -979,7 +980,6 @@ class HarvestManStateObject(dict, Singleton):
                 elif option=='projectfile':
                     if SUCCESS(self.check_value(option,value)):
                         self.set_option_xml('projectfile_value', self.process_value(value))
-                        import utils 
 
                         projector = utils.HarvestManProjectManager()
 
@@ -1080,17 +1080,21 @@ class HarvestManStateObject(dict, Singleton):
                             self[param]=val
                 elif option == 'ui' and value:
                     # Start the web UI
-                    import gui
+                    from harvestman.lib import gui
                     gui.run()
+                    
+                    sys.exit(0)
                 elif option == 'genconfig' and value:
                     #Generate configuration File
                     from harvestman.tools import genconfig
                     genconfig.main()
+                    
+                    sys.exit(0)
                 elif option == 'selftest' and value:
                     # Run the unit-tests as self-tests
                     print 'Running self-test...'
                     sys.path.append(os.path.join(module_path, 'test'))
-                    import run_tests
+                    from harvestman.test import run_tests
                     
                     result = run_tests.run_all_tests()
                     print result
@@ -1574,13 +1578,13 @@ class HarvestManStateObject(dict, Singleton):
 
 def set_aliases():
 
-    import datamgr
-    import rules
-    import connector
-    import urlqueue
-    import event
-    import logger
-    from common.common import SetAlias
+    from harvestman.lib import datamgr
+    from harvestman.lib import rules
+    from harvestman.lib import connector
+    from harvestman.lib import urlqueue
+    from harvestman.lib import event
+    from harvestman.lib import logger
+    from harvestman.lib.common.common import SetAlias
     
     SetAlias(HarvestManStateObject())
     SetAlias(logger.HarvestManLogger())

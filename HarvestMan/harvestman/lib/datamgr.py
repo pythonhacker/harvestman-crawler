@@ -51,20 +51,20 @@ import zlib
 
 import threading 
 # Utils
-import utils
-import urlparser
+from harvestman.lib import utils
+from harvestman.lib import urlparser
 
-from mirrors import HarvestManMirrorManager
-from db import HarvestManDbManager
+from harvestman.lib.mirrors import HarvestManMirrorManager
+from harvestman.lib.db import HarvestManDbManager
 
-from urlthread import HarvestManUrlThreadPool
-from connector import *
-from methodwrapper import MethodWrapperMetaClass
+from harvestman.lib.urlthread import HarvestManUrlThreadPool
+from harvestman.lib.connector import *
+from harvestman.lib.methodwrapper import MethodWrapperMetaClass
 
-from common.common import *
-from common.macros import *
-from common.bst import BST
-from common.pydblite import Base
+from harvestman.lib.common.common import *
+from harvestman.lib.common.macros import *
+from harvestman.lib.common.bst import BST
+from harvestman.lib.common.pydblite import Base
 
 
 # Defining pluggable functions
@@ -134,8 +134,11 @@ class HarvestManDataManager(object):
         self._urldb = BST()
         # Collections database, a BST with disk-caching        
         self.collections = BST()
-        self._urldb.set_auto(2)
-        self.collections.set_auto(2)
+        # For testing, don't set this otherwise we might
+        # be left with many orphaned .bidx... folders!
+        if not self._cfg.testing:
+            self._urldb.set_auto(2)
+            self.collections.set_auto(2)
 
         # Load any mirrors
         self.mirrormgr.load_mirrors(self._cfg.mirrorfile)

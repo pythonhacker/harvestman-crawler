@@ -36,8 +36,11 @@
 __version__ = '2.0 b1'
 __author__ = 'Anand B Pillai'
 
-import re,urlparse,urllib
-from connector import HarvestManUrlConnector
+import re
+import urlparse
+import urllib
+
+from harvestman.lib.connector import HarvestManUrlConnector
 
 __all__ = ["RobotFileParser"]
 

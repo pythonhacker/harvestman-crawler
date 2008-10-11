@@ -16,7 +16,7 @@ Copyright (C) 2008 Anand B Pillai.
 import os, sys
 import time
 
-from common.common import objects, extrainfo, logconsole
+from harvestman.lib.common.common import objects, extrainfo, logconsole
 
 def adapt_datetime(ts):
     return time.mktime(ts.timetuple())

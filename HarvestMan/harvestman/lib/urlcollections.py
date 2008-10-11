@@ -41,8 +41,8 @@ Copyright (C) 2007, Anand B Pillai.
 __version__ = '2.0 b1'
 __author__ = 'Anand B Pillai'
 
-import urltypes
-from urlparser import HarvestManUrl
+from harvestman.lib import urltypes
+from harvestman.lib.urlparser import HarvestManUrl
 
 class HarvestManUrlCollectionException(Exception):
     """ Exception class for collections """
