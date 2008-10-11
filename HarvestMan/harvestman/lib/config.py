@@ -308,6 +308,10 @@ class HarvestManStateObject(dict, Singleton):
         self.serverprioritydict = {}
         self.verbosity=logger.INFO
         self.verbosity_default=logger.INFO
+        # Override project verbosity - done
+        # if a global verbosity flag is defined
+        # say using the command line
+        self.verbosity_override = False
         # timeout for worker threads is a rather
         # large 5 minutes.
         self.timeout=300.00
@@ -1034,7 +1038,9 @@ class HarvestManStateObject(dict, Singleton):
                         if val>=self.connections:
                             self.connections = val + 1
                 elif option=='verbosity':
-                    if SUCCESS(self.check_value(option,value)): self.set_option_xml('verbosity_level', self.process_value(value))
+                    if SUCCESS(self.check_value(option,value)):
+                        self.verbosity = self.process_value(value)
+                        self.verbosity_override = True
                 elif option=='subdomain':
                     if value: self.set_option_xml('subdomain_value', 0)                    
                 #elif option=='savesessions':
@@ -1370,7 +1376,10 @@ class HarvestManStateObject(dict, Singleton):
                 entry['basedir'] = '.'
 
             if entry.get('verbosity',-1)==-1:
-                entry['verbosity'] = self.verbosity_default
+                if self.verbosity_override:
+                    entry['verbosity'] = self.verbosity
+                else:
+                    entry['verbosity'] = self.verbosity_default
 
         self.plugins = list(set(self.plugins))
             
@@ -1380,8 +1389,6 @@ class HarvestManStateObject(dict, Singleton):
             # Set verbosity to zero for all projects
             for entry in self.projects:
                 entry['verbosity'] = logger.DISABLE
-
-        # objects.logger.setLogSeverity(self.verbosity)
 
     def set_system_params(self):
         """ Sets config file/directory parameters for all users """

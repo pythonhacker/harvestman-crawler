@@ -17,6 +17,7 @@ __author__ = 'Anand B Pillai'
 
 from harvestman.lib import hooks
 from harvestman.lib.common.common import *
+from harvestman.lib.common.macros import CONNECTOR_DATA_MODE_INMEM
 
 def save_url(self, urlobj):
 
@@ -50,4 +51,7 @@ def apply_plugin():
     cfg.pagecache = 0
     # Turn off header dumping, since no files are saved
     cfg.urlheaders = 0
+    # For simulator, we need in-mem data mode
+    # since files are never saved!
+    cfg.datamode = CONNECTOR_DATA_MODE_INMEM
     logconsole('Simulation mode turned on. Crawl will be simulated and no files will be saved.')

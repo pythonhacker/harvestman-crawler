@@ -36,7 +36,12 @@ class HarvestManHooksException(Exception):
 class HarvestManHooks:
     """ Class which manages pluggable hooks and callbacks for HarvestMan """
     
-    supported_modules = ('harvestman.lib.crawler','harvestman_run', 'harvestman.lib.urlqueue', 'harvestman.lib.datamgr', 'harvestman.lib.connector', 'harvestman.lib.rules')
+    supported_modules = ('harvestman.lib.crawler',
+                         'harvestman.apps.spider',                         
+                         'harvestman.lib.urlqueue',
+                         'harvestman.lib.datamgr',
+                         'harvestman.lib.connector',
+                         'harvestman.lib.rules')
     module_plugins = {}
     module_callbacks = {}
     run_plugins = {}
@@ -55,9 +60,11 @@ class HarvestManHooks:
         
         for module in cls.supported_modules:
             # Get __plugins__ attribute from the module
-            M = __import__(module)
+            from_module = '.'.join(module.split('.')[:-1])
+            M = __import__(module,fromlist=[from_module])
             plugins = getattr(M, '__plugins__',{})
             for plugin in plugins.keys():
+                # print 'Adding plugin',module,plugin
                 cls.add_plugin(module, plugin)
 
     @classmethod
@@ -77,6 +84,8 @@ class HarvestManHooks:
 
         l = cls.module_plugins.get(module)
         if l is None:
+            # Reduce the module to its basic
+            module = module.split('.')[-1]
             cls.module_plugins[module] = [plugin]
         else:
             l.append(plugin)
@@ -87,6 +96,8 @@ class HarvestManHooks:
 
         l = cls.module_callbacks.get(module)
         if l is None:
+            # Reduce the module to its basic
+            module = module.split('.')[-1]            
             cls.module_callbacks[module] = [callback]
         else:
             l.append(callback)            

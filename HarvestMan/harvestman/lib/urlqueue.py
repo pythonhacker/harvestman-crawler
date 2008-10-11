@@ -200,7 +200,6 @@ class HarvestManCrawlerState(Singleton):
 
         self.cond.release()
 
-
     def all_are_waiting(self):
         """ This method returns whether the threads are all starved for
         data during regular crawl, which signals an end condition for the
