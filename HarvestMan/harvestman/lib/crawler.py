@@ -487,28 +487,25 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
     def _initialize(self):
         HarvestManBaseUrlCrawler._initialize(self)
         self._role = "fetcher"
-
+        self.make_html_parser()
+        
     def make_html_parser(self, choice=0):
 
-        wp = None
-        
         if choice==0:
-            wp = pageparser.HarvestManSimpleParser()
+            self.wp = pageparser.HarvestManSimpleParser()
         elif choice==1:
             try:
-                wp = pageparser.HarvestManSGMLOpParser()
+                self.wp = pageparser.HarvestManSGMLOpParser()
             except ImportError:
-                wp = pageparser.HarvestManSimpleParser()
+                self.wp = pageparser.HarvestManSimpleParser()
 
 
         # Enable/disable features
-        if wp != None:
+        if self.wp != None:
             for feat, val in self._configobj.htmlfeatures:
                 # int feat,'=>',val
-                if val: wp.enable_feature(feat)
-                else: wp.disable_feature(feat)
-
-        return wp
+                if val: self.wp.enable_feature(feat)
+                else: self.wp.disable_feature(feat)
         
     def get_fetch_timestamp(self):
         """ Return the time stamp before fetching """
@@ -677,24 +674,24 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
                         #        data = datatemp
                         #    # print data
                     except JSParserException, e:
-                        error("Javascript parsing error =>", e)            
+                        # No point printing this as error, since the parser is very baaaasic!
+                        # debug("Javascript parsing error =>", e)
+                        pass
 
                     # Raise "afterjsparse" event
                     objects.eventmgr.raise_event('afterjsparse', self.url, document, links=links)
 
-            wp = self.make_html_parser()
-
             while True:
                 try:
-                    wp.reset()
-                    wp.set_url(self.url)
-                    wp.feed(data)
+                    self.wp.reset()
+                    self.wp.set_url(self.url)
+                    self.wp.feed(data)
                     # Bug Fix: If the <base href="..."> tag was defined in the
                     # web page, relative urls must be constructed against
                     # the url provided in <base href="...">
 
-                    if wp.base_url_defined():
-                        url = wp.get_base_url()
+                    if self.wp.base_url_defined():
+                        url = self.wp.get_base_url()
                         if not self.url.is_equal(url):
                             debug("Base url defined, replacing",self.url)
                             # Construct a url object
@@ -708,16 +705,16 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
                             objects.datamgr.add_url(url_obj)
                             document.set_url(url_obj)
 
-                    wp.close()
+                    self.wp.close()
                     break
                 except (SGMLParseError, IOError), e:
                     error('SGML parse error:',str(e))
                     error('Error in parsing web-page %s' % self.url)
 
-                    if wp.typ==0:
+                    if self.wp.typ==0:
                         # Parse error occurred with Python parser
                         debug('Trying to reparse using the HarvestManSGMLOpParser...')
-                        wp = self.make_html_parser(choice=1)
+                        self.make_html_parser(choice=1)
                     else:
                         break
                 except ValueError, e:
@@ -727,19 +724,19 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
 
             if self._configobj.robots:
                 # Check for NOFOLLOW tag
-                if not wp.can_follow:
+                if not self.wp.can_follow:
                     extrainfo('URL %s defines META Robots NOFOLLOW flag, not following its children...' % self.url)
                     return data
 
-            links.extend(wp.links)
-            debug('LINKS=>',len(wp.links))
+            links.extend(self.wp.links)
+            debug('LINKS=>',len(self.wp.links))
             #for typ, link in links:
             #    print 'Link=>',link
                 
             # Let us update some stuff on the document...
-            document.keywords = wp.keywords[:]
-            document.description = wp.description
-            document.title = wp.title
+            document.keywords = self.wp.keywords[:]
+            document.description = self.wp.description
+            document.title = self.wp.title
             
             # Raise "afterparse" event...
             objects.eventmgr.raise_event('afterparse', self.url, document, links=links)
@@ -748,7 +745,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
             # So in order to filer images fully, we need to check the wp.links list also.
             # Sample site: http://www.sheppeyseacadets.co.uk/gallery_2.htm
             if self._configobj.images:
-                links += wp.images
+                links += self.wp.images
             else:
                 # Filter any links with image extensions out from links
                 links = [(type, link) for type, link in links if link[link.rfind('.'):].lower() not in \
@@ -757,8 +754,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
             #for typ, link in links:
             #    print 'Link=>',link
                 
-            wp.reset()
-            del wp
+            self.wp.reset()
             
             # Filter like that for video & audio
             if not self._configobj.movies:

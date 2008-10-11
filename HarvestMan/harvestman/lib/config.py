@@ -1039,8 +1039,10 @@ class HarvestManStateObject(dict, Singleton):
                             self.connections = val + 1
                 elif option=='verbosity':
                     if SUCCESS(self.check_value(option,value)):
-                        self.verbosity = self.process_value(value)
+                        self.verbosity = logger.getLogLevel(value)
                         self.verbosity_override = True
+                    else:
+                        print 'Check failed!'
                 elif option=='subdomain':
                     if value: self.set_option_xml('subdomain_value', 0)                    
                 #elif option=='savesessions':

@@ -36,7 +36,7 @@
       </project>
 
 
-      <project ignore="1">
+      <project ignore="0">
 
         <url>http://swish-e.org/docs</url>
         <name>swish-docs</name>
