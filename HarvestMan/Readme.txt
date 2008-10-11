@@ -38,10 +38,22 @@ Version
 WWW
 ---
 http://harvestmanontheweb.com
+http://harvestman-crawler.googlecode.com/
 
+Requirements
+------------
+
+HarvestMan depends upon:
+1.  python2.4 or higher. (python2.3 untested) (required)
+2. python-dev package (required for sgmlop)
+3. sgmlop,pyparsing,web.py which will get installed automatically as part of the installation. 
 
 Getting started 
 ---------------
+
+You need to get the sourcecode. You can either checkout the source code from our subversion repository or download the tar/zip file which has the source code. If you want to install from source code see our wiki page for the most current up to date installation instructions: http://code.google.com/p/harvestman-crawler/wiki/InstallHarvestMan
+
+If you get the tar archive you need to do the following:
 
 Unarchive the file to a directory of your choice. 
 
@@ -49,15 +61,14 @@ Unarchive the file to a directory of your choice.
 
 where <version> is the version number.
 
-Change to directory 'HarvestMan-<version>' and install
-the program.
+Go into the directory. 
 
-Installation steps are given below.
+cd HarvestMan-<version>
+
 
 How to Install
 --------------
-Make sure you are at the top-level HarvestMan
-directory. 
+Make sure you are at the top-level HarvestMan directory. 
 
 On POSIX systems (Unix, Linux)
 
@@ -74,28 +85,37 @@ The install script installs the HarvestMan framework to
 your system Python folder and creates shortcuts for the
 HarvestMan and Hget applications.
 
-HarvestMan depends upon sgmlop (a fast SGML/XML/(X)HTML parser
-written by Effbot) and pyparsing (a generic parsing module
-for Python written by Paul McGuire). sgmlop dependencies
-are included along with HarvestMan package. The setup.py
-automatically pulls in pyparsing package if it is not
-found in t he system.
-
 Running the program(s)
 ---------------------
         
-The program require a configuration file to run. This
+First thing to do is to test your application.
+
+harvestman --sefltest
+
+To run harvestman you need a configuration file. This
 is named 'config.xml' by default. To pass a different
 configuration file, use the command-line argument '-C'
 or '--configfile'.
 
-You can also locate sample config files
-in the 'apps' directory.
+harvestman -c config.xml
+
+To create your configuration file run
+
+harvestman --genconfig
+
+Your browser will open and you will be able to enter what sites you will want to crawl. Save that file as mycrawl.xml and start harvestman
+
+harvestman -c mycrawl.xml
+
+
+There is a sample config file incuded in the 'apps' directory if you just want to test it right away.
 
 To run HarvestMan application, just type "harvestman" in a command
 prompt.
 
 $ harvestman
+or
+$ harvestman -h
 
 If the program finds a configuration file in the current directory
 or in the users .harvestman folder, it will start. If it does not
