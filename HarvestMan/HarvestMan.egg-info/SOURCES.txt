@@ -48,6 +48,7 @@ harvestman/apps/samples/postingcrawler.py
 harvestman/apps/samples/searchingcrawler.py
 harvestman/apps/samples/taganalyzer.py
 harvestman/bugs/Readme.txt
+harvestman/bugs/config-issue21.xml
 harvestman/bugs/s_municipaux.htm
 harvestman/bugs/soskut_hu_index.html
 harvestman/bugs/test_808.py

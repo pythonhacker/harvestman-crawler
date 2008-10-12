@@ -104,6 +104,7 @@ CONFIG_XML_TEMPLATE="""\
         <maxextdirs value="%(maxextdirs)s"/>
         <maxfiles value="%(maxfiles)s"/>
         <maxfilesize value="%(maxfilesize)s"/>
+        <maxbandwidth value="%(maxbandwidth)s"/>
         <connections value="%(connections)s"/>
         <timelimit value="%(timelimit)s"/>
       </limits>
@@ -386,6 +387,9 @@ class HarvestManConfigGenerator(object):
             SizedTextbox("Maximum Connections Limit",10,
                          'Maximum number of simultaneously open HTTP connections',
                          value=5),
+            SizedTextbox("Maximum Bandwidth Limit(kb)",10,
+                         'Maximum number of bandwidth used for given HTTP connections',
+                         value=0),
             SizedTextbox("Crawl Time Limit",10,
                          'Stops crawl after the crawl duration reaches this limit',
                          value=-1),
@@ -528,6 +532,7 @@ class HarvestManConfigGenerator(object):
                        'maxfiles': form["Maximum Files Limit"].value,
                        'maxfilesize': form["Maximum File Size Limit"].value,
                        'connections': form["Maximum Connections Limit"].value,
+                       'maxbandwidth': str(form["Maximum Bandwidth Limit(kb)"].value) +'kb',
                        'timelimit': form["Crawl Time Limit"].value,
                        'robots': self.convert_val(form["Robots Rules"].value),
                        'urlpriority': form["URL Priority String"].value,
