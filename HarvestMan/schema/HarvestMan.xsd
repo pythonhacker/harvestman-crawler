@@ -150,6 +150,11 @@
             <xsd:attribute name="value" type="xsd:boolean" default="0" use="optional"/>
           </xsd:complexType>
         </xsd:element>
+        <xsd:element name="flash" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="value" type="xsd:boolean" default="0" use="optional"/>
+          </xsd:complexType>
+        </xsd:element>
         <xsd:element name="sounds" minOccurs="0">
           <xsd:complexType>
             <xsd:attribute name="value" type="xsd:boolean" default="0" use="optional"/>
@@ -286,16 +291,6 @@
   <!--- Defining the 'limits' element -->
   <xsd:complexType name="ControlLimitsType">
     <xsd:sequence>
-      <xsd:element name="maxextservers" minOccurs="0">
-        <xsd:complexType>
-          <xsd:attribute name="value" type="xsd:integer" default="0" use="optional"/>
-        </xsd:complexType>
-      </xsd:element>
-      <xsd:element name="maxextdirs" minOccurs="0">
-        <xsd:complexType>
-          <xsd:attribute name="value" type="xsd:integer" default="0" use="optional"/>
-        </xsd:complexType>
-      </xsd:element>
       <xsd:element name="maxfiles" minOccurs="0">
         <xsd:complexType>
           <xsd:attribute name="value" type="xsd:positiveInteger" default="5000" use="optional"/>
