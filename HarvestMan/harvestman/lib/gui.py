@@ -69,6 +69,7 @@ CONFIG_XML_TEMPLATE="""\
         <html value="%(html)s"/>
         <images value="%(images)s"/>
         <movies value="%(movies)s"/>
+        <flash value="%(flash)s"/>        
         <sounds value="%(sounds)s"/>
         <documents value="%(documents)s"/>        
         <javascript value="%(javascript)s"/>
@@ -354,6 +355,7 @@ class HarvestManConfigGenerator(object):
             MyDropbox("HTML", 'Save HTML pages ?', ["Yes","No"]),
             MyDropbox("Images",'Save images in pages ?',["Yes","No"]),
             MyDropbox("Video",'Save video URLs (movies) ?',["No","Yes"]),
+            MyDropbox("Flash",'Save Adobe Flash URLs ?',["No","Yes"]),
             MyDropbox("Audio",'Save audio URLs (sounds) ?',["No","Yes"]),
             MyDropbox("Documents",'Save Microsoft Office, Openoffice, PDF and Postscript files ?',
                       ["Yes","No"]),
@@ -500,6 +502,7 @@ class HarvestManConfigGenerator(object):
                        'html': self.convert_val(form['HTML'].value),
                        'images': self.convert_val(form['Images'].value),
                        'movies': self.convert_val(form['Video'].value),
+                       'flash': self.convert_val(form['Flash'].value),                       
                        'sounds': self.convert_val(form['Audio'].value),
                        'documents': self.convert_val(form['Documents'].value),
                        'javascript': self.convert_val(form['Javascript'].value),
