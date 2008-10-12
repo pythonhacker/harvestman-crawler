@@ -253,7 +253,7 @@ class HarvestManBaseUrlCrawler( threading.Thread ):
             self.stateobj.set(self, THREAD_STARTED)
             self.action()
         except Exception, e:
-        #    # print 'Exception',e,self
+            # print 'Exception',e,self
             self.exception = e
             self.stateobj.set(self, THREAD_DIED)                
 
@@ -738,7 +738,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
                     return data
 
             links.extend(self.wp.links)
-            debug('LINKS=>',len(self.wp.links))
+            # print 'LINKS=>',self.wp.links
             #for typ, link in links:
             #    print 'Link=>',link
                 
@@ -765,11 +765,17 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
                 
             self.wp.reset()
             
-            # Filter like that for video & audio
+            # Filter like that for video, flash & audio
             if not self._configobj.movies:
                 # Filter any links with video extension out from links...
                 links = [(type, link) for type, link in links if link[link.rfind('.'):].lower() not in \
                          netinfo.movie_extns]
+
+            if not self._configobj.flash:
+                # Filter any links with flash extension out from links...
+                links = [(type, link) for type, link in links if link[link.rfind('.'):].lower() not in \
+                         netinfo.flash_extns]    
+                
 
             if not self._configobj.sounds:
                 # Filter any links with audio extension out from links...
@@ -782,7 +788,8 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
                          netinfo.document_extns]                
             
             links = self.offset_links(links)
-
+            # print "Filtered links",links
+            
             # Create collection object
             coll = HarvestManAutoUrlCollection(url_obj)
 

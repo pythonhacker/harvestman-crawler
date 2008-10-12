@@ -99,6 +99,7 @@ CONFIG_XML_TEMPLATE="""\
         <html value="%(html)s" />
         <images value="%(images)s" />
         <movies value="%(movies)s" />
+        <flash value="%(flash)s" />
         <sounds value="%(sounds)s" />
         <documents value="%(documents)s" />        
         <javascript value="%(javascript)s" />
@@ -130,8 +131,6 @@ CONFIG_XML_TEMPLATE="""\
         <ignoretlds value="%(ignoretlds)s" />
       </extent>
       <limits>
-        <maxextservers value="%(maxextservers)s"/>
-        <maxextdirs value="%(maxextdirs)s" />
         <maxfiles value="%(maxfiles)s" />
         <maxfilesize value="%(maxfilesize)s" />
         <maxbytes value="%(maxbytes)s" />
@@ -206,7 +205,7 @@ int_re = re.compile(r'\d+')
 float_re = re.compile(r'\d+\.\d*')
 maxbytes_re = re.compile(r'(\d+\s*)(kb?|mb?|gb?)?$', re.IGNORECASE)
 maxbw_re = re.compile(r'(\d+\s*)(k(b|bps)?|m(b|bps)?|g(b|bps)?)?$', re.IGNORECASE)
-projectname_re = re.compile(r'^[a-zA-Z0-9_\.]+$', re.IGNORECASE|re.UNICODE|re.LOCALE)
+projectname_re = re.compile(r'^[a-zA-Z0-9-_\.]+$', re.IGNORECASE|re.UNICODE|re.LOCALE)
 
 # This will contain the absolute path of parent-folder of
 # harvestman installation...
@@ -278,19 +277,20 @@ class HarvestManStateObject(dict, Singleton):
         self.localise=2
         self.images=1
         self.movies=0
+        self.flash=0
         self.sounds=0
         self.documents=1
         self.depth=10
         self.html=1
         self.robots=1
-        self.eserverlinks=0
-        self.epagelinks=1
+        # self.eserverlinks=0
+        # self.epagelinks=1
         self.fastmode=1
         self.usethreads=1
         self.maxfiles=5000
         self.maxbytes=0
-        self.maxextservers=0
-        self.maxextdirs=0
+        # self.maxextservers=0
+        # self.maxextdirs=0
         self.retryfailed=1
         self.extdepth=0
         self.maxtrackers=4
@@ -481,6 +481,7 @@ class HarvestManStateObject(dict, Singleton):
                          'html_value' : ('html','int'),
                          'images_value' : ('images','int'),
                          'movies_value' : ('movies','int'),
+                         'flash_value' : ('flash','int'),                         
                          'sounds_value' : ('sounds','int'),
                          'documents_value' : ('documents','int'),                         
                          
@@ -578,6 +579,7 @@ class HarvestManStateObject(dict, Singleton):
         try:
             if len(option_val) == 2:
                 key, typ = option_val
+                
                 # If type is not a list, the
                 # action is simple assignment
 
@@ -595,14 +597,13 @@ class HarvestManStateObject(dict, Singleton):
                     # do any type casting of the option
                     fval = (eval(typ))(value)
                     self[key] = fval
-
+                    
                     # If type is list, the action is
                     # appending, after doing any type
                     # casting of the actual value
                 else:
                     # Type is of the form <type>:<actual type>
                     typname, typ = typ.split(':')
-                    # print 'typename',typname
 
                     if typname == 'list':
                         if typ:
@@ -725,6 +726,7 @@ class HarvestManStateObject(dict, Singleton):
         if option_val:
             try:
                 if type(option_val) is tuple:
+                    # print 'Assigning option',option_val,value
                     self.assign_option(option_val, value)
                 elif type(option_val) is list:
                     # If the option_val is a list, there
@@ -1494,7 +1496,7 @@ class HarvestManStateObject(dict, Singleton):
 
         # fix errors in config variables
         self.setup()
-
+        
     def enable_controller(self):
         """ Return whether we need to start the controller
         thread. This is determined by whether we have

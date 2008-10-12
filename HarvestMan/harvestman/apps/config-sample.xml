@@ -57,6 +57,10 @@
       <types>
         <html value="1"/>
         <images value="1"/>
+	<movies value="0"/>
+	<flash value="1"/>
+	<sounds value="0"/>
+        <documents value="0"/>
         <javascript value="0"/>
         <javaapplet value="1"/>
         <querylinks value="1"/>
@@ -86,8 +90,6 @@
         <ignoretlds value="0" />
       </extent>
       <limits>
-        <maxextservers value="0"/>
-        <maxextdirs value="0"/>
         <maxfiles value="0"/>
         <maxfilesize value="5242880"/>
         <maxbytes value="5 MB" />

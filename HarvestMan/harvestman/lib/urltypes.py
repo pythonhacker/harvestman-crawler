@@ -120,7 +120,12 @@ class URL_TYPE_AUDIO(URL_TYPE_MULTIMEDIA):
 class URL_TYPE_VIDEO(URL_TYPE_MULTIMEDIA):
     """ Class representing a multimedia video URL type """
 
-    typ = 'video'        
+    typ = 'video'
+
+class URL_TYPE_FLASH(URL_TYPE_MULTIMEDIA):
+    """ Class representing Adobe shockwave flash/action script type """
+
+    typ = 'flash'            
 
 class URL_TYPE_STYLESHEET(URL_TYPE_ANY):
     """ Class representing a URL which points to a stylesheet (CSS) file """

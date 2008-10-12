@@ -647,34 +647,33 @@ class HarvestManRulesChecker(object):
                     logconsole(e)
                     
             elif self._configobj.fetchlevel > 0:
-                # this option takes precedence over the
-                # extpagelinks option, so set extpagelinks
-                # option to true.
-                self._configobj.epagelinks=1
                 # do other checks , just fall through
-
+                pass
+            
             # Increment external directory count
-            directory = urlObj.get_url_directory()
+            # directory = urlObj.get_url_directory()
 
-            res=self._ext_directory_check(directory)
-            if not res:
-                extrainfo("External directory error - filtered!")
-                return True
+            # res=self._ext_directory_check(directory)
+            # if not res:
+            #    extrainfo("External directory error - filtered!")
+            #    return True
 
             # Apply depth check for external dirs here
             if self._configobj.extdepth:
                 if self.apply_depth_check(urlObj, mode=2):
                     return True
 
-            if self._configobj.epagelinks:
-                # We can get external links belonging to same server,
-                # so this is not an external link
-                return False
-            else:
-                # We cannot get external links belonging to same server,
-                # so this is an external link
-                return True
+            #if self._configobj.epagelinks:
+            #    # We can get external links belonging to same server,
+            #    # so this is not an external link
+            #    return False
+            #else:
+            #    # We cannot get external links belonging to same server,
+            #    # so this is an external link
+            #    return True
+            return False
         else:
+            # print 'Different!',self._configobj.fetchlevel
             debug('Different!')
             # Both belong to different base servers
             if self._configobj.fetchlevel==0 or self._configobj.fetchlevel == 1:
@@ -700,16 +699,16 @@ class HarvestManRulesChecker(object):
                     logconsole(e)
                     
             elif self._configobj.fetchlevel>3:
+                pass
                 # this option takes precedence over the
                 # extserverlinks option, so set extserverlinks
                 # option to true.
-                self._configobj.eserverlinks=1
+                # self._configobj.eserverlinks=1
                 # do other checks , just fall through
 
-            res = self._ext_server_check(urlObj.get_domain())
-
-            if not res:
-                return True
+            # res = self._ext_server_check(urlObj.get_domain())
+            # if not res:
+            #   return True
 
             # Apply filter for servers here
             if self.apply_server_filter(urlObj):
@@ -720,15 +719,16 @@ class HarvestManRulesChecker(object):
                 if self.apply_depth_check(urlObj, mode=2):
                     return True
 
-            if self._configobj.eserverlinks:
-                # We can get links belonging to another server, so
-                # this is NOT an external link
-                return False
-            else:
-                # We cannot get external links beloning to another server,
-                # so this is an external link
-                return True
-
+            #if self._configobj.eserverlinks:
+            #    # We can get links belonging to another server, so
+            #    # this is NOT an external link
+            #    return False
+            #else:
+            #    # We cannot get external links beloning to another server,
+            #    # so this is an external link
+            #    return True
+            return False
+        
         # We should not reach here
         return False
 
@@ -753,46 +753,46 @@ class HarvestManRulesChecker(object):
 
         return False
 
-    def _ext_directory_check(self, directory):
-        """ Check whether the directory <directory>
-        should be considered external """
+    ## def _ext_directory_check(self, directory):
+    ##     """ Check whether the directory <directory>
+    ##     should be considered external """
 
-        index=self._increment_ext_directory_count(directory)
+    ##     index=self._increment_ext_directory_count(directory)
 
-        # Are we above a prescribed limit ?
-        if self._configobj.maxextdirs and len(self._extdirs)>self._configobj.maxextdirs:
-            if index != -1:
-                # directory index was below the limit, allow its urls
-                if index <= self._configobj.maxextdirs:
-                    return True
-                else:
-                    # directory index was above the limit, block its urls
-                    return False
-            # new directory, block its urls
-            else:
-                return False
-        else:
-            return True
+    ##     # Are we above a prescribed limit ?
+    ##     if self._configobj.maxextdirs and len(self._extdirs)>self._configobj.maxextdirs:
+    ##         if index != -1:
+    ##             # directory index was below the limit, allow its urls
+    ##             if index <= self._configobj.maxextdirs:
+    ##                 return True
+    ##             else:
+    ##                 # directory index was above the limit, block its urls
+    ##                 return False
+    ##         # new directory, block its urls
+    ##         else:
+    ##             return False
+    ##     else:
+    ##         return True
 
-    def _ext_server_check(self, server):
-        """ Check whether the server <server> should be considered
-        external """
+    ## def _ext_server_check(self, server):
+    ##     """ Check whether the server <server> should be considered
+    ##     external """
 
-        index=self._increment_ext_server_count(server)
+    ##     index=self._increment_ext_server_count(server)
 
-        # are we above a prescribed limit ?
-        if self._configobj.maxextservers and len(self._extservers)>self._configobj.maxextservers:
-            if index != -1:
-                # server index was below the limit, allow its urls
-                if index <= self._configobj.maxextservers:
-                    return True
-                else:
-                    return False
-            # new server, block its urls
-            else:
-                return False
-        else:
-            return True
+    ##     # are we above a prescribed limit ?
+    ##     if self._configobj.maxextservers and len(self._extservers)>self._configobj.maxextservers:
+    ##         if index != -1:
+    ##             # server index was below the limit, allow its urls
+    ##             if index <= self._configobj.maxextservers:
+    ##                 return True
+    ##             else:
+    ##                 return False
+    ##         # new server, block its urls
+    ##         else:
+    ##             return False
+    ##     else:
+    ##         return True
 
     def _increment_ext_directory_count(self, directory):
         """ Increment the external dir count """

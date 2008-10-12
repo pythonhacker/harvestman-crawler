@@ -84,7 +84,6 @@ class HarvestManUrl(object):
     hashes = {}
     
     def __init__(self, url, urltype = URL_TYPE_ANY, cgi = False, baseurl  = None, rootdir = ''):
-
         # Remove trailing wspace chars.
         url = url.rstrip()
         try:
@@ -413,7 +412,10 @@ class HarvestManUrl(object):
             # Absolute path, so 'paths' is the part of it
             # minus the protocol part.
             paths = self.url.replace(self.protocol, '')            
-
+            if paths=='':
+                # Error: URL consists only of protocol
+                raise HarvestManUrlError, 'Error: Invalid URL containing only protocol'                
+                
             # Split URL
             items = paths.split(URLSEP)
             
@@ -706,8 +708,7 @@ class HarvestManUrl(object):
         elif self.typ == 'generic':
             if self.validfilename:
                 extn = ((os.path.splitext(self.validfilename))[1]).lower()
-                if extn in image_extns:
-                    return True
+                return (extn in image_extns)
              
         return False
 
@@ -724,8 +725,7 @@ class HarvestManUrl(object):
         elif self.typ == 'generic':
             if self.validfilename:
                 extn = ((os.path.splitext(self.validfilename))[1]).lower()
-                if extn in sound_extns:
-                    return True
+                return (extn in sound_extns)
              
         return False
 
@@ -737,8 +737,7 @@ class HarvestManUrl(object):
         elif self.typ == 'generic':
             if self.validfilename:
                 extn = ((os.path.splitext(self.validfilename))[1]).lower()
-                if extn in movie_extns:
-                    return True
+                return (extn in movie_extns)
              
         return False
             
@@ -758,7 +757,6 @@ class HarvestManUrl(object):
                 
                 if extn in webpage_extns:
                     return True
-                
                 elif extn not in document_extns and extn not in image_extns:
                     return True
                 else:
@@ -781,8 +779,7 @@ class HarvestManUrl(object):
         elif self.typ == 'generic':
             if self.validfilename:
                 extn = ((os.path.splitext(self.validfilename))[1]).lower()
-                if extn in stylesheet_extns:
-                    return True
+                return (extn in stylesheet_extns)
              
         return False
 
@@ -804,11 +801,21 @@ class HarvestManUrl(object):
         # Check extension
         if self.validfilename:
             extn = ((os.path.splitext(self.validfilename))[1]).lower()
-            if extn in document_extns:
-                return True
+            return (extn in document_extns)
 
         return False
-    
+
+    def is_flash(self):
+        """ Return whether the url is flash, flash source code
+        or flash action script """
+
+        # Check extension
+        if self.validfilename:
+            extn = ((os.path.splitext(self.validfilename))[1]).lower()
+            return (extn in flash_extns)
+
+        return False        
+        
     def is_equal(self, url):
         """ Find whether the passed url matches
         my url """
@@ -1300,11 +1307,11 @@ class HarvestManUrl(object):
         # This check is valid only if dir2 is a sub-directory of dir1
         dir1=self.get_url_directory()
         dir2=hu.get_url_directory()
-
+        
         # spit off the protocol from directories
         dir1 = dir1.replace(self.protocol, '')
-        dir2 = dir2.replace(self.protocol, '')      
-
+        dir2 = dir2.replace(hu.protocol, '')      
+        
         # Append a '/' to the dirpath if not already present
         if dir1[-1] != '/': dir1 += '/'
         if dir2[-1] != '/': dir2 += '/'

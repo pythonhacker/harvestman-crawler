@@ -100,8 +100,6 @@ CONFIG_XML_TEMPLATE="""\
         <ignoretlds value="%(ignoretlds)s"/>
       </extent>
       <limits>
-        <maxextservers value="%(maxextservers)s"/>
-        <maxextdirs value="%(maxextdirs)s"/>
         <maxfiles value="%(maxfiles)s"/>
         <maxfilesize value="%(maxfilesize)s"/>
         <maxbandwidth value="%(maxbandwidth)s"/>
@@ -445,12 +443,6 @@ class HarvestManConfigGenerator(object):
             MyDropbox("Ignore TLDs (Top level domains)",
                       'Consider http://foo.com and http://foo.org as the same server (dangerous)',
                       ["No","Yes"]),    
-            SizedTextbox("External Servers Limit",10,
-                         'Limit on number of external servers (useful for fetchlevels >1)',
-                         value=0),
-            SizedTextbox("External Directories Limit",
-                         10,'Limit on number of external directories (useful for fetchlevels >0)',
-                         value=0),
             SizedTextbox("URL Priority String",100,'A priority string for URLs (see FAQ)'),
             # SizedTextbox("Server Priority String",100, 'A priority string for servers (see FAQ)'),    
             Label("Parser Configuration", True, True),
@@ -527,8 +519,6 @@ class HarvestManConfigGenerator(object):
                        "extdepth": form["External URL Depth"].value,
                        "subdomain": self.convert_val(form["Crawl Sub-domains"].value),
                        'ignoretlds': self.convert_val(form["Ignore TLDs (Top level domains)"].value),
-                       'maxextservers': form["External Servers Limit"].value,
-                       'maxextdirs': form["External Directories Limit"].value,
                        'maxfiles': form["Maximum Files Limit"].value,
                        'maxfilesize': form["Maximum File Size Limit"].value,
                        'connections': form["Maximum Connections Limit"].value,

@@ -14,10 +14,10 @@ import sys, os
 
 test_base.setUp()
 
+from harvestman.lib.urlparser import HarvestManUrl, HarvestManUrlError
+
 class TestHarvestManUrl(unittest.TestCase):
     """ Unit test class for HarvestManUrl class """
-
-    from harvestman.lib.urlparser import HarvestManUrl
 
     # Basic test set
     l = [ HarvestManUrl('http://www.yahoo.com/photos/my photo.gif'),
@@ -263,7 +263,58 @@ class TestHarvestManUrl(unittest.TestCase):
 
     def test_canonical_url(self):
         assert(self.l[21].get_canonical_url()=='http://example.com/display%3C%5D%2F?article=fred&country=in&lang=en&size=100&weight=1.0')
+    def test_invalid_urls(self):
 
+        # Make sure invalid URLs do raise an error
+        try:
+            HarvestManUrl('')
+            # If it comes here, it is an error
+            assert(0==1)
+        except HarvestManUrlError, e:
+            # This should produce an error
+            assert(str(e)=='Error: Zero Length Url')
+
+        try:
+            HarvestManUrl('',baseurl='http://www.foo.com')
+            # If it comes here, it is an error
+            assert(0==1)
+        except HarvestManUrlError, e:
+            # This should produce an error
+            assert(str(e)=='Error: Zero Length Url')
+
+        try:
+            HarvestManUrl('http://',baseurl='http://www.foo.com')
+            # If it comes here, it is an error
+            assert(0==1)
+        except HarvestManUrlError, e:
+            # This should produce an error
+            assert(str(e)=='Error: Invalid URL containing only protocol')
+
+        try:
+            HarvestManUrl('https://',baseurl='http://www.foo.com')
+            # If it comes here, it is an error
+            assert(0==1)
+        except HarvestManUrlError, e:
+            # This should produce an error
+            assert(str(e)=='Error: Invalid URL containing only protocol')
+
+        try:
+            HarvestManUrl('ftp://',baseurl='http://www.foo.com')
+            # If it comes here, it is an error
+            assert(0==1)
+        except HarvestManUrlError, e:
+            # This should produce an error
+            assert(str(e)=='Error: Invalid URL containing only protocol')
+
+        try:
+            HarvestManUrl('file://',baseurl='http://www.foo.com')
+            # If it comes here, it is an error
+            assert(0==1)
+        except HarvestManUrlError, e:
+            # This should produce an error
+            assert(str(e)=='Error: Invalid URL containing only protocol')
+
+            
 def run(result):
     return test_base.run_test(TestHarvestManUrl, result)
 

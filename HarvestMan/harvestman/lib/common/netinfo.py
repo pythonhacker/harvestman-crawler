@@ -51,8 +51,8 @@ sound_extns = ('.aac', '.aif', '.aiff', '.aifc', '.aifr', '.amr',
                '.mp3', '.mpa', '.mpc', '.mpega', '.msv', '.mus',
                '.nrj', '.nwc', '.nwp', '.ogg', '.psb', '.psm', '.ra',
                '.ram', '.rel', '.sab', '.shn', '.smf', '.snd', '.speex',
-               '.tta', '.vox', '.vy3', '.wav', '.wave', '.wma', '.wpk',
-               '.wv', '.wvc')
+               '.tta', '.vox', '.vy3', '.wav', '.wave', '.wma',
+               '.wpk', '.wv', '.wvc')
 
 # Most common web page url file extensions
 # including dynamic server pages & cgi scripts.
@@ -64,6 +64,9 @@ webpage_extns = ('', '.htm', '.html', '.shtm', '.shtml', '.php',
 # Document extensions
 document_extns = ('.doc','.rtf','.odt','.odp','.ott','.sxw','.stw',
                   '.sdw','.vor','.pdf','.ps')
+
+# Extensions for flash/flash source code/flash action script
+flash_extns = ('.swf', '.fla', '.mxml', '.as', '.abc')
 
 # Web-page extensions which automatically default to directories
 # These are special web-page types which are web-pages as well
