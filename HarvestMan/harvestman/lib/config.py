@@ -206,12 +206,19 @@ int_re = re.compile(r'\d+')
 float_re = re.compile(r'\d+\.\d*')
 maxbytes_re = re.compile(r'(\d+\s*)(kb?|mb?|gb?)?$', re.IGNORECASE)
 maxbw_re = re.compile(r'(\d+\s*)(k(b|bps)?|m(b|bps)?|g(b|bps)?)?$', re.IGNORECASE)
+projectname_re = re.compile(r'^[a-zA-Z0-9_\.]+$', re.IGNORECASE|re.UNICODE|re.LOCALE)
 
 # This will contain the absolute path of parent-folder of
 # harvestman installation...
 
 module_path = ''
 
+class HarvestManConfigError(Exception):
+    """ Exception class for HarvestManStateObject """
+    pass
+
+HarvestManStateObject = HarvestManConfigError
+    
 class HarvestManStateObject(dict, Singleton):
     """ Configuration class for HarvestMan framework and applications
     derived from it. A single instance of this class keeps most of the
@@ -568,50 +575,51 @@ class HarvestManStateObject(dict, Singleton):
     def assign_option(self, option_val, value, kwargs={}):
         """ Assigns values to internal variables using the option specified """
 
-        # Currently this is used only to parse
-        # xml config files.
-        if len(option_val) == 2:
-            key, typ = option_val
-            # If type is not a list, the
-            # action is simple assignment
+        try:
+            if len(option_val) == 2:
+                key, typ = option_val
+                # If type is not a list, the
+                # action is simple assignment
 
-            # Bug fix: If someone has set the
-            # value to 'True'/'False' instead of
-            # 1/0, convert to bool type first.
-            
-            if type(value) in (str, unicode):
-                if value.lower() == 'true':
-                    value = 1
-                elif value.lower() == 'false':
-                    value = 0
+                # Bug fix: If someone has set the
+                # value to 'True'/'False' instead of
+                # 1/0, convert to bool type first.
 
-            if typ.find(':') == -1:
-                # do any type casting of the option
-                fval = (eval(typ))(value)
-                self[key] = fval
-                
-                # If type is list, the action is
-                # appending, after doing any type
-                # casting of the actual value
+                if type(value) in (str, unicode):
+                    if value.lower() == 'true':
+                        value = 1
+                    elif value.lower() == 'false':
+                        value = 0
+
+                if typ.find(':') == -1:
+                    # do any type casting of the option
+                    fval = (eval(typ))(value)
+                    self[key] = fval
+
+                    # If type is list, the action is
+                    # appending, after doing any type
+                    # casting of the actual value
+                else:
+                    # Type is of the form <type>:<actual type>
+                    typname, typ = typ.split(':')
+                    # print 'typename',typname
+
+                    if typname == 'list':
+                        if typ:
+                            fval = (eval(typ))(value)
+                        else:
+                            fval = value
+
+                        var = self[key]
+                        var.append(fval)
+                    elif typname == 'func':
+                        funktion = getattr(self, typ)
+                        if funktion:
+                            funktion(key, value, kwargs)
             else:
-                # Type is of the form <type>:<actual type>
-                typname, typ = typ.split(':')
-                # print 'typename',typname
-                
-                if typname == 'list':
-                    if typ:
-                        fval = (eval(typ))(value)
-                    else:
-                        fval = value
-                        
-                    var = self[key]
-                    var.append(fval)
-                elif typname == 'func':
-                    funktion = getattr(self, typ)
-                    if funktion:
-                        funktion(key, value, kwargs)
-        else:
-            error('Error in option value %s!' % option_val)
+                error('Error in option value %s!' % option_val)
+        except Exception, e:
+            raise HarvestManConfigError, "Error: " + str(e)
 
     def set_option(self, option, value, negate=0):
         """ Sets the passed option in with its value as the passed value """
@@ -695,7 +703,7 @@ class HarvestManStateObject(dict, Singleton):
                             # Set it
                             self.assign_option(item, value, attrs)
             except Exception, e:
-                print 'Error assigning option \"',option,'\"', e
+                print 'Error assigning option','"'+option+'"','=>',str(e)
                 if e.__class__==ValueError:
                     print '(Perhaps you invoked the wrong argument ?)'
                 print 'Pass option -h for command line usage.'                    
@@ -715,8 +723,7 @@ class HarvestManStateObject(dict, Singleton):
         option_val = self.xml_map.get(option, None)
         
         if option_val:
-            #try:
-            if 1:
+            try:
                 if type(option_val) is tuple:
                     self.assign_option(option_val, value)
                 elif type(option_val) is list:
@@ -727,13 +734,13 @@ class HarvestManStateObject(dict, Singleton):
                         if type(item) is tuple:
                             # Set it
                             self.assign_option(item, value)
-            #except Exception, e:
-            #    print 'Error assigning option \"',option,'\"'
-            #    # If this is a ValueError, mostly the wrong argument was passed
-            #    if e.__class__==ValueError:
-            #        print '(Perhaps you invoked the wrong argument ?)'
-            #    print 'Pass option -h for command line usage.'
-            #    hexit(1)
+            except Exception, e:
+               print 'Error assigning option','"'+option+'"','=>',str(e)
+               # If this is a ValueError, mostly the wrong argument was passed
+               if e.__class__==ValueError:
+                   print '(Perhaps you invoked the wrong argument ?)'
+               print 'Pass option -h for command line usage.'
+               hexit(1)
         else:
             return CONFIG_OPTION_NOT_DEFINED
 
@@ -848,7 +855,13 @@ class HarvestManStateObject(dict, Singleton):
         # If project is to be ignored, skip this
         if self.project_ignore:
             return
-        
+
+        # Project name has to match [a-zA-Z0-9_]. No other
+        # characters allowed.
+        if key=='project':
+            if not projectname_re.match(val):
+                raise HarvestManConfigError,'Project name %s is not valid' % val
+            
         new_entry, recent = False, {}
         sz = len(self.projects)
         if sz==0:
@@ -1453,9 +1466,9 @@ class HarvestManStateObject(dict, Singleton):
             logconsole('Configuration file %s not found...' % cfgfile)
         else:
             logconsole('Using configuration file %s...' % cfgfile)
-            
+
         return configparser.parse_xml_config_file(self, cfgfile)
-        
+            
     def get_program_options(self):
         """ Umbrella method for reading the program configuration
         from a configuration file or the command-line or both """
