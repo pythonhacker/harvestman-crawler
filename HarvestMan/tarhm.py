@@ -28,14 +28,14 @@ os.system('rm -rf `find %s -name \*.hpf`' % srcdir)
 os.system('rm -rf `find %s -regex ".*\.org"`' % srcdir)
 os.system('rm -rf `find %s -regex ".*\.com"`' % srcdir)
 # Remove any other stray html
-os.system('rm -rf `find %s -name \*.htm\* | grep -v samples | grep -v bugs | grep -v templates`' % srcdir)
+os.system('rm -rf `find %s -name \*.htm\* | grep -v samples | grep -v bugs | grep -v templates | grep -v test`' % srcdir)
 # Remove any .bidx files
 os.system('rm -rf `find %s -name \.bidx*`' % srcdir)
 # Now tar it up...
 tarfile = time.strftime('HarvestMan-2.0alpha%d%m%Y.tar.gz', time.localtime())
 ret = os.system('tar -czvf %s %s' % (tarfile, srcdir))
 # Clean up the folder
-os.system('rm -rf ' + srcdir)
+# os.system('rm -rf ' + srcdir)
 ret = raw_input('Go ahead with upload [y/n] ? ')
 if ret.strip().lower() != 'y':
     sys.exit('Done.')
