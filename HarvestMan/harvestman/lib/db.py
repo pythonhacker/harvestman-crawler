@@ -49,7 +49,8 @@ class HarvestManDbManager(object):
         c = conn.cursor()
         
         # Create table for projects
-        c.execute("drop table if exists projects")
+        # This line is causing a problem in darwin
+        # c.execute("drop table if exists projects")
         c.execute("""create table projects (id integer primary key autoincrement default 0, time real, name text, url str, config str)""")
         # Create table for project statistics
         # We are storing the information for
@@ -64,7 +65,9 @@ class HarvestManDbManager(object):
         # 9. number of files saved
         # 10. Amount of data fetched in bytes
         # 11. the total time for the crawl.
-        c.execute("drop table if exists project_stats")        
+        
+        # This line is causing a problem in darwin        
+        # c.execute("drop table project_stats")        
         c.execute("""create table project_stats (project_id integer primary key, urls integer, procurls integer, filteredurls integer, failedurls integer, brokenurls integer, cacheurls integer, servers integer, directories integer, files integer, data real, duration text)""")
         
         c.close()
