@@ -31,10 +31,7 @@ doc/state_machine.txt
 harvestman/__init__.py
 harvestman/apps/__init__.py
 harvestman/apps/appbase.py
-harvestman/apps/config-nltk-book.xml
 harvestman/apps/config-sample.xml
-harvestman/apps/config-template.xml
-harvestman/apps/config.xml
 harvestman/apps/hget.py
 harvestman/apps/spider.py
 harvestman/apps/samples/Readme.txt
@@ -48,6 +45,7 @@ harvestman/apps/samples/postingcrawler.py
 harvestman/apps/samples/searchingcrawler.py
 harvestman/apps/samples/taganalyzer.py
 harvestman/bugs/Readme.txt
+harvestman/bugs/config-issue20.xml
 harvestman/bugs/config-issue21.xml
 harvestman/bugs/s_municipaux.htm
 harvestman/bugs/soskut_hu_index.html

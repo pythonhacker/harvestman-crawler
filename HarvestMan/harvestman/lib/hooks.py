@@ -202,7 +202,7 @@ class HarvestManHooks:
 
         return self.run_plugins.copy()
 
-HarvestManHooks.add_all_plugins()
+#HarvestManHooks.add_all_plugins()
 HarvestManHooks.add_all_callbacks()
               
 def register_plugin_function(context, func):

@@ -716,7 +716,7 @@ class HarvestManStateObject(dict, Singleton):
 
     def set_option_xml(self, option, value):
         """ Set an option from the XML config file from an XML element """
-
+        
         # If option in things to be skipped, return
         if option in self.items_to_skip:
             return CONFIG_ITEM_SKIPPED
