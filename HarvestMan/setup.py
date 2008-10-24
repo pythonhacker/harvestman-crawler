@@ -1,8 +1,10 @@
+#Gets setuptools
+import ez_setup
+ez_setup.main(['setuptools'])
+#Normal setup.py starts here
 from setuptools import setup, find_packages
 import sys, os
 #This should install setuptools
-import pkg_resources
-pkg_resources.require("setuptools")
 
 version = '2.0.3'
 
