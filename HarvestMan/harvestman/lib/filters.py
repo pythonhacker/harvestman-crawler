@@ -91,7 +91,10 @@ class HarvestManUrlFilter(HarvestManBaseFilter):
 
         # return a 3 tuple of (inclusionfilter, exclusionfilter, allfilter)
         # return (inclusionfilter, exclusionfilter, allfilter)
-    
+
+    def _make_extn_filter(self, filterstring):
+        pass
+        
     def _compile_filters(self):
 
         # Regular expression filters
