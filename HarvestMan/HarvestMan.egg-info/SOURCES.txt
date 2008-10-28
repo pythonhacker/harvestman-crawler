@@ -4,6 +4,7 @@ README.paste
 Readme.hget
 Readme.txt
 __init__.py
+ez_setup.py
 pydocgen.sh
 setup.cfg
 setup.py

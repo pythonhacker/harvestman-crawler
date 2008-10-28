@@ -127,7 +127,8 @@ class HarvestMan(HarvestManAppBase):
     __metaclass__ = MethodWrapperMetaClass
     alias = 'spider'
     
-    USER_AGENT = "HarvestMan v2.0"
+    USER_AGENT = '%s/%s (+http://code.google.com/p/harvestman-crawler/wiki/bot)' %('Harvestman',__version__)
+    
         
     def __init__(self):
         """ Initializing method """

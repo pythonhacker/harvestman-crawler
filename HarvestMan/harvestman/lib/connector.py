@@ -665,6 +665,7 @@ class HarvestManNetworkConnector(object):
                                               urllib2.FileHandler,
                                               urllib2.HTTPDefaultErrorHandler,
                                               cookiehandler)
+                opener.addheaders=[] #Need to clear default headers so we can apply our own
             else:
                 opener = urllib2.build_opener( authhandler,
                                                urllib2.HTTPRedirectHandler,
@@ -674,6 +675,7 @@ class HarvestManNetworkConnector(object):
                                                urllib2.FileHandler,
                                                urllib2.HTTPDefaultErrorHandler,
                                                cookiehandler)
+                opener.addheaders=[] #Need to clear default headers so we can apply our own
 
         urllib2.install_opener(opener)
 
@@ -1398,7 +1400,8 @@ class HarvestManUrlConnector(object):
         # cases, the connect method, sets useragent flag to False and calls
         # this method again.
         # print 'User agent', self._cfg.USER_AGENT
-        if useragent: request.add_header('User-Agent', self._cfg.USER_AGENT)
+        if useragent: 
+            request.add_header('User-Agent', self._cfg.USER_AGENT)
         
         # Check if any HTTP username/password are required
         username, password = self._cfg.username, self._cfg.passwd

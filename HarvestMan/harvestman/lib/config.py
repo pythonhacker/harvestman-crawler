@@ -251,7 +251,8 @@ class HarvestManStateObject(dict, Singleton):
         self.maturity="alpha 1"
         # Single appname property for hget/harvestman
         self.appname='HarvestMan'
-        self.USER_AGENT = 'v'.join((self.appname + ' ', self.version))
+        #self.USER_AGENT = 'v'.join((self.appname + ' ', self.version))
+        self.USER_AGENT = '%s/%s (+http://code.google.com/p/harvestman-crawler/wiki/bot)' %(self.appname,self.version)
         self.progname="".join((self.appname," ",self.version," ",self.maturity))
         self.program = sys.argv[0]
         self.url=''
