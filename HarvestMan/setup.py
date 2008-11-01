@@ -1,6 +1,7 @@
 #Gets setuptools
-import ez_setup
-ez_setup.main(['setuptools'])
+from ez_setup import use_setuptools
+use_setuptools()
+
 #Normal setup.py starts here
 from setuptools import setup, find_packages
 import sys, os
