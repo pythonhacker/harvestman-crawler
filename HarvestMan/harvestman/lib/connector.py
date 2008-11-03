@@ -1614,7 +1614,7 @@ class HarvestManUrlConnector(object):
                                 request = self.create_request(urlobj.get_full_url())
                                 self._freq = urllib2.urlopen(request)
 
-                                logconsole('Downloading URL %s...' % urlobj.get_full_url())
+                                logconsole('Downloading' % urlobj.get_full_url())
                                 trynormal = True
                     else:
                         logconsole('Server supports multipart downloads')

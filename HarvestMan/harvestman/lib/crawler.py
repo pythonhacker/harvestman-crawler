@@ -438,7 +438,7 @@ class HarvestManUrlCrawler(HarvestManBaseUrlCrawler):
             return None
 
         self.stateobj.set(self, CRAWLER_CRAWLING)                    
-        info('Fetching links for url', self.url)
+        info('Fetching links', self.url)
         
         priority_indx = 0
 
@@ -612,7 +612,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
             return 
         
         if self.url.qstatus==urlparser.URL_NOT_QUEUED:
-            info('Downloading file for url', self.url.get_full_url())
+            info('Downloading', self.url.get_full_url())
             # About to fetch
             self._fetchtime = time.time()
             self.stateobj.set(self, FETCHER_DOWNLOADING)

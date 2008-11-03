@@ -114,8 +114,7 @@ class HarvestManLogger(object):
         self._logger.setLevel(self._severity)
             
         if self.consolelog:
-            formatter = logging.Formatter('[%(asctime)s] %(message)s',
-                                          '%H:%M:%S')
+            formatter = logging.Formatter('[%(asctime)s] %(message)s')
             handler = logging.StreamHandler()
             handler.setFormatter(formatter)
             self._logger.addHandler(handler)
@@ -168,12 +167,10 @@ class HarvestManLogger(object):
         # Call helper function here
         handler = HandlerFactory.createHandle(handlertype, *args)
         if handlertype != 'StreamHandler':
-            formatter = logging.Formatter('%(asctime)s %(levelname)s - %(message)s',
-                                            '(%d-%m-%y) [%H:%M:%S]')
+            formatter = logging.Formatter('%(asctime)s %(levelname)s - %(message)s')
         else:
             # Minimal formatting for console log
-            formatter = logging.Formatter('[%(asctime)s] %(message)s',
-                                          '%H:%M:%S')
+            formatter = logging.Formatter('[%(asctime)s] %(message)s')
         handler.setFormatter(formatter)
         self._logger.addHandler(handler)
 

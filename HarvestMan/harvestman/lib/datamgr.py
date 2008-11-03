@@ -777,7 +777,7 @@ class HarvestManDataManager(object):
                 self.update_file_stats( url, res )
 
                 if res==DOWNLOAD_YES_OK:
-                    info("Saved to",filename)
+                    info("Saved",filename)
 
                 if url.is_webpage():
                     if self._cfg.datamode==CONNECTOR_DATA_MODE_INMEM: 
