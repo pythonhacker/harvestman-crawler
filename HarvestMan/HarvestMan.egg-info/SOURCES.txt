@@ -1,6 +1,5 @@
 LICENSE.txt
 MANIFEST
-README.paste
 Readme.hget
 Readme.txt
 __init__.py

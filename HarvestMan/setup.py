@@ -1,13 +1,15 @@
 #Gets setuptools
-from ez_setup import use_setuptools
-use_setuptools()
+try:
+    from setuptools import setup, find_packages
+except ImportError:
+    from ez_setup import use_setuptools
+    use_setuptools()
+    from setuptools import setup, find_packages
 
 #Normal setup.py starts here
-from setuptools import setup, find_packages
 import sys, os
-#This should install setuptools
 
-version = '2.0.3'
+version = '2.0.3beta'
 
 setup(name='HarvestMan',
       version=version,

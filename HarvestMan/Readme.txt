@@ -97,7 +97,7 @@ is named 'config.xml' by default. To pass a different
 configuration file, use the command-line argument '-C'
 or '--configfile'.
 
-harvestman -c config.xml
+harvestman -C config.xml
 
 To create your configuration file run
 
@@ -105,7 +105,7 @@ harvestman --genconfig
 
 Your browser will open and you will be able to enter what sites you will want to crawl. Save that file as mycrawl.xml and start harvestman
 
-harvestman -c mycrawl.xml
+harvestman -C mycrawl.xml
 
 
 There is a sample config file incuded in the 'apps' directory if you just want to test it right away.
@@ -184,12 +184,12 @@ HarvestMan accepts about 60 configuration options in total.
 
 For a detailed discussion on the options, refer the HarvestMan 
 documentation files in the 'doc' sub-directory or point your browser
-to http://www.harvestmanontheweb.com/configoptions.html .
+to http://code.google.com/p/harvestman-crawler/wiki/ConfigXml
 
 Python Dependencies
 -------------------
 The minimal requirement is Python 2.4 and the latest version of pyparsing.
-HarvestMan should work on all platforms where Python is supported.
+HarvestMan should work on all platforms where Python is supported. Due to one of the subpackages we use Python-dev version is required.
 
 More Documentation
 ------------------
@@ -205,30 +205,4 @@ Change Log for this Version
 ---------------------------
 See the file ChangeLog.txt.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-
-    
-    
 
