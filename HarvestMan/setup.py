@@ -9,7 +9,7 @@ except ImportError:
 #Normal setup.py starts here
 import sys, os
 
-version = '2.0.3beta'
+version = '2.0.4beta'
 
 setup(name='HarvestMan',
       version=version,

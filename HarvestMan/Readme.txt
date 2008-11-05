@@ -32,7 +32,7 @@ See the file LICENSE.TXT.
 
 Version
 --------
-2.0 alpha (HarvestMan)
+2.0.4 beta (HarvestMan)
 
 
 WWW
