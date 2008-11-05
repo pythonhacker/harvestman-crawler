@@ -11,6 +11,9 @@ setup.py.original
 setup_paste.py
 tarhm.py
 HarvestMan.egg-info/PKG-INFO
+HarvestMan.egg-info/PKG-INFO.mine
+HarvestMan.egg-info/PKG-INFO.r160
+HarvestMan.egg-info/PKG-INFO.r167
 HarvestMan.egg-info/SOURCES.txt
 HarvestMan.egg-info/dependency_links.txt
 HarvestMan.egg-info/entry_points.txt
