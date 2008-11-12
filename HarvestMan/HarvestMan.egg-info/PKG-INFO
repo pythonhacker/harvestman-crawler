@@ -1,21 +1,24 @@
 Metadata-Version: 1.0
 Name: HarvestMan
-Version: 2.0.4betadev-r168
+Version: 2.0.4betadev-r169
 Summary: HarvestMan is a web crawler application and framework.
 Home-page: http://code.google.com/p/harvestman-crawler/
-Author: Anand B Pillai
-Author-email: abpillai at gmail dot com
+Author: Lukasz Szybalski
+Author-email: szybalski@gmail.com
 License: GPLv2
 Description: HarvestMan is a modular, extensible and flexible web crawler program cum framework written in pure Python. HarvestMan? can be used to download files from websites according to a number of customized rules and constraints. It can be used to find information from websites matching keywords or regular expressions.
         
 Keywords: crawler spider web-crawler web-bot robot data-mining python
 Platform: UNKNOWN
-Classifier: Development Status :: 5 - Stable
+Classifier: Development Status :: 5 - Production/Stable
 Classifier: Environment :: Console
 Classifier: Environment :: Web Environment
 Classifier: Intended Audience :: End Users/Desktop
 Classifier: Intended Audience :: Developers
-Classifier: License :: OSI Approved :: GNU General Public License
+Classifier: License :: OSI Approved :: GNU General Public License (GPL)
 Classifier: Operating System :: OS Independent
 Classifier: Programming Language :: Python
-Classifier: Topic :: Offline browsing, Indexing, Search
+Classifier: Topic :: Internet :: WWW/HTTP :: Indexing/Search
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Software Development :: Testing :: Traffic Generation
+Classifier: Topic :: Text Processing :: Indexing
