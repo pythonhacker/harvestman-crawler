@@ -297,6 +297,7 @@ class HarvestManStateObject(dict, Singleton):
         self.maxtrackers=4
         # Url filter object
         self.urlfilter = None
+        self.urlfiltercontext = 'crawl'
         # To prevent config from breaking...
         self.serverfilter=''
         self.wordfilter=''
@@ -544,9 +545,10 @@ class HarvestManStateObject(dict, Singleton):
                          'configfile_value': ('configfile', 'str'),
                          'projectfile_value': ('projectfile', 'str'),
 
-                         'regexp_value' : ('regexp', 'func:set_urlfilter'),
+                         'regex_value' : ('regex', 'func:set_urlfilter'),
                          'path_value': ('path', 'func:set_urlfilter'),
                          'extension_value': ('extension', 'func:set_urlfilter'),
+
                          'content_value': ('content', 'func:set_textfilter'),
                          'meta_value': ('meta', 'func:set_textfilter'),
                          'urlfilterre_value': (('inclfilter', 'list'),
@@ -828,12 +830,16 @@ class HarvestManStateObject(dict, Singleton):
         flags = filterdict.get(u'flags','')
 
         # Append a tuple of value, casing, flags
-        if key=='regexp':
+        if key=='regex':
             self.regexurlfilters.append((val,casing,flags))
+            print self.regexurlfilters
         elif key=='path':
             self.pathurlfilters.append((val,casing,flags))
+            print self.pathurlfilters
         elif key=='extension':
             self.extnurlfilters.append((val,casing,flags))
+            print self.extnurlfilters
+            
 
     def set_textfilter(self, key, val, filterdict):
 

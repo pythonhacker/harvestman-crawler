@@ -11,11 +11,14 @@ of filters.
  --------------------
 
  Jul 23 2008 Anand   Creation
+ Nov 17 2008 Anand   Completed URL filters class implementation
+                     and integrated with HarvestMan.
 
   Copyright (C) 2003-2008 Anand B Pillai.
                                 
 """
 import re
+from harvestman.lib.common.common import *
 
 class HarvestManBaseFilter(object):
     """ Base class for all HarvestMan filter classes """
@@ -36,19 +39,25 @@ class HarvestManBaseFilter(object):
 class HarvestManUrlFilter(HarvestManBaseFilter):
     """ Filter class for filtering out web pages based on the URL path string """
 
-    def __init__(self, regexfilters=[], pathfilters=[], extnfilters=[]):
+    def __init__(self, pathfilters=[], extnfilters=[], regexfilters=[]):
         # Filter pattern strings
         self.regexfilterpatterns = regexfilters
         self.pathfilterpatterns = pathfilters
         self.extnfilterpatterns = extnfilters
+        # Intermediate patterns, dictionaries
+        # with keys 'include' and 'exclude'
+        self.regexpatterns = []
+        self.pathpatterns = { 'include': [], 'exclude': [] }
+        self.extnpatterns = { 'include': [], 'exclude': [] }
         # Actual filters
-        self.regexfilters = []
-        self.pathfilters = []
-        self.extnfilters = []
-        self._compile_filters()
+        self.inclfilters = []
+        self.exclfilters = []
+        self.compile_filters()
 
-
-    def _make_path_filter(self, filterstring):
+    def parse_filter(self, filterstring):
+        """ Parse a filter pattern string and return a two
+        tuple of (<inclusion>, <exclusion>) pattern string
+        lists """
 
         fstr = filterstring
         # First replace any ''' with ''
@@ -57,16 +66,12 @@ class HarvestManUrlFilter(HarvestManBaseFilter):
         include=[]
         # regular expressions to exclude        
         exclude=[]
-        # all regular expressions
-        all=[]
 
         index=0
         previndex=-1
         fstr += '+'
         for c in fstr:
             if c in ('+','-'):
-                subs=fstr[(previndex+1):index]
-                if subs: all.append(subs)
                 previndex=index
             index+=1
 
@@ -82,33 +87,115 @@ class HarvestManUrlFilter(HarvestManBaseFilter):
                 else:
                     exclude.append(s)
 
-        print 'Exclude=>',exclude
-        print 'Include=>',include
+        return (include, exclude)
+
+    def create_filter(self, plainstr, extn=False):
+        """ Create a python regular expression based on
+        the list of filter strings provided as input """
+
+        # Final filter string
+        fstr = ''
+        s = plainstr
         
-        #exclusionfilter=self._create_filter(exclude,servers)
-        #inclusionfilter=self._create_filter(include,servers)
-        #allfilter = self._create_filter(all, servers)
+        # First replace any ''' with ''
+        s=s.replace("'",'')            
+        # Then we remove the asteriks
+        s=s.replace('*','.*')
+        fstr = s
 
-        # return a 3 tuple of (inclusionfilter, exclusionfilter, allfilter)
-        # return (inclusionfilter, exclusionfilter, allfilter)
+        if extn:
+            fstr = '\.' + fstr + '$'
 
-    def _make_extn_filter(self, filterstring):
-        pass
+        return fstr
         
-    def _compile_filters(self):
+    def make_path_filter(self, filterstring, casing=0, flags=''):
 
-        # Regular expression filters
-        for pattern, casing, flags in self.regexfilterpatterns:
-            self.regexfilters.append(self.make_regex(pattern, casing, flags))
+        include, exclude = self.parse_filter(filterstring)
+        
+        for pattern in include:
+            self.pathpatterns['include'].append((self.create_filter(pattern), casing, flags))
+        for pattern in exclude:
+            self.pathpatterns['exclude'].append((self.create_filter(pattern), casing, flags))
 
-        print self.regexfilters
+    def make_extn_filter(self, filterstring, casing=0, flags=''):
+
+        include, exclude = self.parse_filter(filterstring)
+        
+        for pattern in include:
+            self.extnpatterns['include'].append((self.create_filter(pattern, True), casing, flags))
+        for pattern in exclude:
+            self.extnpatterns['exclude'].append((self.create_filter(pattern, True), casing, flags))
+
+    def make_regex_filter(self, filterstring, casing=0, flags=''):
+
+        # Direct use - no processing required
+        self.regexpatterns.append((filterstring, casing, flags))
+        
+    def compile_filters(self):
 
         for pattern, casing, flags in self.pathfilterpatterns:
-            self._make_path_filter(pattern)
+            self.make_path_filter(pattern, casing, flags)
+
+        for pattern, casing, flags in self.extnfilterpatterns:
+            self.make_extn_filter(pattern, casing, flags)            
             
-        # URL path filters
+        for pattern, casing, flags in self.regexfilterpatterns:
+            self.make_regex_filter(pattern, casing, flags)
 
+        # Now, compile each to regular expressions and
+        # append to include & exclude regex filter list
+        for urlfilter in self.pathpatterns['include'] + self.extnpatterns['include']:
+            regexp = self.make_regex(urlfilter[0], urlfilter[1], urlfilter[2])
+            self.inclfilters.append(regexp)
+            
+        for urlfilter in self.pathpatterns['exclude'] + self.extnpatterns['exclude']:
+            regexp = self.make_regex(urlfilter[0], urlfilter[1], urlfilter[2])
+            self.exclfilters.append(regexp)
 
+        for urlfilter in self.regexpatterns:
+            regexp = self.make_regex(urlfilter[0], urlfilter[1], urlfilter[2])
+            self.exclfilters.append(regexp)            
+
+    def filter(self, urlobj):
+        """ Apply all URL filters on the passed URL object 'urlobj'.
+        Return True if filtered and False if not filtered """
+
+        # The logic of this is simple - The URL is checked
+        # against all inclusion filters first, if any. If
+        # anything matches, then we don't do exclusion filter
+        # check since inclusion (+) has preference over exclusion (-)
+        # In that case, False is returned.
+        
+        # Otherwise, the URL is checked against all exclusion
+        # filters and if any match, True is returned.
+
+        # Finally, if none match, False is returned.
+
+        url = urlobj.get_full_url()
+        matchincl, matchexcl = False, False
+
+        for urlfilter in self.inclfilters:
+            m = urlfilter.search(url)
+            if m:
+                debug("Inclusion filter for URL %s found", url)
+                matchincl = True
+                break
+
+        if matchincl:
+            return False
+
+        for urlfilter in self.exclfilters:
+            m = urlfilter.search(url)
+            if m:
+                debug("Exclusion filter for URL %s found", url)
+                matchexcl = True
+                break
+
+        if matchexcl:
+            return True
+
+        return False
+               
 class HarvestManJunkFilter(object):
     """ Junk filter class. Filter out junk urls such
     as ads, banners, flash files etc """

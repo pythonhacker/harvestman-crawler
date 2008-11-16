@@ -210,28 +210,39 @@ def render_tabs():
     <div class="tabber">
 
      <div class="tabbertab">
-          <h2>Settings</h2>
-          <p>Settings stuff goes here</p>
-
+          <h2>Configuration</h2>
+          <p>
+            <ol>
+              <li>User configuration</li>
+              <li>System configuration</li>
+              <li>New configuration</li>
+            </ol>
+          </p>
      </div>
 
 
      <div class="tabbertab">
-          <h2>Crawls(Projects)</h2>
-          <p>Projects stuff goes here</p>
-     </div>
-
-
-     <div class="tabbertab">
-
-          <h2>Files</h2>
-          <p>Files stuff goes here</p>
+          <h2>Projects</h2>
+          <p>
+            <ol>
+              <li>Project History</li>
+              <li>Current Project</li>
+              <li>New Project</li>
+            </ol>
+          </p>          
      </div>
 
      <div class="tabbertab">
 
           <h2>Documentation</h2>
-          <p>Documentation goes here</p>
+          <p>
+            <ol>
+              <li>Release Notes</li>
+              <li>Change History</li>
+              <li>API Documentation</li>
+              <li>HOWTOs & Tutorials</li>
+            </ol>
+          </p>
      </div>     
 
      <div class="tabbertab">

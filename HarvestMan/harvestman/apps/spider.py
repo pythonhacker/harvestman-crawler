@@ -449,7 +449,7 @@ class HarvestMan(HarvestManAppBase):
         # sites.
         locale.setlocale(locale.LC_ALL, '')
 
-        objects.rulesmgr.make_filters()
+        # objects.rulesmgr.make_filters()
         
         if objects.config.verbosity:
             self.welcome_message()

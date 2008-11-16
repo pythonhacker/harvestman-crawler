@@ -80,6 +80,10 @@ class HarvestManRulesChecker(object):
         self._madefilters = False
         self._configobj = objects.config
         self.junkfilter = filters.HarvestManJunkFilter()
+        self.urlfilter =  filters.HarvestManUrlFilter(self._configobj.pathurlfilters,
+                                                      self._configobj.extnurlfilters,
+                                                      self._configobj.regexurlfilters)
+
         
     def violates_rules(self, urlObj):
         """ Check the basic rules for this url object,
@@ -110,9 +114,9 @@ class HarvestManRulesChecker(object):
         except KeyError:
             pass
 
-       # now apply the url filter
+        # now apply the url filter
         if self.apply_url_filter(urlObj):
-            extrainfo("Custom filter - filtered ", url)
+            extrainfo("URL filter - filtered", url)
             self.add_to_filter(urlObj.index)
             return True
 
@@ -263,6 +267,11 @@ class HarvestManRulesChecker(object):
         if ip1==ip2: return True
         else: return False
 
+    def apply_url_filter(self, urlObj):
+        """ Apply URL filter to the URL. Return True if filtered and False otherwise """
+
+        return self.urlfilter.filter(urlObj)
+    
     def apply_rep(self, urlObj):
         """ See if the robots.txt file on the server
         allows fetching of this url. Return 0 on success
@@ -345,183 +354,6 @@ class HarvestManRulesChecker(object):
                 return False
 
         return False
-
-    def apply_url_filter(self, urlobj):
-        """ See if we have a filter matching the url.
-        Return 1 for blocking the url and 0 for allowing it """
-
-        inclfilter = self._configobj.inclfilter
-        exclfilter = self._configobj.exclfilter
-
-        # neither filters are enabled, return False
-        if not inclfilter and not exclfilter:
-            return 0
-
-        # We always check inclusion filter first since it is
-        # normally more specific than exclusion filter. Someone
-        # can request to not fetch any url containing /images/
-        # in the path, but still fetch the particular path
-        # /preferred/images. It will work only if we check for
-        # inclusion first and exclusion later.
-        inclcheck,exclcheck=-1,-1
-        matchincl, matchexcl=False,False
-
-        url = urlobj.get_full_url()
-        
-        if inclfilter:
-            inclcheck=1
-            # see if we have a match
-            for f in inclfilter:
-                m=f.search(url)
-                if m:
-                    debug('Go-through filter for url ', url, 'found')
-                    matchincl=True
-                    inclcheck=0
-                    break
-
-        if exclfilter:
-            exclcheck=0
-            # see if we have a match
-            for f in exclfilter:
-                m=f.search(url)
-                if m:
-                    debug('No-pass filter for url ', url, 'found')
-                    matchexcl=True
-                    exclcheck=1
-                    break
-
-        if inclcheck==1:
-            extrainfo("Inclfilter does not allow this url", url)
-        if exclcheck==0:
-            extrainfo("Exclfilter allows this url", url)
-
-        # if exclfilter and inclfilter returns different results
-        # (exclfilter denys, inclfilter allows)
-        # we check the order of the filters in the global filter. Whichever
-        # comes first has precedence.
-        if inclcheck == 0 and exclcheck == 1:
-            globalfilter=self._configobj.allfilters
-            try:
-                indexincl=globalfilter.index(matchincl)
-            except:
-                indexincl=-1
-            try:
-                indexexcl=globalfilter.index(matchexcl)
-            except:
-                indexexcl=-1
-            if indexincl != -1 and indexexcl != -1:
-                if indexincl < indexexcl:
-                    # inclusion filter has precedence
-                    return inclcheck
-                else:
-                    # exclusion filter has precedence
-                    return exclcheck
-            else:
-                # error, return allow (0)
-                return 0
-        else:
-            # return whichever matched
-            if inclcheck != -1:
-                return inclcheck
-            elif exclcheck != -1:
-                return exclcheck
-            # none matched, allow it
-            else:
-                return 0 
-
-        # We wont reach here
-        return 0
-
-    def apply_server_filter(self, urlObj):
-        """ See if we have a filter matching the server of
-        this url. Return 1 on success(blocked) and 0 on failure
-        (allowed) """
-
-        server = urlObj.get_domain()
-
-        serverinclfilter = self._configobj.serverinclfilter
-        serverexclfilter = self._configobj.serverexclfilter
-
-        if not serverexclfilter and not serverinclfilter: return 0
-
-        # We always check inclusion filter first since it is
-        # normally more specific than exclusion filter. Someone
-        # can request to not fetch any url containing /images/
-        # in the path, but still fetch the particular path
-        # /preferred/images. It will work only if we check for
-        # inclusion first and exclusion later.
-        inclcheck,exclcheck=-1,-1
-        matchincl, matchexcl=False,False
-
-        url = urlObj.get_full_url()
-
-        if serverinclfilter:
-            inclcheck = 1
-
-            for f in serverinclfilter:
-                # see if we have a match
-                m=re.search(re.compile(f,re.IGNORECASE), server)
-
-                if m:
-                    debug('Go-through filter for url ', url, 'found')
-                    matchincl=f
-                    inclcheck=0
-                    break
-
-        if serverexclfilter:
-            exclcheck = 1
-            for f in serverexclfilter:
-                # see if we have a match
-                m=re.search(re.compile(f,re.IGNORECASE), server)
-
-                if m:
-                    debug('No-pass filter for url ', url, 'found')
-                    matchexcl=f
-                    exclcheck=1
-                    break
-
-        if inclcheck==1:
-            extrainfo("Inclfilter does not allow this url", url)
-        if exclcheck==0:
-            extrainfo("Exclfilter allows this url", url)
-
-        # if exclfilter and inclfilter returns different results
-        # (exclfilter denys, inclfilter allows)
-        # we check the order of the filters in the global filter. Whichever
-        # comes first has precedence.
-        if inclcheck == 0 and exclcheck == 1:
-            globalfilter=self._configobj.allserverfilters
-            try:
-                indexincl=globalfilter.index(matchincl)
-            except:
-                indexincl=-1
-            try:
-                indexexcl=globalfilter.index(matchexcl)
-            except:
-                indexexcl=-1
-
-            if indexincl != -1 and indexexcl != -1:
-                if indexincl < indexexcl:
-                    # inclusion filter has precedence
-                    return inclcheck
-                else:
-                    # exclusion filter has precedence
-                    return exclcheck
-            else:
-                # error, return allow (0)
-                return 0
-        else:
-            # return whichever matched
-            if inclcheck != -1:
-                return inclcheck
-            elif exclcheck != -1:
-                return exclcheck
-            # none matched, allow it
-            else:
-                return 0 
-
-        # We wont reach here
-        return 0
 
     def is_under_starting_directory(self, urlObj):
         """ Check whether the url in the url object belongs
@@ -710,10 +542,6 @@ class HarvestManRulesChecker(object):
             # if not res:
             #   return True
 
-            # Apply filter for servers here
-            if self.apply_server_filter(urlObj):
-                return True
-
             # Apply depth check for external servers here
             if self._configobj.extdepth:
                 if self.apply_depth_check(urlObj, mode=2):
@@ -829,14 +657,8 @@ class HarvestManRulesChecker(object):
         return (numservers, numdirs, numfiltered)
 
     def make_filters(self):
-
-        urlfilter = filters.HarvestManUrlFilter(self._configobj.regexurlfilters,
-                                                self._configobj.pathurlfilters,
-                                                self._configobj.extnurlfilters)
-
-        self._configobj.urlfilter =  urlfilter
-        # sys.exit(0)
-        
+        pass
+    
    ##  def make_filters(self):
 ##         """ This function creates the filter regexps
 ##         for url/text based filtering of content """
@@ -909,105 +731,6 @@ class HarvestManRulesChecker(object):
             d[key.lower()] = val
 
         return d
-
-    def _make_filter(self, fstr,servers=0):
-        """ Function used to convert url filter strings
-        to python regular expresssions """
-
-        # First replace any ''' with ''
-        fstr=fstr.replace("'",'')            
-        # regular expressions to include
-        include=[]
-        # regular expressions to exclude        
-        exclude=[]
-        # all regular expressions
-        all=[]
-
-        index=0
-        previndex=-1
-        fstr += '+'
-        for c in fstr:
-            if c in ('+','-'):
-                subs=fstr[(previndex+1):index]
-                if subs: all.append(subs)
-                previndex=index
-            index+=1
-
-        l=fstr.split('+')
-
-        for s in l:
-            l2=s.split('-')
-            for x in xrange(len(l2)):
-                s=l2[x]
-                if s=='': continue
-                if x==0:
-                    include.append(s)
-                else:
-                    exclude.append(s)
-
-        # print 'Exclude=>',exclude
-        # print 'Include=>',include
-        
-        exclusionfilter=self._create_filter(exclude,servers)
-        inclusionfilter=self._create_filter(include,servers)
-        allfilter = self._create_filter(all, servers)
-
-        # return a 3 tuple of (inclusionfilter, exclusionfilter, allfilter)
-        return (inclusionfilter, exclusionfilter, allfilter)
-
-    def _create_filter(self, strlist, servers=0):
-        """ Create a python regular expression based on
-        the list of filter strings provided as input """
-
-        refilter = []
-        if servers:
-            serverfilter=[]
-            for s in strlist:
-                # First replace any ''' with ''
-                s=s.replace("'",'')
-                # Here asteriks have a meaning, they should match
-                # anything
-                s=s.replace('*', '.*')
-                serverfilter.append(s)
-
-            return serverfilter
-
-        for s in strlist:
-            fstr = ''
-            # First replace any ''' with ''
-            extn=s.replace("'",'')            
-            # Then we remove the asteriks
-            s=s.replace('*','.*')
-            # Type 1 filter-> they begin with '.' now
-            # Find out position of '.'
-            pos=s.rfind('.')
-            if pos == 0:
-                s = "".join(("\\", s))
-                # Append a '.*$' to the string
-                s += '$'
-                fstr += s
-            # Type 3 filter
-            # These will be the form of <something>/.<extn> now
-            elif s[pos-1] == '/':
-                # get that <something>
-                prefix = s[:(pos-1)]
-                # get the <extn>
-                extn = s[(pos+1):]
-                myfilter = prefix
-                myfilter += '/(?=\w+.'
-                myfilter += extn
-                myfilter += ')'
-                fstr += myfilter
-            # All other cases are considered Type 2 filters
-            # i.e, plain strings
-            else:
-                fstr += s
-
-            # print 'Fstr=>',fstr
-            
-            refilter.append(re.compile(fstr, re.IGNORECASE))
-
-        return refilter
 
     def _make_word_filter(self, s):
         """ Create a word filter rule for HarvestMan """

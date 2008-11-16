@@ -36,7 +36,7 @@
       </project>
 
 
-      <project ignore="0">
+      <project ignore="1">
 
         <url>http://swish-e.org/docs</url>
         <name>swish-docs</name>
@@ -103,10 +103,12 @@
         <serverpriority></serverpriority>
       </rules>
       <filters>
-        <urlfilter></urlfilter>
-        <serverfilter></serverfilter>
-        <wordfilter></wordfilter>
-        <junkfilter value="1"/>
+	<urlfilter context="crawl">
+	  <path value="-/images/*+/images/public/*" enable="1" case="1" />
+	  <extension value="-jpg-png+doc" enable="0" case="0" />
+	  <regex value="(\s*\/banner\/)" enable="1" case="0" flags='re.LOCALE' />
+	</urlfilter>
+        <junkfilter enable="1"/>
       </filters>
       <plugins>
         <plugin name="swish-e" enable="0" />
