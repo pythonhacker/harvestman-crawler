@@ -249,13 +249,13 @@ class HarvestManBaseUrlCrawler( threading.Thread ):
     def run(self):
         """ The overloaded run method of threading.Thread class """
 
-        try:
-            self.stateobj.set(self, THREAD_STARTED)
-            self.action()
-        except Exception, e:
-            # print 'Exception',e,self
-            self.exception = e
-            self.stateobj.set(self, THREAD_DIED)                
+        #try:
+        self.stateobj.set(self, THREAD_STARTED)
+        self.action()
+        #except Exception, e:
+        #    # print 'Exception',e,self
+        #    self.exception = e
+        #    self.stateobj.set(self, THREAD_DIED)                
 
     def stop(self):
         self.join()

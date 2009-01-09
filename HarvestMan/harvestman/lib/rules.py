@@ -372,7 +372,9 @@ class HarvestManRulesChecker(object):
         # Sample site: http://www.vegvesen.no
 
         if baseUrlObj.reresolved:
-            bdir = baseUrlObj.get_original_url_directory()
+            # bdir = baseUrlObj.get_original_url_directory()
+            old_urlobj = baseUrlObj.get_original_state()
+            bdir = old_urlobj.get_url_directory()
         else:
             bdir = baseUrlObj.get_url_directory()
             

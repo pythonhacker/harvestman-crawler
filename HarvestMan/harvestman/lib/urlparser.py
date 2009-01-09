@@ -32,6 +32,8 @@ Author: Anand B Pillai <abpillai at gmail dot com>
                              of URL added .Generating index as hash of canonical URL
                              now. Added queue macros.
    Apr 24 2008     Anand    Fix for #829.
+   Jan 9 2009      Anand    Use a different hashing scheme for URL other than
+                            in-built 'hash'.
 
 Copyright (C) 2004 Anand B Pillai.
    
@@ -64,6 +66,23 @@ URL_IN_QUEUE=2         # URL is in queue
 URL_IN_DOWNLOAD=3      # URL is out of queue and in download
 URL_DONE_DOWNLOAD=4    # URL has completed download, though this may not mean
                        # that the download was successful.
+
+mask=0xffffff
+
+def one_stringhash(s):
+    # One-at-a-time string hash
+    l = len(s)
+    hashval = 0
+    for c in s:
+        hashval += ord(c)
+        hashval += (hashval << 10)
+        hashval ^= (hashval >> 6)
+
+    hashval += (hashval << 3)
+    hashval ^= (hashval >> 11)
+    hashval += (hashval << 15)
+
+    return (hashval & mask)
 
 class HarvestManUrlError(Exception):
     """ Error class for HarvestManUrl """
@@ -215,7 +234,7 @@ class HarvestManUrl(object):
 
         # For starting URL, the index is 0, for the rest
         # it is as hash of the canonical URL string...
-        self.index = hash(self.get_canonical_url())
+        self.index = one_stringhash(self.get_canonical_url())
         # If this is a URL similar to start URL,
         # reset its index to zero. The trick is
         # to store only the hash of the start URL

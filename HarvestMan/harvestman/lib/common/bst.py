@@ -4,6 +4,7 @@ the nodes. This is not a full-fledged implementation since it does not
 implement node deletion, tree balancing etc.
 
 Created Anand B Pillai <abpillai at gmail dot com> Feb 13 2008
+Modified Anand B Pillai  Make BST use bsddb caching (experimental!)
 
 Copyright (C) 2008, Anand B Pillai.
 
@@ -15,6 +16,7 @@ import sys
 import os
 import shutil
 import weakref
+import bsddb
 
 from dictcache import DictCache
 
@@ -185,10 +187,11 @@ class BST(object):
         self.clear()
 
     def to_cache(self, key, val):
-        self.diskcache[key] = val
-
+        self.diskcache[str(key)] = cPickle.dumps(val)
+        self.diskcache.sync()
+        
     def from_cache(self, key):
-        return self.diskcache[key]
+        return cPickle.loads(self.diskcache[str(key)])
     
     def addNode(self, key, val):
         self.size += 1
@@ -472,8 +475,8 @@ class BST(object):
             except Exception, e:
                 raise
 
-        self.diskcache = DictCache(10, self.bdir)
-        self.diskcache.freq = self.autolevel
+        self.diskcache = bsddb.btopen('cache.db','n')              # DictCache(10, self.bdir)
+        # self.diskcache.freq = self.autolevel
         
 if __name__ == "__main__":
     b = BST()
