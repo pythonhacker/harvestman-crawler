@@ -200,6 +200,7 @@ harvestman/test/test_connector.py
 harvestman/test/test_logger.py
 harvestman/test/test_pageparser.py
 harvestman/test/test_urlcollections.py
+harvestman/test/test_urlfilter.py
 harvestman/test/test_urlparser.py
 harvestman/test/test_urltypes.py
 harvestman/tools/__init__.py
