@@ -622,6 +622,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
         # download the url
         url_obj = self.url
 
+        # print self.url,'=>',self.url.is_webpage()
         if self.url.is_webpage() and data:
             # Create a HarvestMan document with all data we have...
 
@@ -749,6 +750,15 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
             
             # Raise "afterparse" event...
             objects.eventmgr.raise_event('afterparse', self.url, document, links=links)
+
+            # Apply textfilter check here. This filter is applied on content
+            # or metadata and is always a crawl filter, i.e since it operates
+            # on content, we cannot apply the filter before the URL is fetched.
+            # However it is applied after the URL is fetched on its content. If
+            # matches, then its children are not crawled...
+            if objects.rulesmgr.apply_text_filter(document, self.url):
+                extrainfo('Text filter - filtered', self.url)                
+                return data
             
             # Some times image links are provided in webpages as regular <a href=".."> links.
             # So in order to filer images fully, we need to check the wp.links list also.

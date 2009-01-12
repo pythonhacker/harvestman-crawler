@@ -4,43 +4,12 @@
             xsi:schemaLocation="http://harvestmanontheweb.com/schemas/HarvestMan.xsd">
   <config version="3.0" xmlversion="1.0">
     <projects>
-      
       <project ignore="0">
 
-        <url>http://docs.python.org/tutorial/index.html</url>
-        <name>pytut</name>
-        <verbosity level="extrainfo"/>
-      </project>
-
-      <project ignore="1">
-
-        <url>http://docs.python.org/lib/lib.html</url>
-        <name>pydoc</name>
-        <verbosity level="info"/>
-      </project>
-
-      <project ignore="1">
-
         <url>www.harvestmanontheweb.com</url>
-        <name>foo</name>
+        <name>harvestman</name>
         <verbosity level="extrainfo"/>
       </project>
-      
-      <project ignore="1">
-
-        <url>www.automotive.com</url>
-        <name>auto</name>
-        <verbosity level="extrainfo"/>
-      </project>
-
-
-      <project ignore="1">
-
-        <url>http://swish-e.org/docs</url>
-        <name>swish-docs</name>
-        <verbosity level="20"/>
-      </project>
-    </projects>
     
     <network>
       <proxy>
@@ -96,19 +65,18 @@
         <timelimit value="-1"/>
       </limits>
       <rules>
-        <robots value="1"/>
+        <robots value="0"/>
         <urlpriority></urlpriority>
         <serverpriority></serverpriority>
       </rules>
       <filters>
         <urlfilter>
-          <path value="-/images/*+/images/public/*" enable="0" case="1" />
+          <path value="-/images/*+/images/public/*" case="1" enable="0" />
           <extension value="-jpg-png+doc" enable="0"/>
-          <regex value="(\s*\/banner\/)" enable="0" flags='re.LOCALE' />
+          <regex value="(\s*\/banner\/)" enable="1" flags='re.LOCALE' />
         </urlfilter>
         <textfilter>
-          <meta value="(internet|crawler|web-bot|web-crawler)" tags="keywords" enable="0" />
-          <meta value="harvestman|web-crawler" tags="title,description" enable="0" />
+          <meta value="project page of the harvestman" tags="description" case="1" />
         </textfilter>
         <junkfilter enable="1"/>
       </filters>

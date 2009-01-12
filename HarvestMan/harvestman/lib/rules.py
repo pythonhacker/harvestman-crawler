@@ -83,8 +83,9 @@ class HarvestManRulesChecker(object):
         self.urlfilter =  filters.HarvestManUrlFilter(self._configobj.pathurlfilters,
                                                       self._configobj.extnurlfilters,
                                                       self._configobj.regexurlfilters)
+        self.txtfilter = filters.HarvestManTextFilter(self._configobj.contentfilters,
+                                                      self._configobj.metafilters)
 
-        
     def violates_rules(self, urlObj):
         """ Check the basic rules for this url object,
         This function returns True if the url object
@@ -122,7 +123,7 @@ class HarvestManRulesChecker(object):
 
         # now apply the junk filter
         if self.junkfilter:
-            if not self.junkfilter.check(urlObj):
+            if self.junkfilter.filter(urlObj):
                 extrainfo("Junk Filter - filtered", url)
                 self.add_to_filter(urlObj.index)                            
                 return True
@@ -271,7 +272,13 @@ class HarvestManRulesChecker(object):
         """ Apply URL filter to the URL. Return True if filtered and False otherwise """
 
         return self.urlfilter.filter(urlObj)
-    
+
+    def apply_text_filter(self, document, urlObj):
+        """ Apply text filter to the document object. Return True if filtered and
+        False otherwise """
+
+        return self.txtfilter.filter(document, urlObj)
+        
     def apply_rep(self, urlObj):
         """ See if the robots.txt file on the server
         allows fetching of this url. Return 0 on success

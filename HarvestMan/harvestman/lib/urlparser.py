@@ -773,10 +773,7 @@ class HarvestManUrl(object):
         elif self.typ==URL_TYPE_ANY:
             if self.validfilename:
                 extn = ((os.path.splitext(self.validfilename))[1]).lower()
-                
                 if extn in webpage_extns:
-                    return True
-                elif extn not in document_extns and extn not in image_extns:
                     return True
                 else:
                     # jkleven: 10/1/06.  Forms were never being parsed for links.
@@ -834,7 +831,7 @@ class HarvestManUrl(object):
             return (extn in flash_extns)
 
         return False        
-        
+
     def is_equal(self, url):
         """ Find whether the passed url matches
         my url """
@@ -850,6 +847,50 @@ class HarvestManUrl(object):
         #        return True
 
         return False
+
+    def parseable(self):
+        """ Return whether the URL could have parseable content.
+        This function tries to make the best guess
+        based on the URL file extension and type. Parseable
+        means the possibility of having content which can
+        produce child URLs effectively meaning HTML and
+        parseable stylesheets """
+
+        # This is called before downloading of a URL. However
+        # whether a URL has parseable content is fully known
+        # only after downloading it. However in this case, we
+        # need this information prior to download, so we try
+        # to make the best guess....
+
+        # The guess is very much optimistic. That is the logic
+        # is tilted towards trying to make all possible checks
+        # on returning this as a parseable URL.
+
+        if self.is_webpage() or self.is_stylesheet():
+            return True
+
+        # Is this an image,multimedia,flash then return False
+        if self.is_image() or self.is_multimedia() or self.is_flash():
+            return False
+        
+        # Okay, it is not webpage/css/multimedia/flash, but this
+        # could be a directory URL which can turn out to be
+        # a web-page. So check for file extension
+        if self.validfilename:
+            extn = ((os.path.splitext(self.validfilename))[1]).lower()
+            # Document ? Return false
+            if extn in document_extns:
+                return False
+            
+            # The extension has to be a valid (at least 2 chars, excluding the dot)
+            # extension, to assume this is a valid non-HTML type file.
+            if len(extn)>=3:
+                return False
+
+
+        # Ok - Safely assume that this is parseable HTML type or
+        # will turn out to be that later!
+        return True
         
     # ============ End - Is (Boolean Get) Methods =========== #  
     # ============ Begin - General Get Methods ============== #

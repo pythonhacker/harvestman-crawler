@@ -832,14 +832,13 @@ class HarvestManStateObject(dict, Singleton):
         # Append a tuple of value, casing, flags
         if key=='regex':
             self.regexurlfilters.append((val,casing,flags))
-            print self.regexurlfilters
+            # print self.regexurlfilters
         elif key=='path':
             self.pathurlfilters.append((val,casing,flags))
-            print self.pathurlfilters
+            # print self.pathurlfilters
         elif key=='extension':
             self.extnurlfilters.append((val,casing,flags))
-            print self.extnurlfilters
-            
+            # print self.extnurlfilters
 
     def set_textfilter(self, key, val, filterdict):
 

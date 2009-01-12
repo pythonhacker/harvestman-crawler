@@ -29,6 +29,9 @@
    April 4 2008     Anand          Added update_url method and corresponding update method
                                    in bst.py to update state of URLs after download. Added
                                    statement to print broken links information at end.
+
+   Jan 13 2008      Anand          Better check for thread download in download_url method.
+                                   Added method 'parseable' in urlparser.py for the same.
    
    Copyright (C) 2004 Anand B Pillai.
     
@@ -755,8 +758,7 @@ class HarvestManDataManager(object):
     def download_url(self, caller, url):
 
         no_threads = (not self._cfg.usethreads) or \
-                     url.is_webpage() or \
-                     url.is_stylesheet()
+                     url.parseable()
 
         data=""
         if no_threads:

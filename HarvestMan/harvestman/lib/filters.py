@@ -13,7 +13,10 @@ of filters.
  Jul 23 2008 Anand   Creation
  Nov 17 2008 Anand   Completed URL filters class implementation
                      and integrated with HarvestMan.
-
+ Jan 13 2009 Anand   Added text filter class. Modified
+                     junk filter class to follow the filter
+                     class interface.
+ 
   Copyright (C) 2003-2008 Anand B Pillai.
                                 
 """
@@ -23,6 +26,9 @@ from harvestman.lib.common.common import *
 class HarvestManBaseFilter(object):
     """ Base class for all HarvestMan filter classes """
 
+    def __init__(self):
+        self.context = None
+        
     def filter(self, url):
         raise NotImplementedError
 
@@ -109,7 +115,10 @@ class HarvestManUrlFilter(HarvestManBaseFilter):
         return fstr
         
     def make_path_filter(self, filterstring, casing=0, flags=''):
-
+        """ Creates a URL path filter. A URL path is specified
+        as an include/exclude filter. Wildcards are specified by
+        using asteriks """
+        
         include, exclude = self.parse_filter(filterstring)
         
         for pattern in include:
@@ -118,7 +127,10 @@ class HarvestManUrlFilter(HarvestManBaseFilter):
             self.pathpatterns['exclude'].append((self.create_filter(pattern), casing, flags))
 
     def make_extn_filter(self, filterstring, casing=0, flags=''):
-
+        """ Creates a file extension filter. A file extension filter
+        is specified by concatenating file extensions with a + or - in
+        front of them to specify include/exclude respectively """
+        
         include, exclude = self.parse_filter(filterstring)
         
         for pattern in include:
@@ -127,12 +139,16 @@ class HarvestManUrlFilter(HarvestManBaseFilter):
             self.extnpatterns['exclude'].append((self.create_filter(pattern, True), casing, flags))
 
     def make_regex_filter(self, filterstring, casing=0, flags=''):
-
+        """ Creates a regular expression filter. This is nothing but a Python
+        regular expression string which is compiled directly into a regex """
+        
         # Direct use - no processing required
         self.regexpatterns.append((filterstring, casing, flags))
         
     def compile_filters(self):
-
+        """ Compile all filter strings and create regular
+        expression objects """
+        
         for pattern, casing, flags in self.pathfilterpatterns:
             self.make_path_filter(pattern, casing, flags)
 
@@ -195,8 +211,91 @@ class HarvestManUrlFilter(HarvestManBaseFilter):
             return True
 
         return False
-               
-class HarvestManJunkFilter(object):
+
+class HarvestManTextFilter(HarvestManBaseFilter):
+    """ Filter class for filtering out web pages based on the URL path string """
+
+    def __init__(self, contentfilters=[], metafilters=[]):
+        # Filter pattern strings
+        self.contentpatterns = contentfilters
+        self.metapatterns = metafilters
+        # print 'Content=>',self.contentpatterns
+        # print 'Meta=>',self.metapatterns
+        # Actual filters
+        # Text filters are always exclude filters, so
+        # no need of separate include & exclude keys
+        self.contentfilter = []
+        # Meta filters
+        self.keywordfilter = []
+        self.titlefilter = []
+        self.descfilter = []
+        # Parse and compile the filters
+        self.compile_filters()
+
+    def compile_filters(self):
+
+        # Content filter is straight forward
+        for pattern, casing, flags in self.contentpatterns:
+            self.contentfilter.append(self.make_regex(pattern, casing, flags))
+
+        # Some pre-processing is involved in meta-filters
+        for pattern,casing,flags,tags in self.metapatterns:
+            regex = self.make_regex(pattern, casing, flags)
+            if tags=='all':
+                # Append to all filters
+                self.keywordfilter.append(regex)
+                self.titlefilter.append(regex)
+                self.descfilter.append(regex)
+            else:
+                # Split and see which all tags are specified
+                tagslist = tags.split(',')
+                if 'title' in tagslist:
+                    self.titlefilter.append(regex)
+                if 'keywords' in tagslist:
+                    self.keywordfilter.append(regex)
+                if 'description' in tagslist:
+                    self.descfilter.append(regex)                    
+
+
+    def filter(self, urldoc, urlobj):
+        """ Apply all URL filters on the passed URL document object
+        Return True if filtered and False if not filtered """
+
+        filterurl = False
+        
+        # Apply content filter
+        for cfilter in self.contentfilter:
+            m = cfilter.search(urldoc.content)
+            if m:
+                debug("Content filter for URL %s found" % urlobj)
+                self.context='Content'
+                return True
+
+        # Apply meta filters
+        for tfilter in self.titlefilter:
+            m = tfilter.search(urldoc.title)
+            if m:
+                debug("Title filter for URL %s found" % urlobj)
+                self.context='Title'                
+                return True
+
+        for dfilter in self.descfilter:
+            m = dfilter.search(urldoc.description)
+            if m:
+                debug("Description filter for URL %s found" % urlobj)
+                self.context='Description'                
+                return True            
+            
+        for kfilter in self.keywordfilter:
+            matches = [kfilter.search(keyword) for keyword in urldoc.keywords]
+            if len(matches):
+                debug("Keyword filter for URL %s found" % urlobj)
+                self.context='Keyword'                
+                return True
+
+        return False
+                   
+class HarvestManJunkFilter(HarvestManBaseFilter):
     """ Junk filter class. Filter out junk urls such
     as ads, banners, flash files etc """
 
@@ -571,21 +670,20 @@ class HarvestManJunkFilter(object):
     def reset_match(self):
         self.msg = ''        
         
-    def check(self, url_obj):
-        """ Check whether the url is junk. Return
-        True if the url is O.K (not junk) and False
-        otherwise """
+    def filter(self, urlobj):
+        """ Apply Junk filter on the passed URL object. Return True
+        if filtered and False if not filtered """
 
         self.reset_msg()
         self.reset_match()
         
         # Check domain first
-        ret = self._check_domain(url_obj)
-        if not ret:
+        ret = self._check_domain(urlobj)
+        if ret:
             return ret
 
         # Check pattern next
-        return self._check_pattern(url_obj)
+        return self._check_pattern(urlobj)
 
     def base_domain(self, domain):
 
@@ -608,14 +706,14 @@ class HarvestManJunkFilter(object):
         # First check for domain
         if domain_port in self.block_domains:
             self.msg = '<Found domain match>'
-            return False
+            return True
         # Then check for base domain
         else:
             if base_domain_port in self.base_domains:
                 self.msg = '<Found base-domain match>'                
-                return False
+                return True
 
-        return True
+        return False
 
     def _check_pattern(self, url_obj):
         """ Check whether the url matches a junk pattern.
@@ -630,11 +728,11 @@ class HarvestManJunkFilter(object):
             if p.search(url):
                 self.msg = '<Found pattern match>'
                 self.match = self.block_patterns[indx]
-                return False
+                return True
             
             indx += 1
             
-        return True
+        return False
             
     def get_error_msg(self):
         return self.msg
@@ -643,6 +741,8 @@ class HarvestManJunkFilter(object):
         return self.match
     
 if __name__=="__main__":
+    import urlparser
+    
     # Test filter class
     filter = HarvestManJunkFilter()
     
@@ -650,39 +750,39 @@ if __name__=="__main__":
     # The first two are direct domain matches, the
     # next two are base domain matches.
     u = urlparser.HarvestManUrl("http://a.tribalfusion.com/images/1.gif")
-    print filter.check(u),filter.get_error_msg(),'=>',u.get_full_url()
+    print filter.filter(u),filter.get_error_msg(),'=>',u.get_full_url()
     u = urlparser.HarvestManUrl("http://stats.webtrendslive.com/cgi-bin/stats.pl")
-    print filter.check(u),filter.get_error_msg(),'=>',u.get_full_url()
+    print filter.filter(u),filter.get_error_msg(),'=>',u.get_full_url()
     u = urlparser.HarvestManUrl("http://stats.cyberclick.net/cgi-bin/stats.pl")
-    print filter.check(u),filter.get_error_msg(),'=>',u.get_full_url()    
+    print filter.filter(u),filter.get_error_msg(),'=>',u.get_full_url()    
     u = urlparser.HarvestManUrl("http://m.doubleclick.net/images/anim.gif")
-    print filter.check(u),filter.get_error_msg(),'=>',u.get_full_url()
+    print filter.filter(u),filter.get_error_msg(),'=>',u.get_full_url()
     
     # The next are pattern matches
     u = urlparser.HarvestManUrl("http://www.foo.com/popupads/ad.gif")
-    print filter.check(u),filter.get_error_msg(),'=>',u.get_full_url()
+    print filter.filter(u),filter.get_error_msg(),'=>',u.get_full_url()
     print '\tMatch=>',filter.get_match()
     u = urlparser.HarvestManUrl("http://www.foo.com/htmlad/1.html")
-    print filter.check(u),filter.get_error_msg(),'=>',u.get_full_url()
+    print filter.filter(u),filter.get_error_msg(),'=>',u.get_full_url()
     print '\tMatch=>',filter.get_match()    
     u = urlparser.HarvestManUrl("http://www.foo.com/logos/nbclogo.gif")
-    print filter.check(u),filter.get_error_msg(),'=>',u.get_full_url()
+    print filter.filter(u),filter.get_error_msg(),'=>',u.get_full_url()
     print '\tMatch=>',filter.get_match()    
     u = urlparser.HarvestManUrl("http://www.foo.com/bar/siteads/1.ad")
-    print filter.check(u),filter.get_error_msg(),'=>',u.get_full_url()
+    print filter.filter(u),filter.get_error_msg(),'=>',u.get_full_url()
     print '\tMatch=>',filter.get_match()    
     u = urlparser.HarvestManUrl("http://www.foo.com/banners/world-banners/banner.gif")
-    print filter.check(u),filter.get_error_msg(),'=>',u.get_full_url()
+    print filter.filter(u),filter.get_error_msg(),'=>',u.get_full_url()
     print '\tMatch=>',filter.get_match()
     u = urlparser.HarvestManUrl("http://ads.foo.com/")
-    print filter.check(u),filter.get_error_msg(),'=>',u.get_full_url()
+    print filter.filter(u),filter.get_error_msg(),'=>',u.get_full_url()
     print '\tMatch=>',filter.get_match()    
     
     
     # This one should not match
     u = urlparser.HarvestManUrl("http://www.foo.com/doc/logo.gif")
-    print filter.check(u),filter.get_error_msg(),'=>',u.get_full_url()
+    print filter.filter(u),filter.get_error_msg(),'=>',u.get_full_url()
     # This also...
     u = urlparser.HarvestManUrl("http://www.foo.org/bar/vodka/pattern.html")
-    print filter.check(u),filter.get_error_msg(),'=>',u.get_full_url()    
+    print filter.filter(u),filter.get_error_msg(),'=>',u.get_full_url()    
 
