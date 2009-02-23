@@ -331,17 +331,15 @@ class HarvestManRulesChecker(object):
                 # server as None, so next
                 # time we dont need to do
                 # this operation again.
+                print 'Setting None'
                 self._robots[domport] = None
                 return False
             else:
                 # Set it
                 self._robots[domport] = rp
-
-        # Get user-agent from Spider
-        ua = self._configobj.USER_AGENT
         
         # Check #6
-        if rp.can_fetch(ua, url_directory):
+        if rp.can_fetch(self._configobj.USER_AGENT, url_directory):
             # Add to white list
             self._robocache.append(url_directory)
             return False

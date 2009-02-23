@@ -101,6 +101,9 @@ class RobotFileParser:
         """Reads the robots.txt URL and feeds it to the parser."""
         opener = URLopener()
         f = opener.open(self.url)
+        if f is None:
+            return -1
+        
         lines = []
         line = f.readline()
         while line:
