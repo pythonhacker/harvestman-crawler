@@ -331,7 +331,6 @@ class HarvestManRulesChecker(object):
                 # server as None, so next
                 # time we dont need to do
                 # this operation again.
-                print 'Setting None'
                 self._robots[domport] = None
                 return False
             else:
