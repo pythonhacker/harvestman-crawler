@@ -7,8 +7,6 @@ ez_setup.py
 pydocgen.sh
 setup.cfg
 setup.py
-setup.py.original
-setup_paste.py
 tarhm.py
 HarvestMan.egg-info/PKG-INFO
 HarvestMan.egg-info/SOURCES.txt
@@ -31,6 +29,7 @@ doc/state_machine.txt
 harvestman/__init__.py
 harvestman/apps/__init__.py
 harvestman/apps/appbase.py
+harvestman/apps/config-sample-urlfilter.xml
 harvestman/apps/config-sample.xml
 harvestman/apps/hget.py
 harvestman/apps/spider.py
