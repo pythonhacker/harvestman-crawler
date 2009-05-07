@@ -353,14 +353,6 @@ class HarvestManUrlThread(threading.Thread):
 
         self._timeout = value
 
-    def close_file(self):
-        """ Close temporary file objects of the connector """
-
-        # Currently used only by hget
-        if self._conn:
-            reader = self._conn.get_fileobj()
-            if reader: reader.close()
-        
 class HarvestManUrlThreadPool(Queue):
     """ Thread group/pool class to manage download threads """
 
@@ -395,9 +387,6 @@ class HarvestManUrlThreadPool(Queue):
         self._cond = threading.Condition(threading.Lock())
         # Condition object for waiting on end condition
         self._endcond = threading.Condition(threading.Lock())
-        # Monitor object, used with hget
-        self._monitor = None
-        
         Queue.__init__(self, self._numthreads + 5)
         
     def start_threads(self):
@@ -520,10 +509,7 @@ class HarvestManUrlThreadPool(Queue):
                     if datalen != expected:
                         extrainfo("Expected: %d, Got: %d" % (expected, datalen))
                         extrainfo("Thread %s did only a partial download, rescheduling this piece..." % thread)
-                        if self._monitor:
-                            # print 'Notifying failure',thread
-                            self._monitor.notify_failure(urlObj, thread)
-                            return
+
                         
                     index = urlObj.mirror_url.index
                     # print 'Index=>',index
@@ -564,10 +550,6 @@ class HarvestManUrlThreadPool(Queue):
                     # In future, we can inspect whether the error is fatal or not
                     # and resume download in another thread etc...
                     extrainfo('Thread %s reported error => %s' % (str(thread), str(thread.get_error())))
-                    if self._monitor:
-                        # print 'Notifying failure',thread
-                        self._monitor.notify_failure(urlObj, thread)
-                        # print 'Notified failure',thread
                         
             # if the thread failed, update failure stats on the data manager
             err = thread.get_error()
@@ -807,70 +789,4 @@ class HarvestManUrlThreadPool(Queue):
         self._multipartstatus.clear()
         self._multipartstatus = {}
         
-        
-class HarvestManUrlThreadPoolMonitor(threading.Thread):
-
-    def __init__(self, threadpool):
-        self._pool = threadpool
-        self._pool._monitor = self
-        self.lock = threading.Lock()
-        self._failedurls = []
-        self._listfailed = []
-        self._flag = False
-        # Mirror manager
-        self.mirrormgr = HarvestManMirrorManager.getInstance()
-        # initialize threading
-        threading.Thread.__init__(self, None, None, "Monitor")        
-
-    def run(self):
-
-        while not self._flag:
-            try:
-                self.lock.acquire()
-                items = []
-
-                self._failedurls = self._listfailed[:]
-                
-                for urlobj, urlerror in self._failedurls:
-                    # Reset URL to parent and try again...
-                    if urlobj.mirrored:
-                        # Try getting a new mirror URL
-                        new_urlobj = self.mirrormgr.get_different_mirror_url(urlobj, urlerror)
-                        
-                        if new_urlobj:
-                            extrainfo("New mirror URL=>", new_urlobj.get_full_url())
-                            items.append((urlobj, urlerror))
-                            self._pool.push(new_urlobj)
-                        else:
-                            logconsole('Could not find new working mirror. Exiting...')
-                            self._pool._multiparterror = True
-                            self._listfailed = []
-                            break
-                    else:
-                        logconsole("URL is not mirrored, so no new mirrors to try. Exiting...")
-                        self._pool._multiparterror = True
-                        break
-
-                for item in items:
-                    self._listfailed.remove(item)
-
-                self.lock.release()
-                time.sleep(0.1)
-
-            finally:
-                pass
-            
-    def notify_failure(self, urlobj, thread):
-        self.lock.acquire()
-        self._listfailed.append((urlobj, thread.get_error()))
-        self.lock.release()
-
-    def stop(self):
-        self._flag = True
-
-    def reset(self):
-        """ Reset the state """
-
-        self._listfailed = []
-        self._failedurls = []
         

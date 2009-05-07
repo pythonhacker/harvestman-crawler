@@ -15,5 +15,48 @@ The following steps are involved in the project.
    documentation - 1 week.
 
 
-All identified modules, files, actions etc will be documented in the
-file doc/cleanlog.txt .
+Modules to trim
+---------------
+I. Hget is an application which I wrote just for personal
+interest. Nobody seems to be using it, so remvoe all hget
+modules (app & lib) from HarvestMan - if necessary hget
+can be spawned with a separate code base.
+
+This means removing and cleaning up code for the 
+following modules.
+
+1. apps/hget.py
+
+This means also cleaning up references to hget modules
+and hget specific code inside modules like datamgr.py, 
+connector.py etc.
+
+The following moduels in lib/common are used currently
+only by hget, but since these are inside common, I
+guess they could remain (to be decided later).
+
+1. spincursor.py
+2. progress.py 
+
+II. The entire javascript folder is currently pretty
+basic. Except for the code which does JS forwarding,
+nothing else works well. Also the narcissus port in
+Python does not belong here anymore, since it is 
+never used in the HarvestMan code.
+
+So these folders/files would be entirely removed.
+
+1. js/testnarcissus.py
+2. js/narcissus.py
+3. js/jsparse.py
+4. js/parse.rb
+5. js/Parser.rb
+6. js/samples/*.js (html test files are for my
+other js parser, which can remain)
+7. js/samples/fail (only narcissus test cases)
+
+(The narcissus code will be moved to a separate project
+on google later.)
+
+
+All cleanup actions will be documented in the file doc/cleanlog.txt .

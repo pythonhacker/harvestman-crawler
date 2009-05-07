@@ -42,7 +42,7 @@
 __version__ = '2.0 b1'
 __author__ = 'Anand B Pillai'
 
-USAGE1 = """\
+USAGE = """\
  %(program)s [options] [optional URL]
  
 %(appname)s %(version)s %(maturity)s: An extensible, multithreaded web crawler.
@@ -50,17 +50,6 @@ Author: Anand B Pillai
 
 Mail bug reports and suggestions to <abpillai at gmail dot com>."""
 
-USAGE2 = """\
- %(program)s [options] URL(s) | file(s)
- 
-%(appname)s %(version)s %(maturity)s: A multithreaded web downloader based on HarvestMan.
-Author: Anand B Pillai
-
-The program accepts URL(s) or an input file(s) containing a number of URLs,
-one per line. If a file is passed as input, any other program option
-passed is applied for every URL downloaded using the file.
-
-Mail bug reports and suggestions to <abpillai at gmail dot com>."""
 
 import os, sys
 import re
@@ -75,7 +64,6 @@ from harvestman.lib.common.optionparser import *
 from harvestman.lib.common.macros import *
 from harvestman.lib.common.common import hexit, test_sgmlop, logconsole, objects
 from harvestman.lib.common.singleton import Singleton
-from harvestman.lib.common.progress import TextProgress
 
 CONFIG_XML_TEMPLATE="""\
 <?xml version="1.0" encoding="utf-8"?>
@@ -249,7 +237,6 @@ class HarvestManStateObject(dict, Singleton):
         self.version='2.0'
         # Maturity for harvestman
         self.maturity="alpha 1"
-        # Single appname property for hget/harvestman
         self.appname='HarvestMan'
         #self.USER_AGENT = 'v'.join((self.appname + ' ', self.version))
         self.USER_AGENT = '%s/%s (+http://code.google.com/p/harvestman-crawler/wiki/bot)' %(self.appname,self.version)
@@ -426,10 +413,6 @@ class HarvestManStateObject(dict, Singleton):
         # after the given value
         self.linksoffsetend = -1
         # Cache size for 
-        # Current progress object
-        self.progressobj = TextProgress()
-        # Internal flag - show progress obj ?
-        self.showprogress = True
         # Flag for forcing multipart downloads
         self.forcesplit = 0
         # Data save mode for connectors
@@ -437,24 +420,6 @@ class HarvestManStateObject(dict, Singleton):
         self.datamode = CONNECTOR_DATA_MODE_FLUSH
         # Name for data mode
         self.datamodename = "flush"
-        # Hget outfile - default empty string
-        self.hgetoutfile = ''
-        # Hget output directory - default current directory
-        self.hgetoutdir = '.'
-        # Hget verbosity flag - default False
-        self.hgetverbose = 0
-        # Hget temp flag - default False
-        self.hgetnotemp = 0
-        # Hget mirror file
-        self.mirrorfile = ''
-        # Hget mirror search flag
-        self.mirrorsearch = False
-        # Hget mirror relpath index
-        self.mirrorpathindex = 0
-        # Hget relpath use flag
-        self.mirroruserelpath = 1
-        # Hget resume mode
-        self.canresume = 1
         # Internal state param
         self._badrequests = 0
         # Internal config param
@@ -562,9 +527,7 @@ class HarvestManStateObject(dict, Singleton):
 
     def copy(self):
         """ Return a serializable copy of this instance """
-        
-        # Set non-picklable objects to None type
-        self.progressobj = None
+
         return self
 
     def __getstate__(self):
@@ -969,11 +932,6 @@ class HarvestManStateObject(dict, Singleton):
         
         args, optdict = '',{}
         try:
-            if self.appname == 'HarvestMan':
-                USAGE = USAGE1
-            elif self.appname == 'Hget':
-                USAGE = USAGE2
-                
             gopt = GenericOptionParser(options.getOptList(self.appname), usage = USAGE % self )
             optdict, args = gopt.parse_arguments()
         except GenericOptionParserError, e:
@@ -1134,99 +1092,6 @@ class HarvestManStateObject(dict, Singleton):
                         print 'self-test failed. Please check your installation!'
                         sys.exit(1)
 
-        elif self.appname == 'Hget':
-            # Hget options
-            for option, value in optdict.items():
-                # If an option with value of null string, skip it
-                if value=='':
-                   # print 'Skipping option',option
-                   continue
-                else:
-                   # print 'Processing option',option,'value',value
-                   pass
-
-                # first parse arguments with no options
-                if option=='version' and value:
-                    self.print_version_info()
-                    sys.exit(0)                               
-                elif option=='numparts':
-                    # Setting numparts forces split downloads
-                    self.numparts = abs(int(value))
-                    if self.numparts == 0:
-                        print 'Error: Invalid value for number of parts, value should be non-zero!'
-                        sys.exit(1)
-                    if self.numparts>1:
-                        self.forcesplit = True
-                        # If we are forcesplitting with parts>1, then disable resume automatically
-                        print 'Force-split switched on, resuming will be disabled'
-                        self.canresume = False
-                    else:
-                        print 'Warning: Setting numparts to 1 has no effect!'
-                elif option=='memory':
-                    if value:
-                        print 'Warning: Enabling in-memory flag, data will be stored in memory!'
-                        self.datamode = CONNECTOR_DATA_MODE_INMEM
-                        self.datamodename = "mem"
-                elif option=='currentdir':
-                    if value:
-                        print 'Temporary files will be saved to current directory'
-                        # Do not use temporary directory for saving intermediate files
-                        self.hgetnotemp = True
-                elif option=='output':
-                    self.hgetoutfile = value
-                elif option=='outputdir':
-                    self.hgetoutdir = value
-                elif option=='verbose':
-                    self.hgetverbose = value
-                elif option=='proxy':
-                    if SUCCESS(self.check_value(option,value)):
-                        # Set proxyencrypted flat to False
-                        self.proxyenc=False
-                        self.set_option_xml('proxyserver', self.process_value(value))
-                elif option=='proxyuser':
-                    if SUCCESS(self.check_value(option,value)): self.set_option_xml('proxyuser', self.process_value(value))
-                elif option=='proxypasswd':
-                    if SUCCESS(self.check_value(option,value)): self.set_option_xml('proxypasswd', self.process_value(value))
-                elif option=='passwd':
-                    if SUCCESS(self.check_value(option,value)): self.set_option_xml('passwd', self.process_value(value))
-                elif option=='username':
-                    if SUCCESS(self.check_value(option,value)): self.set_option_xml('username', self.process_value(value))
-                elif option == 'mirrorfile':
-                    filename = value.strip()
-                    if os.path.isfile(filename):
-                        print 'Mirrors will be loaded from %s...' % filename
-                        self.mirrorfile = filename
-                    else:
-                        print  'Warning: Mirror file %s not found!' % filename
-                elif option == 'mirrorsearch':
-                    if value:
-                        print  'Mirror search turned on'
-                        print 'Warning: This is an experimental feature...'
-                        self.mirrorsearch = True
-                elif option == 'relpathidx':
-                    idx = int(value.strip())
-                    self.mirrorpathindex = idx
-                elif option == 'norelpath':
-                    if value:
-                        print 'Using filename only to construct mirror URLs...'
-                        self.mirroruserelpath = False
-                elif option == 'resumeoff':
-                    if value:
-                        print 'Resume mode set to off, partial downloads will not be resumed!'
-                        self.canresume = False
-                elif option == 'retries':
-                    self.retryfailed = int(value)
-
-            # If both mirror search and mirror file specified, mirror file is used
-            # Print some information regarding mismatch of options...
-            if self.mirrorfile and self.mirrorsearch:
-                print 'Both mirror search and mirror file option given, mirror search will not be done'
-                self.mirrorsearch = False
-            if self.mirrorpathindex and not self.mirrorfile:
-                print 'Ignoring mirror path index param because no mirror file is loaded'
-            if not self.mirroruserelpath and not self.mirrorfile:
-                print 'Ignoring relpath flag because no mirror file is loaded'
-        
         if args:
             # Any option without an argument is assumed to be a URL
             for arg in args:
@@ -1512,12 +1377,6 @@ class HarvestManStateObject(dict, Singleton):
                (self.maxfiles) or \
                (self.maxbytes)
     
-    def reset_progress(self):
-        """ Rests the progress bar object (used by Hget)"""
-        
-        self.progressobj = None
-        self.progressobj = TextProgress()
-        
     def __getattr__(self, name):
         """Overloaded __getattr__ method """
         

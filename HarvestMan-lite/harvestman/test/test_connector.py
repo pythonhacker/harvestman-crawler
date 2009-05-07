@@ -81,19 +81,6 @@ class TestHarvestManUrlConnector(unittest.TestCase):
         else:
             print 'Error in fetching data, skipping tests...'                
 
-    def test_urltofile(self):
-        
-        objects.config.showprogress = False
-        conn = HarvestManUrlConnector()
-        url = random.choice(urls)
-        res = conn.url_to_file(HarvestManUrl(url))
-        if conn.get_error().number==0:
-            assert(res==URL_DOWNLOAD_OK)
-            if os.path.isfile('index.html'):
-                os.remove('index.html')
-        else:
-            print 'Error in fetching data, skipping tests...'                
-        
     def test_connfactory(self):
         pass
 
