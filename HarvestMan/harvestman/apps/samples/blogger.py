@@ -30,10 +30,11 @@ class BlogJobPoster(object):
         feed = self.service.Get(query.ToUri())
         
         for entry in feed.entry:
-            # print "\t" + entry.title.text
-            # print entry.link[0].href
+            print "\t" + entry.title.text
+            print entry.link[0].href
             
-            if entry.link[0].href=='http://pythonjobs.blogspot.com/':
+            # if entry.link[0].href=='http://pythonjobs.blogspot.com/':
+            if entry.link[0].href=='http://www.blogger.com/feeds/18362312542208032325/blogs/5503040385101187323':
                 self_link = entry.GetSelfLink()
                 self.blog_id = self_link.href.split('/')[-1]
                 break
@@ -48,7 +49,7 @@ class BlogJobPoster(object):
         entry.content = atom.Content(content_type='html', text=content)
 
         # Ask the service to insert the new entry.
-        job_post = self.service.Post(entry, '/feeds/' + self.blog_id + '/posts/default')
+        job_post = self.service.Post(entry, '/feeds/' + str(self.blog_id) + '/posts/default')
         print "Successfully created post: \"" + job_post.title.text + "\".\n"
 
 if __name__ == "__main__":

@@ -12,19 +12,26 @@ Copyright (C) 2008 Anand B Pillai
 """
 import __init__
 from harvestman.apps.spider import HarvestMan
+from harvestman.lib.common.common import objects
 
 import sys
 import blogger
 import getpass
+import re
+import cPickle
 
 class JobPostingCrawler(HarvestMan):
     """ A job-posting crawler by integrating HarvestMan
     with the google blogger API """
 
+    month_re = re.compile(r'\d{4}-\w+')
+
     def __init__(self):
         self.jobs = {}
+        # Archive and post later
+        self.archive = True
         super(JobPostingCrawler, self).__init__()
-        
+
     def after_parse_cb(self, event, *args, **kwargs):
         
         document = event.document
@@ -52,6 +59,17 @@ class JobPostingCrawler(HarvestMan):
 
         if len(self.jobs):
             print 'Found %d job postings' % len(self.jobs)
+            if self.archive:
+                # Archive the data as a pickled file
+                # get base URL
+                post_month = self.month_re.findall(objects.config.url)[0]
+                fname = 'pythonjobs-%s' % post_month
+                f = open(fname, 'wb')
+                cPickle.dump(self.jobs, f)
+                f.close()
+                print 'Wrote jobs data to file %s.' % fname
+                return
+                
             go_ahead = raw_input("Go ahead with posting [y/n] ? ")
             if go_ahead.lower().strip() == 'y':
                 print 'Logging to blogger...'
