@@ -1,0 +1,122 @@
+Using HarvestMan with swish-e
+-----------------------------
+HarvestMan can be used as an external crawler program for swish-e 
+indexer {http://www.swish-e.org}. The swish-e support for 
+HarvestMan is built into the swish-e plugin present in the plugins
+folder.
+
+Swish-e configuration
+---------------------
+In order to use swish-e with HarvestMan, an appropriate configuration
+file needs to be generated. A sample configuration file is available
+in this folder as swish-config.conf. Typically this configuration
+file only contains two directives
+
+IndexDir <program>
+SwishProgParameters <params>
+
+"IndexDir" is the path to the external crawler program. If HarvestMan
+is installed in your machine, this would be "harvesttman". If the
+PATH where HarvestMan is present is not part of the PATH environment
+variable, you need to specify the full path.
+
+"SwishProgParameters" is the parameters required for the external
+program. Here you can specify the parameters required for HarvestMan.
+
+
+HarvestMan configuration for swish-e
+------------------------------------
+In HarvestMan, there are two ways to load plugins like swish-e.
+Either the plugin can be given as a command-line parameter using the
+-g/--plugins option, or it can be specified in the configuration file
+by editing the "plugins" element and adding an appopriate plugin
+element with its "enable" attribute set to 1. For more information
+read the HOWTO.plugins document in the "doc" folder.
+
+There are also two ways to pass URL and other options. The suggested
+way is to create an appropriate configuration file and put all the
+options there. If the file is the default 'config.xml' present in
+the current directory or the user's .harvestman directory, there is
+no need to specify this file. In such case, "SwishProgParameters"
+is empty and should not be specified. In this case the swish configuration
+file will look like,
+
+IndexDir harvestman
+
+However, if the configuration file name is different, it has to be 
+passed to HarvestMan with the -C option. In order to enable swish-e,
+the "enable" attribute of the swish-e plugin element should be set to
+1 in this file. In this case the swish configuration file will look like,
+
+IndexDir harvestman
+SwishProgParameters -C <path_to_config_file>
+
+The other way is to specify a URL and other options in the command line
+and pass it to HarvestMan. This typically can be used for the simplest
+crawl which do not require a lot of customization. For example,
+
+IndexDir harvestman
+SwishProgParameters -g swish-e http://swish-e.org/docs/
+
+The last line instructs HarvestMan to crawl http://www.swish-e.org/docs .
+Swish-e will in turn index the content of files contained at ths URL.
+
+NOTE: If you have more than three parameters to customize it is better to
+use a configuration file than specifying them on the command line.
+
+Running directly from source
+----------------------------
+In case you prefer to run HarvestMan directly from the source tree
+with swish-e without installing it, the above mentioned configuration
+would not work.
+
+In this case there are two ways of writing the configuration. The simplest
+way is to make the harvestman.py module executable and use the
+following configuration.
+
+IndexDir <path>/harvestman.py
+SwishProgParameters <params>
+
+where <path> is the relative path to where HarvestMan source code is
+present. If it is the current directory, this would be '.'.
+
+The second way is to run harvestman.py as an argument to Python. In
+this case the following configuration need to be used.
+
+IndexDir python
+SwishProgParameters <path>/harvestman.py <params>
+
+In this case, the main program becomes Python and path to harvestman.py
+is passed as the first part of SwishProgParameters param value.
+
+Running swish-e 
+---------------
+Once the appropriate swish configuration file is written, swish-e can
+be run with HarvestMan as follows
+
+swish-e -c <path_to_config_file> -S prog
+
+Once crawling and indexing starts, swish-e prints an output like,
+
+$ swish-e -c swish-config.cong -S prog
+
+Indexing Data Source: "External-Program"
+Indexing "harvestman"
+External Program found: /usr/bin/harvestman
+
+If everything goes well, the indexing will terminate soon after
+the crawling is completed and an index summary is printed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

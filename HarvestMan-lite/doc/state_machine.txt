@@ -1,0 +1,237 @@
+Design for HarvestMan State Machine
+0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0-0
+
+This document proposes a design for a state machine for
+HarvestMan. 
+
+Background
+----------
+The current logic in HarvestMan which uses a polling loop in the main
+thread is causing problems. Here are a few issues with this approach.
+
+1. Main thread keeps polling other threads in a spinning loop sleeping
+every second. This burns up CPU cycles.
+
+2. The polling is not very accurate, since threads can change state
+often. The polling takes a snapshot of the status of all the current
+crawler threads and then takes actions. However such decisions
+may not always reflect the current thread status.
+
+3. The current logic does not process the state of the worker threads
+properly. It determines exit condition as when the crawler threads
+are idle. For managing worker threads it uses a grace period once
+it detects crawlers are idle. This may not give enough time for the
+worker threads to do their work and generally decreases the robustness
+of the program.
+
+4. The current logic relies on "magic numbers" which have been
+arbitrarily added to decide on the program exit condition. For
+example the exit loop times the idle state of the crawler threads
+3 times continously to make sure that the program is idle and needs
+to exit. However the number "3" is not chosen because of any
+particular reason. We need to avoid such magic numbers.
+
+5. The current logic spreads state management across many functions
+and a few flags. This is not very object oriented. It would be
+better to consolidate the state and their processing and management
+to a single object.
+
+State Machine Design
+--------------------
+
+A state machine class has been defined in the module urlqueue.py .
+This class has the following attributes.
+
+1. A thread state dictionary
+2. The queue manager object 
+3. Flags indicating that threads are blocked etc
+4. Counters for thread state transitions
+5. A condition object which is used to synchronize the state with
+the main thread.
+
+The module crawler.py defines the crawler states. Currently the
+following states are defined.
+
+THREAD_STATE_IDLE = 0          # Idle thread: not running
+THREAD_STATE_WAITING = 1       # Waiting for data
+THREAD_STATE_PUSH_BUFFER = 2   # Thread, pushing buffer data
+THREAD_STATE_BEFORE_WORK = 3
+THREAD_STATE_WORKING = 4       # Thread, doing work
+THREAD_STATE_SLEEPING = 5      # Thread, sleeping
+THREAD_STATE_DOWNLOADING = 6   # Fetcher thread, about to download
+THREAD_STATE_DOWNLOADED = 7    # Fetcher thread, just after download
+THREAD_STATE_PUSHING =      8  # Thread is pushing/about to push data to queue
+THREAD_STATE_PUSHED =      9   # Thread has pushed data to queue
+THREAD_STATE_DIED = 10         # Thread died due to an exception...
+
+Here are the descriptions for these states.
+
+1. THREAD_STATE_IDLE      -   Thread has not yet started.
+2. THREAD_STATE_WAITING   -   Thread has started and is waiting for data.
+3. THREAD_STATE_PUSH_BUFFER - Thread is trying to push local buffer data to queue.
+4. THREAD_STATE_BEFORE_WORK - Thread has got data and is ready to do work.
+5. THREAD_STATE_WORKING     - Thread is working now. This is a generic work flag
+                              which can be overriden by specific work flags by
+                              the threads.
+6. THREAD_STATE_SLEEPING    - Thread has finished one work cycle and is sleeping.
+                              The sleep state indicates a cycle of state transitions.
+7. THREAD_STATE_DOWNLOADING - This is a state specific to fetcher threads. This
+                              indicates the thread is about to download data.
+8. THREAD_STATE_DOWNLOADED -  This is a state specific to fetcher threads. This
+                              indicates the thread has finished downloading data.
+9. THREAD_STATE_PUSHING    -  This indicates the thread is trying to push processed
+                              data to queue.
+10. THREAD_STATE_PUSHED    -  This indicates the thread has pushed data successfully
+                              to the queue.
+11. THREAD_STATE_DIED      -  This indicates the threade died due to an exception.
+
+During the life time of a thread, it typically goes from THREAD_STATE_IDLE
+via other states to THREAD_STATE_WAITING or THREAD_STATE_DIED. 
+
+For example, here is the typical state transition cycle for a fetcher thread. The
+numbers indicate the value of the states. A '*' before a state indicates it is
+conditional.
+
+First cycle
+----------
+0-1-3-4-6-7-8-9-5-1
+
+Second cycle onwards
+--------------------
+*2-1-*2-3-4-6-7-8-*9-*2
+
+This is because in the first cycle there is no buffer push and a push to the queue
+is guaranteed. This is not the case from second cycle onwards.
+
+Here is the same for a crawler thread.
+
+First cycle
+----------
+0-1-3-4-8-9-5-1
+
+Second cycle onwards
+--------------------
+*2-1-*2-3-4-*8-*9-*2
+
+
+The threads keep updating their status on the state machine object which is shared
+between the threads and the queue. The status machine object is a singleton.
+
+Main thread synchronization
+---------------------------
+
+The main thread creates the other threads and then enters the main loop.
+The main loop is as follows...
+
+    def mainloop(self):
+        """ Main program loop which waits for
+        the threads to do their work """
+
+        timeslot = 0.5
+        while not self.stateobj.end_state():
+            self.stateobj.wait2(timeslot)
+            if self._flag:
+                break
+
+        self._flag = 1
+        self.end_threads()
+
+
+In the loop the main thread keeps checking the end state of the state
+machine object. While the end state is not achieved it goes to sleep,
+waiting on the condition object of the state machine for a small time
+(0.5 seconds). It also checks an internal flag.
+
+Normal termination happens when the end state is achieved i.e the
+function end_state() returns True. Abnormal terminations (such
+as pressing Ctrl-C to terminate the program) sets the flag to 1,
+which breaks the main loop.
+
+At the end of main loop the threads are stopped.
+
+Why a timed wait ?
+------------------
+The simplest wait on a condition object is a simple wait() without
+a timeout argument. However if the main thread goes to such a wait,
+it will be prevented from receiving any signals such as a keyboard
+interrupt (Ctrl-C). Since Python only allows sending interrupts to
+the main thread, it means the program will be insensitive to any
+interrupts.
+
+However, waiting on the condition object with a very small timeout
+exposes the main thread to signals during the rest of the loop.
+This allows the program to be controlled using signals.
+
+Using a wait on a condition object prevents CPU hogging since
+the thread does not do a sleep(...). Instead it goes to sleep
+on the condition object which prevents it from taking any 
+CPU time.
+
+End state logic
+---------------
+The end-state is decided when all the threads go to a waiting
+mode i.e when every thread reports THREAD_STATE_WAITING to the
+state object. It also uses some additional logic to prevent
+spurious end-state events.
+
+Here are the checks to prevent spurious end-state modes and
+to make sure end-states are valid.
+
+1. To make sure we do not end the crawl prematurely,
+the main thread calls end_state only after it makes sure
+that the other threads have started and well enough into 
+their tasks. For example, it waits for the base thread
+(the first fetcher thread) to get its data and start
+its work before going to the main loop.
+
+2. The end state performs validity of state transitions.
+For example, if the fetchers have done at least one push
+to the queue, the end-state will return True only if
+the crawlers have completed at least one cycle of
+transitions. The logic is that since the fetchers have
+pushed data, the crawlers have to at least extract the
+data before we signal an end-state. 
+
+3. No checks on queue lengths are performed because as
+said earlier, run-time checks on the queue objects will be
+erroneous as the queue objects use locking to control
+access to them.
+
+Additional checks
+-----------------
+We should add additional state transition based checks to
+take care of all the cases of thread deadlock, thread
+stalemates etc.
+
+Thread regeneration
+-------------------
+The thread regeneration logic (re-creating a thread when
+it fails due to an exception) has been moved to the state
+machine.
+
+State of the code
+-----------------
+The current code implements the design and the logic 
+mentioned above.
+
+Pending work
+------------
+To complete the state machine, the following needs to be done.
+
+1. Add states for the worker threads - Currently the machine
+only takes care of tracker (crawler & fetcher) thread states.
+To fine-grain the thread management, we need to add the
+worker thread states also.
+
+2. Define algorithms to handle thread contentions, deadlocks 
+and timeouts - 
+
+The current logic does not handle any thread deadlocks or
+contentions. For example, there is no logic to take care of
+a hanging fetcher. The project timeout logic is not integrated
+to the state machine. 
+
+
+
+
+

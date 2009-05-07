@@ -31,9 +31,12 @@ def handleAllResults(results):
     print results
     print 'Done.'
     reactor.stop()
+
+def handleResult(result):
+    print result
     
 if __name__ == "__main__":
     urls = (open('urls.txt').read()).split('\n')
-    downloaders = [saveUrl(url) for url in urls if url != '']
-    defer.DeferredList(downloaders, consumeErrors=True).addCallback(handleAllResults)
+    downloaders = [saveUrl(url).addCallback(handleResult) for url in urls if url != '']
+    # defer.DeferredList(downloaders, consumeErrors=True).addCallback(handleAllResults)
     reactor.run()

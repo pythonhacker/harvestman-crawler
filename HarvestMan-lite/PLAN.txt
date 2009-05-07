@@ -1,0 +1,19 @@
+Project start - May 7 2009
+Project duration - approx 5 weeks
+Project end - approx Jun 14 2009
+
+Participants: Solely self
+
+The following steps are involved in the project.
+
+1. Identify redundant/useless/ modules, test files, other files - 3 days
+2. Clean up code to remove modules/code, files found in (1) - 1 week.
+3. Identify redundant classes/objects etc in remaining
+   modules - 2 weeks
+4. Clean up code to remove items identified in (3) - 1 week.
+5. Produce HarvestMan-lite source code with complete
+   documentation - 1 week.
+
+
+All identified modules, files, actions etc will be documented in the
+file doc/cleanlog.txt .

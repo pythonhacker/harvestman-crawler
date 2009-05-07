@@ -1,0 +1,307 @@
+2009-05-06 19:45:58,568 INFO - *** Log Started ***
+ 
+2009-05-06 19:45:58,568 INFO - Starting project pytut ...
+2009-05-06 19:45:58,568 INFO - Writing Project Files... 
+2009-05-06 19:45:58,570 EXTRAINFO - Done. 
+2009-05-06 19:45:58,594 EXTRAINFO - Writing project record to crawls database... 
+2009-05-06 19:45:58,607 EXTRAINFO - Done. 
+2009-05-06 19:45:58,607 INFO - Starting download of url http://docs.python.org/tutorial/index.html ...
+2009-05-06 19:45:58,684 INFO - Reading Project Cache... 
+2009-05-06 19:45:58,684 EXTRAINFO - Created directory =>  ./pytut/hm-cache
+2009-05-06 19:45:58,684 INFO - Project cache not found 
+2009-05-06 19:45:58,691 INFO - Downloading http://docs.python.org/tutorial/index.html
+2009-05-06 19:45:59,775 EXTRAINFO - Created =>  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial
+2009-05-06 19:45:59,776 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/index.html
+2009-05-06 19:45:59,777 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/index.html
+2009-05-06 19:45:59,778 EXTRAINFO - Parsing web page http://docs.python.org/tutorial/index.html
+2009-05-06 19:46:00,000 INFO - Fetching links http://docs.python.org/tutorial/index.html
+2009-05-06 19:46:00,217 ERROR - Not Found =>  http://docs.python.org/robots.txt
+2009-05-06 19:46:00,722 EXTRAINFO - External link - filtered  http://docs.python.org/_static/opensearch.xml
+2009-05-06 19:46:00,722 EXTRAINFO - Filtered URL http://docs.python.org/_static/opensearch.xml
+2009-05-06 19:46:00,724 EXTRAINFO - External link - filtered  http://docs.python.org/about.html
+2009-05-06 19:46:00,724 EXTRAINFO - Filtered URL http://docs.python.org/about.html
+2009-05-06 19:46:00,727 EXTRAINFO - External link - filtered  http://docs.python.org/copyright.html
+2009-05-06 19:46:00,727 EXTRAINFO - Filtered URL http://docs.python.org/copyright.html
+2009-05-06 19:46:00,729 EXTRAINFO - External link - filtered  http://docs.python.org/index.html
+2009-05-06 19:46:00,729 EXTRAINFO - Filtered URL http://docs.python.org/index.html
+2009-05-06 19:46:00,734 EXTRAINFO - External link - filtered  http://docs.python.org/whatsnew/2.0.html
+2009-05-06 19:46:00,735 EXTRAINFO - Filtered URL http://docs.python.org/whatsnew/2.0.html
+2009-05-06 19:46:00,737 EXTRAINFO - External link - filtered  http://docs.python.org/_static/py.png
+2009-05-06 19:46:00,737 EXTRAINFO - Filtered URL http://docs.python.org/_static/py.png
+2009-05-06 19:46:00,739 EXTRAINFO - External link - filtered  http://docs.python.org/genindex.html
+2009-05-06 19:46:00,739 EXTRAINFO - Filtered URL http://docs.python.org/genindex.html
+2009-05-06 19:46:00,740 INFO - Downloading http://docs.python.org/tutorial/appetite.html
+2009-05-06 19:46:00,742 EXTRAINFO - External link - filtered  http://docs.python.org/modindex.html
+2009-05-06 19:46:00,740 INFO - Downloading http://docs.python.org/_static/default.css
+2009-05-06 19:46:00,743 INFO - Downloading http://docs.python.org/_static/pygments.css
+2009-05-06 19:46:00,744 EXTRAINFO - Filtered URL http://docs.python.org/modindex.html
+2009-05-06 19:46:00,751 EXTRAINFO - External link - filtered  http://www.python.org/
+2009-05-06 19:46:00,751 EXTRAINFO - Filtered URL http://www.python.org/
+2009-05-06 19:46:00,753 EXTRAINFO - External link - filtered  http://docs.python.org/glossary.html
+2009-05-06 19:46:00,754 EXTRAINFO - Filtered URL http://docs.python.org/glossary.html
+2009-05-06 19:46:00,762 INFO - Downloading http://docs.python.org/tutorial/interpreter.html
+2009-05-06 19:46:00,777 INFO - Downloading http://docs.python.org/tutorial/modules.html
+2009-05-06 19:46:00,796 INFO - Downloading http://docs.python.org/tutorial/errors.html
+2009-05-06 19:46:00,804 EXTRAINFO - External link - filtered  http://docs.python.org/_sources/tutorial/index.txt
+2009-05-06 19:46:00,805 EXTRAINFO - Filtered URL http://docs.python.org/_sources/tutorial/index.txt
+2009-05-06 19:46:00,807 EXTRAINFO - External link - filtered  http://docs.python.org/search.html
+2009-05-06 19:46:00,807 EXTRAINFO - Filtered URL http://docs.python.org/search.html
+2009-05-06 19:46:00,811 EXTRAINFO - External link - filtered  http://sphinx.pocoo.org/
+2009-05-06 19:46:00,811 EXTRAINFO - Filtered URL http://sphinx.pocoo.org/
+2009-05-06 19:46:01,202 INFO - Downloading http://docs.python.org/tutorial/floatingpoint.html
+2009-05-06 19:46:01,357 EXTRAINFO - Created =>  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/_static
+2009-05-06 19:46:01,358 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/_static/default.css
+2009-05-06 19:46:01,359 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/_static/default.css
+2009-05-06 19:46:01,366 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/_static/pygments.css
+2009-05-06 19:46:01,367 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/_static/pygments.css
+2009-05-06 19:46:01,544 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/appetite.html
+2009-05-06 19:46:01,545 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/appetite.html
+2009-05-06 19:46:01,546 EXTRAINFO - Parsing web page http://docs.python.org/tutorial/appetite.html
+2009-05-06 19:46:01,595 INFO - Fetching links http://docs.python.org/tutorial/appetite.html
+2009-05-06 19:46:01,598 EXTRAINFO - External link - filtered  http://docs.python.org/_sources/tutorial/appetite.txt
+2009-05-06 19:46:01,599 EXTRAINFO - Filtered URL http://docs.python.org/_sources/tutorial/appetite.txt
+2009-05-06 19:46:01,786 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/interpreter.html
+2009-05-06 19:46:01,787 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/interpreter.html
+2009-05-06 19:46:01,788 EXTRAINFO - Parsing web page http://docs.python.org/tutorial/interpreter.html
+2009-05-06 19:46:01,890 INFO - Fetching links http://docs.python.org/tutorial/interpreter.html
+2009-05-06 19:46:01,892 EXTRAINFO - External link - filtered  http://docs.python.org/using/cmdline.html
+2009-05-06 19:46:01,892 EXTRAINFO - Filtered URL http://docs.python.org/using/cmdline.html
+2009-05-06 19:46:01,895 EXTRAINFO - External link - filtered  http://docs.python.org/library/functions.html
+2009-05-06 19:46:01,895 EXTRAINFO - Filtered URL http://docs.python.org/library/functions.html
+2009-05-06 19:46:01,898 EXTRAINFO - External link - filtered  http://docs.python.org/reference/compound_stmts.html
+2009-05-06 19:46:01,899 EXTRAINFO - Filtered URL http://docs.python.org/reference/compound_stmts.html
+2009-05-06 19:46:01,901 EXTRAINFO - External link - filtered  http://docs.python.org/library/exceptions.html
+2009-05-06 19:46:01,902 EXTRAINFO - Filtered URL http://docs.python.org/library/exceptions.html
+2009-05-06 19:46:01,905 EXTRAINFO - External link - filtered  http://docs.python.org/library/codecs.html
+2009-05-06 19:46:01,905 EXTRAINFO - Filtered URL http://docs.python.org/library/codecs.html
+2009-05-06 19:46:01,907 EXTRAINFO - External link - filtered  http://docs.python.org/contents.html
+2009-05-06 19:46:01,907 EXTRAINFO - Filtered URL http://docs.python.org/contents.html
+2009-05-06 19:46:01,911 EXTRAINFO - External link - filtered  http://docs.python.org/_sources/tutorial/interpreter.txt
+2009-05-06 19:46:01,911 EXTRAINFO - Filtered URL http://docs.python.org/_sources/tutorial/interpreter.txt
+2009-05-06 19:46:02,058 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/modules.html
+2009-05-06 19:46:02,059 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/modules.html
+2009-05-06 19:46:02,060 EXTRAINFO - Parsing web page http://docs.python.org/tutorial/modules.html
+2009-05-06 19:46:02,126 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/floatingpoint.html
+2009-05-06 19:46:02,138 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/floatingpoint.html
+2009-05-06 19:46:02,139 EXTRAINFO - Parsing web page http://docs.python.org/tutorial/floatingpoint.html
+2009-05-06 19:46:02,560 INFO - Downloading http://docs.python.org/tutorial/stdlib.html
+2009-05-06 19:46:02,625 INFO - Downloading http://docs.python.org/tutorial/whatnow.html
+2009-05-06 19:46:03,011 INFO - Downloading http://docs.python.org/tutorial/introduction.html
+2009-05-06 19:46:03,026 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/whatnow.html
+2009-05-06 19:46:03,027 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/whatnow.html
+2009-05-06 19:46:03,027 EXTRAINFO - Parsing web page http://docs.python.org/tutorial/whatnow.html
+2009-05-06 19:46:03,071 INFO - Fetching links http://docs.python.org/tutorial/whatnow.html
+2009-05-06 19:46:03,074 EXTRAINFO - External link - filtered  http://docs.python.org/library/index.html
+2009-05-06 19:46:03,074 EXTRAINFO - Filtered URL http://docs.python.org/library/index.html
+2009-05-06 19:46:03,077 EXTRAINFO - External link - filtered  http://docs.python.org/install/index.html
+2009-05-06 19:46:03,077 EXTRAINFO - Filtered URL http://docs.python.org/install/index.html
+2009-05-06 19:46:03,080 EXTRAINFO - External link - filtered  http://docs.python.org/reference/index.html
+2009-05-06 19:46:03,080 EXTRAINFO - Filtered URL http://docs.python.org/reference/index.html
+2009-05-06 19:46:03,081 EXTRAINFO - External link - filtered  http://docs.python.org/
+2009-05-06 19:46:03,081 EXTRAINFO - Filtered URL http://docs.python.org/
+2009-05-06 19:46:03,085 EXTRAINFO - External link - filtered  http://pypi.python.org/
+2009-05-06 19:46:03,085 EXTRAINFO - Filtered URL http://pypi.python.org/
+2009-05-06 19:46:03,091 EXTRAINFO - External link - filtered  http://aspn.activestate.com/ASPN/Python/Cookbook/
+2009-05-06 19:46:03,092 EXTRAINFO - Filtered URL http://aspn.activestate.com/ASPN/Python/Cookbook/
+2009-05-06 19:46:03,097 EXTRAINFO - External link - filtered  http://www.python.org/doc/faq/
+2009-05-06 19:46:03,097 EXTRAINFO - Filtered URL http://www.python.org/doc/faq/
+2009-05-06 19:46:03,102 EXTRAINFO - External link - filtered  http://mail.python.org/pipermail/
+2009-05-06 19:46:03,102 EXTRAINFO - Filtered URL http://mail.python.org/pipermail/
+2009-05-06 19:46:03,106 EXTRAINFO - External link - filtered  http://docs.python.org/_sources/tutorial/whatnow.txt
+2009-05-06 19:46:03,106 EXTRAINFO - Filtered URL http://docs.python.org/_sources/tutorial/whatnow.txt
+2009-05-06 19:46:03,258 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/errors.html
+2009-05-06 19:46:03,259 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/errors.html
+2009-05-06 19:46:03,259 EXTRAINFO - Parsing web page http://docs.python.org/tutorial/errors.html
+2009-05-06 19:46:03,273 INFO - Fetching links http://docs.python.org/tutorial/modules.html
+2009-05-06 19:46:03,275 INFO - Fetching links http://docs.python.org/tutorial/floatingpoint.html
+2009-05-06 19:46:03,283 EXTRAINFO - External link - filtered  http://docs.python.org/reference/simple_stmts.html
+2009-05-06 19:46:03,307 EXTRAINFO - External link - filtered  http://docs.python.org/using/index.html
+2009-05-06 19:46:03,307 EXTRAINFO - Filtered URL http://docs.python.org/reference/simple_stmts.html
+2009-05-06 19:46:03,307 EXTRAINFO - Filtered URL http://docs.python.org/using/index.html
+2009-05-06 19:46:03,312 EXTRAINFO - External link - filtered  http://docs.python.org/library/compileall.html
+2009-05-06 19:46:03,318 EXTRAINFO - External link - filtered  http://www.lahey.com/float.htm
+2009-05-06 19:46:03,318 EXTRAINFO - Filtered URL http://docs.python.org/library/compileall.html
+2009-05-06 19:46:03,328 EXTRAINFO - External link - filtered  http://docs.python.org/library/sys.html
+2009-05-06 19:46:03,328 EXTRAINFO - Filtered URL http://docs.python.org/library/sys.html
+2009-05-06 19:46:03,331 EXTRAINFO - External link - filtered  http://docs.python.org/library/__builtin__.html
+2009-05-06 19:46:03,331 EXTRAINFO - Filtered URL http://docs.python.org/library/__builtin__.html
+2009-05-06 19:46:03,319 EXTRAINFO - Filtered URL http://www.lahey.com/float.htm
+2009-05-06 19:46:03,337 EXTRAINFO - External link - filtered  http://docs.python.org/library/stdtypes.html
+2009-05-06 19:46:03,337 EXTRAINFO - Filtered URL http://docs.python.org/library/stdtypes.html
+2009-05-06 19:46:03,341 EXTRAINFO - External link - filtered  http://docs.python.org/_sources/tutorial/floatingpoint.txt
+2009-05-06 19:46:03,341 EXTRAINFO - Filtered URL http://docs.python.org/_sources/tutorial/floatingpoint.txt
+2009-05-06 19:46:03,334 EXTRAINFO - External link - filtered  http://docs.python.org/_sources/tutorial/modules.txt
+2009-05-06 19:46:03,342 EXTRAINFO - Filtered URL http://docs.python.org/_sources/tutorial/modules.txt
+2009-05-06 19:46:03,417 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/stdlib.html
+2009-05-06 19:46:03,425 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/stdlib.html
+2009-05-06 19:46:03,426 EXTRAINFO - Parsing web page http://docs.python.org/tutorial/stdlib.html
+2009-05-06 19:46:03,608 INFO - Downloading http://docs.python.org/tutorial/controlflow.html
+2009-05-06 19:46:03,869 INFO - Downloading http://docs.python.org/tutorial/datastructures.html
+2009-05-06 19:46:03,944 INFO - Downloading http://docs.python.org/tutorial/inputoutput.html
+2009-05-06 19:46:04,376 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/introduction.html
+2009-05-06 19:46:04,377 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/introduction.html
+2009-05-06 19:46:04,378 EXTRAINFO - Parsing web page http://docs.python.org/tutorial/introduction.html
+2009-05-06 19:46:04,804 INFO - Fetching links http://docs.python.org/tutorial/errors.html
+2009-05-06 19:46:04,807 EXTRAINFO - External link - filtered  http://docs.python.org/reference/datamodel.html
+2009-05-06 19:46:04,807 EXTRAINFO - Filtered URL http://docs.python.org/reference/datamodel.html
+2009-05-06 19:46:04,811 EXTRAINFO - External link - filtered  http://docs.python.org/_sources/tutorial/errors.txt
+2009-05-06 19:46:04,811 EXTRAINFO - Filtered URL http://docs.python.org/_sources/tutorial/errors.txt
+2009-05-06 19:46:04,849 INFO - Fetching links http://docs.python.org/tutorial/stdlib.html
+2009-05-06 19:46:04,852 EXTRAINFO - External link - filtered  http://docs.python.org/library/os.html
+2009-05-06 19:46:04,852 EXTRAINFO - Filtered URL http://docs.python.org/library/os.html
+2009-05-06 19:46:04,855 EXTRAINFO - External link - filtered  http://docs.python.org/library/shutil.html
+2009-05-06 19:46:04,855 EXTRAINFO - Filtered URL http://docs.python.org/library/shutil.html
+2009-05-06 19:46:04,857 EXTRAINFO - External link - filtered  http://docs.python.org/library/glob.html
+2009-05-06 19:46:04,858 EXTRAINFO - Filtered URL http://docs.python.org/library/glob.html
+2009-05-06 19:46:04,860 EXTRAINFO - External link - filtered  http://docs.python.org/library/getopt.html
+2009-05-06 19:46:04,860 EXTRAINFO - Filtered URL http://docs.python.org/library/getopt.html
+2009-05-06 19:46:04,865 EXTRAINFO - External link - filtered  http://docs.python.org/library/optparse.html
+2009-05-06 19:46:04,865 EXTRAINFO - Filtered URL http://docs.python.org/library/optparse.html
+2009-05-06 19:46:04,868 EXTRAINFO - External link - filtered  http://docs.python.org/library/re.html
+2009-05-06 19:46:04,868 EXTRAINFO - Filtered URL http://docs.python.org/library/re.html
+2009-05-06 19:46:04,870 EXTRAINFO - External link - filtered  http://docs.python.org/library/math.html
+2009-05-06 19:46:04,871 EXTRAINFO - Filtered URL http://docs.python.org/library/math.html
+2009-05-06 19:46:04,873 EXTRAINFO - External link - filtered  http://docs.python.org/library/random.html
+2009-05-06 19:46:04,874 EXTRAINFO - Filtered URL http://docs.python.org/library/random.html
+2009-05-06 19:46:04,876 EXTRAINFO - External link - filtered  http://docs.python.org/library/urllib2.html
+2009-05-06 19:46:04,876 EXTRAINFO - Filtered URL http://docs.python.org/library/urllib2.html
+2009-05-06 19:46:04,879 EXTRAINFO - External link - filtered  http://docs.python.org/library/smtplib.html
+2009-05-06 19:46:04,879 EXTRAINFO - Filtered URL http://docs.python.org/library/smtplib.html
+2009-05-06 19:46:04,882 EXTRAINFO - External link - filtered  http://docs.python.org/library/datetime.html
+2009-05-06 19:46:04,883 EXTRAINFO - Filtered URL http://docs.python.org/library/datetime.html
+2009-05-06 19:46:04,885 EXTRAINFO - External link - filtered  http://docs.python.org/library/zlib.html
+2009-05-06 19:46:04,885 EXTRAINFO - Filtered URL http://docs.python.org/library/zlib.html
+2009-05-06 19:46:04,888 EXTRAINFO - External link - filtered  http://docs.python.org/library/gzip.html
+2009-05-06 19:46:04,888 EXTRAINFO - Filtered URL http://docs.python.org/library/gzip.html
+2009-05-06 19:46:04,890 EXTRAINFO - External link - filtered  http://docs.python.org/library/bz2.html
+2009-05-06 19:46:04,891 EXTRAINFO - Filtered URL http://docs.python.org/library/bz2.html
+2009-05-06 19:46:04,893 EXTRAINFO - External link - filtered  http://docs.python.org/library/zipfile.html
+2009-05-06 19:46:04,894 EXTRAINFO - Filtered URL http://docs.python.org/library/zipfile.html
+2009-05-06 19:46:04,896 EXTRAINFO - External link - filtered  http://docs.python.org/library/tarfile.html
+2009-05-06 19:46:04,897 EXTRAINFO - Filtered URL http://docs.python.org/library/tarfile.html
+2009-05-06 19:46:04,899 EXTRAINFO - External link - filtered  http://docs.python.org/library/timeit.html
+2009-05-06 19:46:04,899 EXTRAINFO - Filtered URL http://docs.python.org/library/timeit.html
+2009-05-06 19:46:04,902 EXTRAINFO - External link - filtered  http://docs.python.org/library/profile.html
+2009-05-06 19:46:04,902 EXTRAINFO - Filtered URL http://docs.python.org/library/profile.html
+2009-05-06 19:46:04,905 EXTRAINFO - External link - filtered  http://docs.python.org/library/doctest.html
+2009-05-06 19:46:04,905 EXTRAINFO - Filtered URL http://docs.python.org/library/doctest.html
+2009-05-06 19:46:04,908 EXTRAINFO - External link - filtered  http://docs.python.org/library/unittest.html
+2009-05-06 19:46:04,908 EXTRAINFO - Filtered URL http://docs.python.org/library/unittest.html
+2009-05-06 19:46:04,911 EXTRAINFO - External link - filtered  http://docs.python.org/library/xmlrpclib.html
+2009-05-06 19:46:04,911 EXTRAINFO - Filtered URL http://docs.python.org/library/xmlrpclib.html
+2009-05-06 19:46:04,915 EXTRAINFO - External link - filtered  http://docs.python.org/library/simplexmlrpcserver.html
+2009-05-06 19:46:04,915 EXTRAINFO - Filtered URL http://docs.python.org/library/simplexmlrpcserver.html
+2009-05-06 19:46:04,917 EXTRAINFO - External link - filtered  http://docs.python.org/library/email.html
+2009-05-06 19:46:04,918 EXTRAINFO - Filtered URL http://docs.python.org/library/email.html
+2009-05-06 19:46:04,920 EXTRAINFO - External link - filtered  http://docs.python.org/library/poplib.html
+2009-05-06 19:46:04,920 EXTRAINFO - Filtered URL http://docs.python.org/library/poplib.html
+2009-05-06 19:46:04,923 EXTRAINFO - External link - filtered  http://docs.python.org/library/xml.dom.html
+2009-05-06 19:46:04,923 EXTRAINFO - Filtered URL http://docs.python.org/library/xml.dom.html
+2009-05-06 19:46:04,926 EXTRAINFO - External link - filtered  http://docs.python.org/library/xml.sax.html
+2009-05-06 19:46:04,927 EXTRAINFO - Filtered URL http://docs.python.org/library/xml.sax.html
+2009-05-06 19:46:04,929 EXTRAINFO - External link - filtered  http://docs.python.org/library/csv.html
+2009-05-06 19:46:04,929 EXTRAINFO - Filtered URL http://docs.python.org/library/csv.html
+2009-05-06 19:46:04,932 EXTRAINFO - External link - filtered  http://docs.python.org/library/gettext.html
+2009-05-06 19:46:04,932 EXTRAINFO - Filtered URL http://docs.python.org/library/gettext.html
+2009-05-06 19:46:04,935 EXTRAINFO - External link - filtered  http://docs.python.org/library/locale.html
+2009-05-06 19:46:04,935 EXTRAINFO - Filtered URL http://docs.python.org/library/locale.html
+2009-05-06 19:46:04,938 EXTRAINFO - External link - filtered  http://docs.python.org/_sources/tutorial/stdlib.txt
+2009-05-06 19:46:04,939 EXTRAINFO - Filtered URL http://docs.python.org/_sources/tutorial/stdlib.txt
+2009-05-06 19:46:05,333 INFO - Downloading http://docs.python.org/tutorial/classes.html
+2009-05-06 19:46:05,489 INFO - Downloading http://docs.python.org/tutorial/stdlib2.html
+2009-05-06 19:46:05,774 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/controlflow.html
+2009-05-06 19:46:05,775 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/controlflow.html
+2009-05-06 19:46:05,776 EXTRAINFO - Parsing web page http://docs.python.org/tutorial/controlflow.html
+2009-05-06 19:46:06,154 INFO - Fetching links http://docs.python.org/tutorial/introduction.html
+2009-05-06 19:46:06,157 EXTRAINFO - External link - filtered  http://docs.python.org/library/string.html
+2009-05-06 19:46:06,157 EXTRAINFO - Filtered URL http://docs.python.org/library/string.html
+2009-05-06 19:46:06,161 EXTRAINFO - External link - filtered  http://www.unicode.org/
+2009-05-06 19:46:06,162 EXTRAINFO - Filtered URL http://www.unicode.org/
+2009-05-06 19:46:06,165 EXTRAINFO - External link - filtered  http://docs.python.org/_sources/tutorial/introduction.txt
+2009-05-06 19:46:06,166 EXTRAINFO - Filtered URL http://docs.python.org/_sources/tutorial/introduction.txt
+2009-05-06 19:46:06,228 INFO - Downloading http://docs.python.org/tutorial/interactive.html
+2009-05-06 19:46:06,408 INFO - Fetching links http://docs.python.org/tutorial/controlflow.html
+2009-05-06 19:46:06,411 EXTRAINFO - External link - filtered  http://docs.python.org/reference/expressions.html
+2009-05-06 19:46:06,411 EXTRAINFO - Filtered URL http://docs.python.org/reference/expressions.html
+2009-05-06 19:46:06,416 EXTRAINFO - External link - filtered  http://www.python.org/dev/peps/pep-0008
+2009-05-06 19:46:06,416 EXTRAINFO - Filtered URL http://www.python.org/dev/peps/pep-0008
+2009-05-06 19:46:06,420 EXTRAINFO - External link - filtered  http://docs.python.org/_sources/tutorial/controlflow.txt
+2009-05-06 19:46:06,420 EXTRAINFO - Filtered URL http://docs.python.org/_sources/tutorial/controlflow.txt
+2009-05-06 19:46:07,169 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/inputoutput.html
+2009-05-06 19:46:07,170 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/inputoutput.html
+2009-05-06 19:46:07,171 EXTRAINFO - Parsing web page http://docs.python.org/tutorial/inputoutput.html
+2009-05-06 19:46:07,465 INFO - Fetching links http://docs.python.org/tutorial/inputoutput.html
+2009-05-06 19:46:07,467 EXTRAINFO - External link - filtered  http://docs.python.org/library/pickle.html
+2009-05-06 19:46:07,468 EXTRAINFO - Filtered URL http://docs.python.org/library/pickle.html
+2009-05-06 19:46:07,471 EXTRAINFO - External link - filtered  http://docs.python.org/_sources/tutorial/inputoutput.txt
+2009-05-06 19:46:07,471 EXTRAINFO - Filtered URL http://docs.python.org/_sources/tutorial/inputoutput.txt
+2009-05-06 19:46:07,743 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/interactive.html
+2009-05-06 19:46:07,745 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/interactive.html
+2009-05-06 19:46:07,745 EXTRAINFO - Parsing web page http://docs.python.org/tutorial/interactive.html
+2009-05-06 19:46:07,832 INFO - Fetching links http://docs.python.org/tutorial/interactive.html
+2009-05-06 19:46:07,835 EXTRAINFO - External link - filtered  http://docs.python.org/_sources/tutorial/interactive.txt
+2009-05-06 19:46:07,836 EXTRAINFO - Filtered URL http://docs.python.org/_sources/tutorial/interactive.txt
+2009-05-06 19:46:08,964 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/stdlib2.html
+2009-05-06 19:46:08,965 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/stdlib2.html
+2009-05-06 19:46:08,966 EXTRAINFO - Parsing web page http://docs.python.org/tutorial/stdlib2.html
+2009-05-06 19:46:09,261 INFO - Fetching links http://docs.python.org/tutorial/stdlib2.html
+2009-05-06 19:46:09,264 EXTRAINFO - External link - filtered  http://docs.python.org/library/repr.html
+2009-05-06 19:46:09,264 EXTRAINFO - Filtered URL http://docs.python.org/library/repr.html
+2009-05-06 19:46:09,266 EXTRAINFO - External link - filtered  http://docs.python.org/library/pprint.html
+2009-05-06 19:46:09,267 EXTRAINFO - Filtered URL http://docs.python.org/library/pprint.html
+2009-05-06 19:46:09,269 EXTRAINFO - External link - filtered  http://docs.python.org/library/textwrap.html
+2009-05-06 19:46:09,269 EXTRAINFO - Filtered URL http://docs.python.org/library/textwrap.html
+2009-05-06 19:46:09,272 EXTRAINFO - External link - filtered  http://docs.python.org/library/struct.html
+2009-05-06 19:46:09,272 EXTRAINFO - Filtered URL http://docs.python.org/library/struct.html
+2009-05-06 19:46:09,275 EXTRAINFO - External link - filtered  http://docs.python.org/library/threading.html
+2009-05-06 19:46:09,275 EXTRAINFO - Filtered URL http://docs.python.org/library/threading.html
+2009-05-06 19:46:09,278 EXTRAINFO - External link - filtered  http://docs.python.org/library/queue.html
+2009-05-06 19:46:09,278 EXTRAINFO - Filtered URL http://docs.python.org/library/queue.html
+2009-05-06 19:46:09,281 EXTRAINFO - External link - filtered  http://docs.python.org/library/logging.html
+2009-05-06 19:46:09,281 EXTRAINFO - Filtered URL http://docs.python.org/library/logging.html
+2009-05-06 19:46:09,284 EXTRAINFO - External link - filtered  http://docs.python.org/library/weakref.html
+2009-05-06 19:46:09,284 EXTRAINFO - Filtered URL http://docs.python.org/library/weakref.html
+2009-05-06 19:46:09,287 EXTRAINFO - External link - filtered  http://docs.python.org/library/array.html
+2009-05-06 19:46:09,287 EXTRAINFO - Filtered URL http://docs.python.org/library/array.html
+2009-05-06 19:46:09,290 EXTRAINFO - External link - filtered  http://docs.python.org/library/collections.html
+2009-05-06 19:46:09,290 EXTRAINFO - Filtered URL http://docs.python.org/library/collections.html
+2009-05-06 19:46:09,292 EXTRAINFO - External link - filtered  http://docs.python.org/library/bisect.html
+2009-05-06 19:46:09,293 EXTRAINFO - Filtered URL http://docs.python.org/library/bisect.html
+2009-05-06 19:46:09,295 EXTRAINFO - External link - filtered  http://docs.python.org/library/heapq.html
+2009-05-06 19:46:09,296 EXTRAINFO - Filtered URL http://docs.python.org/library/heapq.html
+2009-05-06 19:46:09,298 EXTRAINFO - External link - filtered  http://docs.python.org/library/decimal.html
+2009-05-06 19:46:09,298 EXTRAINFO - Filtered URL http://docs.python.org/library/decimal.html
+2009-05-06 19:46:09,302 EXTRAINFO - External link - filtered  http://docs.python.org/_sources/tutorial/stdlib2.txt
+2009-05-06 19:46:09,302 EXTRAINFO - Filtered URL http://docs.python.org/_sources/tutorial/stdlib2.txt
+2009-05-06 19:46:10,167 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/classes.html
+2009-05-06 19:46:10,168 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/classes.html
+2009-05-06 19:46:10,169 EXTRAINFO - Parsing web page http://docs.python.org/tutorial/classes.html
+2009-05-06 19:46:10,376 INFO - Fetching links http://docs.python.org/tutorial/classes.html
+2009-05-06 19:46:10,379 EXTRAINFO - External link - filtered  http://docs.python.org/library/__main__.html
+2009-05-06 19:46:10,379 EXTRAINFO - Filtered URL http://docs.python.org/library/__main__.html
+2009-05-06 19:46:10,385 EXTRAINFO - External link - filtered  http://www.python.org/download/releases/2.3/mro/
+2009-05-06 19:46:10,385 EXTRAINFO - Filtered URL http://www.python.org/download/releases/2.3/mro/
+2009-05-06 19:46:10,389 EXTRAINFO - External link - filtered  http://docs.python.org/_sources/tutorial/classes.txt
+2009-05-06 19:46:10,389 EXTRAINFO - Filtered URL http://docs.python.org/_sources/tutorial/classes.txt
+2009-05-06 19:46:12,790 EXTRAINFO - Writing file  /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/datastructures.html
+2009-05-06 19:46:12,792 INFO - Saved /home/anand/projects/harvestman/HarvestMan/harvestman/apps/pytut/docs.python.org/tutorial/datastructures.html
+2009-05-06 19:46:12,792 EXTRAINFO - Parsing web page http://docs.python.org/tutorial/datastructures.html
+2009-05-06 19:46:13,035 INFO - Fetching links http://docs.python.org/tutorial/datastructures.html
+2009-05-06 19:46:13,038 EXTRAINFO - External link - filtered  http://docs.python.org/_sources/tutorial/datastructures.txt
+2009-05-06 19:46:13,039 EXTRAINFO - Filtered URL http://docs.python.org/_sources/tutorial/datastructures.txt
+2009-05-06 19:46:14,331 EXTRAINFO - Ending threads... 
+2009-05-06 19:46:14,332 INFO - Ending Project pytut ...
+2009-05-06 19:46:19,799 EXTRAINFO - Waiting for threads to finish up... 
+2009-05-06 19:46:19,800 EXTRAINFO - Done. 
+2009-05-06 19:46:19,803 INFO -   
+2009-05-06 19:46:19,810 EXTRAINFO - Writing url headers database 
+2009-05-06 19:46:19,815 INFO - Dumping url tree to file ./pytut/urltree.html
+2009-05-06 19:46:19,821 INFO -   
+2009-05-06 19:46:19,822 INFO - HarvestMan mirror pytut completed in 21.11 seconds.
+2009-05-06 19:46:19,822 INFO - 118 links scanned in 1 server .
+2009-05-06 19:46:19,822 INFO - 17 files written.
+2009-05-06 19:46:19,822 INFO - 615498  bytes received at the rate of 28.47 KB/sec .
+2009-05-06 19:46:19,822 INFO - 615498  bytes were written to disk.
+
+2009-05-06 19:46:19,822 INFO - *** Log Completed ***
+ 

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<HarvestMan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://harvestmanontheweb.com/schemas/HarvestMan.xsd">
+  <config version="3.0" xmlversion="1.0">
+    <projects>
+
+      <project ignore="0">
+
+        <url>http://www.dumitruoprea.ro</url>
+        <name>bla</name>
+        <verbosity level="extrainfo"/>
+      </project>
+
+      <project ignore="1">
+
+        <url>http://docs.python.org/lib/lib.html</url>
+        <name>pydoc</name>
+        <verbosity level="info"/>
+      </project>
+
+      <project ignore="1">
+
+        <url>www.foo.com</url>
+        <name>foo</name>
+
+        <basedir>/tmp/sites</basedir>
+        <verbosity level="info"/>
+      </project>
+
+      <project ignore="1">
+
+        <url>www.automotive.com</url>
+        <name>auto</name>
+        <verbosity level="extrainfo"/>
+      </project>
+
+
+      <project ignore="1">
+
+        <url>http://swish-e.org/docs</url>
+        <name>swish-docs</name>
+        <verbosity level="20"/>
+      </project>
+    </projects>
+
+    <network>
+      <proxy>
+        <proxyserver></proxyserver>
+        <proxyuser></proxyuser>
+        <proxypasswd></proxypasswd>
+        <proxyport value="80"/>
+      </proxy>
+    </network>
+
+    <download>
+      <types>
+        <html value="1"/>
+        <images value="1"/>
+        <javascript value="0"/>
+        <javaapplet value="1"/>
+        <querylinks value="1"/>
+      </types>
+      <cache status="1">
+        <datacache value="0"/>
+      </cache>
+      <protocol>
+        <http compress="1" />
+      </protocol>
+      <misc>
+        <retries value="1"/>
+      </misc>
+    </download>
+
+    <control>
+      <links>
+        <imagelinks value="1"/>
+        <stylesheetlinks value="1"/>
+        <offset start="0" end="-1" />
+      </links>
+      <extent>
+        <fetchlevel value="0"/>
+        <depth value="10"/>
+        <extdepth value="0"/>
+        <subdomain value="0"/>
+        <ignoretlds value="0" />
+      </extent>
+      <limits>
+        <maxextservers value="0"/>
+        <maxextdirs value="0"/>
+        <maxfiles value="0"/>
+        <maxfilesize value="5242880"/>
+        <maxbytes value="50 MB" />
+        <maxbandwidth value="40 k" factor="1.5" />
+        <maxconnections value="10"/>
+        <timelimit value="-1"/>
+      </limits>
+      <rules>
+        <robots value="1"/>
+        <urlpriority></urlpriority>
+        <serverpriority></serverpriority>
+      </rules>
+      <filters>
+        <urlfilter></urlfilter>
+        <serverfilter></serverfilter>
+        <wordfilter></wordfilter>
+        <junkfilter value="1"/>
+      </filters>
+      <plugins>
+        <plugin name="swish-e" enable="0" />
+        <plugin name="simulator" enable="0" />
+        <plugin name="lucene" enable="0" />
+      </plugins>
+    </control>
+
+    <parser>
+      <feature name='a' enable='1' />
+      <feature name='base' enable='1' />
+      <feature name='frame' enable='1' />
+      <feature name='img' enable='1' />
+      <feature name='form' enable='1' />
+      <feature name='link' enable='1' />
+      <feature name='body' enable='1' />
+      <feature name='script' enable='1' />
+      <feature name='applet' enable='1' />
+      <feature name='area' enable='1' />
+      <feature name='meta' enable='1' />
+      <feature name='embed' enable='1' />
+      <feature name='object' enable='1' />
+      <feature name='option' enable='0' />
+    </parser>
+
+    <system>
+      <useragent value="Firefox v2.0.0.8" />
+      <workers status="1" size="10" timeout="1200"/>
+      <trackers value="10"/>
+      <timegap value="3.0" random="1" />
+      <connections type="flush" />
+    </system>
+
+    <files>
+      <urltreefile status="1" />
+      <archive status="0" format="bzip"/>
+      <urlheaders status="1" />
+      <localise value="0"/>
+    </files>
+
+    <display>
+      <browsepage value="0"/>
+    </display>
+
+  </config>
+
+</HarvestMan>

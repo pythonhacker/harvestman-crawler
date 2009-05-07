@@ -1,0 +1,442 @@
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  
+  <xsd:annotation>
+    <xsd:documentation xml:lang="en">
+      W3C Schema file for HarvestMan webcrawler configuration file.
+      Copyright 2004-2005 Anand B Pillai. All rights reserved.
+      Written on Jan 18 2005, validated with xmllint.
+    </xsd:documentation>
+  </xsd:annotation>
+  
+  <xsd:element name="HarvestMan" type="HarvestManType"/>
+  
+  <!--- Defining the non-null uri -->
+  <xsd:simpleType name="validURI">
+    <xsd:restriction base="xsd:anyURI">
+      <xsd:minLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <!--- Defining the non-null string -->
+  <xsd:simpleType name="validString">
+    <xsd:restriction base="xsd:string">
+      <xsd:minLength value="1"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Defining the "verbosity" type -->
+  <xsd:simpleType name="VerbType">
+    <xsd:restriction base="xsd:integer">
+      <xsd:minInclusive value="0"/>
+      <xsd:maxInclusive value="5"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <!-- Defining the "fetchlevel" type -->
+  <xsd:simpleType name="FetchType">
+    <xsd:restriction base="xsd:integer">
+      <xsd:minInclusive value="0"/>
+      <xsd:maxInclusive value="4"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!-- Defining the "localise" type -->
+  <xsd:simpleType name="LocaliseType">
+    <xsd:restriction base="xsd:integer">
+      <xsd:minInclusive value="0"/>
+      <xsd:maxInclusive value="2"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!--- Defining the 'HarvestMan element -->
+  <xsd:complexType name="HarvestManType">
+    <xsd:sequence>
+      <xsd:element name="config" type="HarvestManConfigType"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!--- Defining the 'config' element -->
+  <xsd:complexType name="HarvestManConfigType">
+    <xsd:sequence>
+      <xsd:element name="projects" type="ConfigProjectsType" minOccurs="0" />
+      <xsd:element name="network" type="ConfigNetworkType"  minOccurs="0" />
+      <xsd:element name="download" type="ConfigDownloadType" minOccurs="0" />
+      <xsd:element name="control" type="ConfigControlType" minOccurs="0" />
+      <xsd:element name="parser" type="ConfigParserType" minOccurs="0" />
+      <xsd:element name="system" type="ConfigSystemType" minOccurs="0" />      
+      <xsd:element name="files" type="ConfigFilesType" minOccurs="0" />
+      <xsd:element name="display" type="ConfigDisplayType" minOccurs="0" />
+    </xsd:sequence>
+    <xsd:attribute name="version" type="validString" fixed="3.0" use="required"/>
+    <xsd:attribute name="xmlversion" type="validString" fixed="1.0" use="required"/>
+  </xsd:complexType>
+
+  <!-- Defining the 'projects' element -->
+  <xsd:complexType name="ConfigProjectsType">
+    <xsd:sequence>
+      <!--- This element contains zero or more 'project' elements -->
+      <xsd:element name="project" type="ProjectsProjectType" minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!--- Defining the 'project' element -->
+  <xsd:complexType name="ProjectsProjectType">
+    <xsd:sequence>
+      <xsd:element name="url" type="xsd:anyURI"/>
+      <xsd:element name="name" type="validString" minOccurs="0" />      
+      <xsd:element name="basedir" type="validString" minOccurs="0" />
+      <xsd:element name="verbosity" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="VerbType" default="3"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="timeout" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:double" default="600.0"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+    <xsd:attribute name="ignore" type="xsd:integer" default="0"/>                 
+  </xsd:complexType>
+  
+  <!--- Defining the 'network' element -->
+  <xsd:complexType name="ConfigNetworkType">
+    <xsd:sequence>
+      <!--- This consists of one 'proxy' element and one 'urlserver' element, both optional -->
+      <xsd:element name="proxy" type="NetworkProxyType" minOccurs="0"/>      
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <!--- Defining the 'proxy' element -->
+  <xsd:complexType name="NetworkProxyType">
+    <xsd:sequence>
+      <xsd:element name="proxyserver" type="xsd:string" minOccurs="0" />
+      <xsd:element name="proxyuser" type="xsd:string" minOccurs="0" />      
+      <xsd:element name="proxypasswd" type="xsd:string" minOccurs="0" />
+      <xsd:element name="proxyport">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:positiveInteger" default="80"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!--- Defining the 'download' element -->
+  <xsd:complexType name="ConfigDownloadType">
+    <xsd:sequence>
+      <!--- Consists of three elements, 'types', 'cache' and 'misc' -->
+      <xsd:element name="types" type="DownloadTypesType" minOccurs="0" />
+      <xsd:element name="cache" type="DownloadCacheType" minOccurs="0" />
+      <xsd:element name="protocol" type="DownloadProtocolType" minOccurs="0" />
+      <xsd:element name="misc" type="DownloadMiscType" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!--- Definint the 'types' element -->
+  <xsd:complexType name="DownloadTypesType">
+      <xsd:sequence>
+        <xsd:element name="html" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="value" type="xsd:boolean" default="1" use="optional"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="images" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="value" type="xsd:boolean" default="1" use="optional"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="movies" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="value" type="xsd:boolean" default="0" use="optional"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="flash" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="value" type="xsd:boolean" default="0" use="optional"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="sounds" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="value" type="xsd:boolean" default="0" use="optional"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="documents" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="value" type="xsd:boolean" default="1" use="optional"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="javascript" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="value" type="xsd:boolean" default="1" use="optional"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="javaapplet" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="value" type="xsd:boolean" default="1" use="optional"/>
+          </xsd:complexType>
+        </xsd:element>
+        <xsd:element name="querylinks" minOccurs="0">
+          <xsd:complexType>
+            <xsd:attribute name="value" type="xsd:boolean" default="1" use="optional"/>
+          </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+  </xsd:complexType>
+
+  <!--- Defining the 'cache' type -->
+  <xsd:complexType name="DownloadCacheType">
+    <xsd:sequence>
+      <xsd:element name="datacache" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:boolean" default="1" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>     
+    <xsd:attribute name="status" type="xsd:boolean" default="1" use="optional"/>
+  </xsd:complexType>
+
+  <!--- Defining the 'protocol' type -->
+  <xsd:complexType name="DownloadProtocolType">
+    <xsd:sequence>
+      <xsd:element name="http" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="compress" type="xsd:boolean" default="1" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>     
+  </xsd:complexType>
+
+  <!--- Defining the 'misc' type -->
+  <xsd:complexType name="DownloadMiscType">
+    <xsd:sequence>
+      <xsd:element name="retries" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:boolean" default="1" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="tidyhtml" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:boolean" default="0" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>       
+  </xsd:complexType>
+  
+  <!--- Defining the 'control' element -->
+  <xsd:complexType name="ConfigControlType">
+    <xsd:sequence>
+      <!--- Consists of six elements, 'links', 'extent' and 'limits', 'rules', filters' & plugins -->
+      <xsd:element name="links" type="ControlLinksType" minOccurs="0" />
+      <xsd:element name="extent" type="ControlExtentType" minOccurs="0" />
+      <xsd:element name="limits" type="ControlLimitsType" minOccurs="0" />
+      <xsd:element name="rules" type="ControlRulesType" minOccurs="0" />
+      <xsd:element name="filters" type="ControlFiltersType" minOccurs="0" />
+      <xsd:element name="plugins" type="ControlPluginsType" minOccurs="0" />
+    </xsd:sequence>
+  </xsd:complexType>
+  
+  <!--- Defining the 'links' element -->
+  <xsd:complexType name="ControlLinksType">
+    <xsd:sequence>
+      <xsd:element name="imagelinks" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:boolean" default="1" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="stylesheetlinks" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:boolean" default="1" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="offset" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="start" type="xsd:integer" default="0" use="optional"/>
+          <xsd:attribute name="end" type="xsd:integer" default="-1" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>       
+  </xsd:complexType>
+  
+  <!--- Defining the 'extent' element -->
+  <xsd:complexType name="ControlExtentType">
+    <xsd:sequence>
+      <xsd:element name="fetchlevel" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="FetchType" default="1" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="depth" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:integer" default="10" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="extdepth" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:integer" default="0" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="subdomain" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:boolean" default="0" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ignoretlds" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:boolean" default="0" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>       
+  </xsd:complexType>
+  
+  <!--- Defining the 'limits' element -->
+  <xsd:complexType name="ControlLimitsType">
+    <xsd:sequence>
+      <xsd:element name="maxfiles" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:positiveInteger" default="5000" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="maxfilesize" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:positiveInteger" default="1048576" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="maxbytes" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:integer" default="0" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="maxbandwidth" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:integer" default="0" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="connections" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:positiveInteger" default="5" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="timelimit" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:integer" default="-1" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>       
+  </xsd:complexType>
+
+  <!--- Defining the 'rules' element -->
+  <xsd:complexType name="ControlRulesType">
+    <xsd:sequence>
+      <xsd:element name="robots" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:boolean" default="1" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="urlpriority" type="xsd:string" minOccurs="0" />
+      <xsd:element name="serverpriority" type="xsd:string" minOccurs="0" />
+    </xsd:sequence>       
+  </xsd:complexType>
+        
+   <!--- Defining the 'filters' element -->
+  <xsd:complexType name="ControlFiltersType">
+    <xsd:sequence>
+      <xsd:element name="urlfilter" type="xsd:string" minOccurs="0" />
+      <xsd:element name="serverfilter" type="xsd:string" minOccurs="0" />
+      <xsd:element name="wordfilter" type="xsd:string" minOccurs="0" />
+      <xsd:element name="junkfilter" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:boolean" default="0" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>       
+  </xsd:complexType>
+
+   <!--- Defining the 'plugins' element -->
+  <xsd:complexType name="ControlPluginsType">
+    <xsd:sequence>
+      <xsd:element name="plugin" minOccurs="0" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:attribute name="name" type="xsd:string" use="required"/>
+          <xsd:attribute name="enable" type="xsd:boolean" use="required"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence> 
+    <xsd:attribute name="type" type="xsd:integer" default="0" use="optional"/>
+  </xsd:complexType>
+
+  <!--- Defining the 'parser' element -->
+  <xsd:complexType name="ConfigParserType">
+    <xsd:sequence>
+      <xsd:element name="feature" minOccurs="0" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:attribute name="name" type="xsd:string" use="required"/>
+          <xsd:attribute name="enable" type="xsd:boolean" use="required"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>       
+  </xsd:complexType>
+  
+  <!--- Defining the 'system' element -->
+  <xsd:complexType name="ConfigSystemType">
+    <xsd:sequence>
+      <xsd:element name="workers" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="status" type="xsd:boolean" default="1" use="optional"/>
+          <xsd:attribute name="size" type="xsd:positiveInteger" default="10" use="optional"/>
+          <xsd:attribute name="timeout" type="xsd:double" default="1200.0" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="trackers" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:positiveInteger" default="4" use="optional"/>
+          <xsd:attribute name="timeout" type="xsd:double" default="240.0" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="timegap" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:double" default="0.5" use="optional"/>
+          <xsd:attribute name="random" type="xsd:boolean" default="1" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <!--- Defining the 'files' element -->
+  <xsd:complexType name="ConfigFilesType">
+    <xsd:sequence>
+      <xsd:element name="urltreefile" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="status" type="xsd:boolean" default="0" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      
+      <xsd:element name="archive" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="status" type="xsd:boolean" default="0" use="optional"/>
+          <xsd:attribute name="format" type="xsd:string" default="bzip" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="urlheaders" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="status" type="xsd:boolean" default="1" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="localise" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="LocaliseType" default="0" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:complexType name="ConfigDisplayType">
+    <xsd:sequence>
+      <xsd:element name="browsepage" minOccurs="0">
+        <xsd:complexType>
+          <xsd:attribute name="value" type="xsd:boolean" default="1" use="optional"/>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

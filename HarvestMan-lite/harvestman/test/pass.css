@@ -1,0 +1,133 @@
+@import "css1.css";
+
+
+body
+{
+background-color: #EEFFFF;
+font-family: Lucida, Georgia, Verdana, Helvetica, sans-serif, Times;
+color: #000000;
+
+}
+
+h1{
+ font-size: 20pt;
+ color: #334d55;
+ text-align: center;
+}
+
+#masthead{
+        margin: 2px solid black;
+        padding: 5px 2px;
+        border-bottom: 1px solid #cccccc;
+        background-color: #a2bcef;
+        height: 80px;
+}
+
+@import url("css2.css");
+
+div#top-navbar {
+  float: left; 
+  width: 20%; 
+  background-color: #A9BCEF; 
+  background-color: #a2ccef;
+  padding: 1em 0px;
+  margin-top: 0.8em;
+  border: 1px solid black; 
+}
+div#top-navbar span {
+  display:block; 
+  margin-left: .5em;
+  margin-top: 0.8em;
+}
+div#top-navbar span.navbar-title {
+  font-weight: bold; 
+  font-size:110%; 
+  border-bottom: 1px solid #007; 
+  margin-right: .1em; 
+  padding-bottom: 0.3em
+  align: center;
+}
+div#top-navbar span.first-item {
+  margin-top: 1em;
+}
+div#top-navbar span.colored-item {
+  background: #ffffff;
+  text-align: center;
+  margin-right: 1em;
+  padding: 0;
+}
+
+div#bottom-navbar {
+  float: left;
+  width: 20%; 
+  background-color: EEF; 
+  border: 2px solid black; 
+  padding: 1em 0px;
+  margin-top: 100em;
+
+}
+
+div#bottom-navbar span {
+  display:block; 
+  margin-left: .5em;
+  margin-top: .25em;
+}
+div#bottom-navbar span.navbar-title {
+  font-weight: bold; 
+  font-size:110%; 
+  border-bottom: 1px solid #007; 
+  margin-right: .5em; 
+  padding-bottom: 0.3em
+  align: center;
+}
+
+div#bottom-navbar span.colored-item {
+  background: #ffffcc;
+  text-align: center;
+  margin-right: 1em;
+  padding: 0;
+}
+
+div#top-navbar span.nbsep {
+  display: none;
+}
+
+div#top-navbar span.nbsep2 {
+  display: yes;
+  align: center;
+}
+
+div#footer {
+  position: relative; 
+  bottom: 0.5em;
+  width: 96%; 
+  text-align: center; 
+  border-top: 1px solid #AAA; 
+  color: #AAA; 
+  margin: 0 1%; 
+  padding: 0
+}
+
+div#main-content {
+  position: relative; 
+  margin-left: 25.0%; 
+  padding-top: .5em;
+  top: -1em; 
+  border-top: 1 px solid black;
+  font-size: 100%;
+}
+
+div#section-title span
+{
+  border: 2px solid #999999;
+  padding: 2px 4px;
+  background: #cccccc;
+  underline: yes;
+}
+
+div#table-placement
+{
+  float: right;
+}
+
+UL           { list-style: url(fancybullet.gif) disc }

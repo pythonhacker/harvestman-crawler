@@ -1,0 +1,457 @@
+
+*==========================================================*
+|            -Changelog.txt file for HarvestMan-           |
+|                                                          |
+|           URL: http://www.harvestmanontheweb.com         |
+*==========================================================*
+Version 2.0 b1
+Release Date: TBD
+
+Release Focus: Major Enhancements, Bug-fixes
+
+Brief
+=====
+The 2.0 version is a release of HarvestMan after more than 2.0
+years. This version has numerous new features in terms of
+extensibility and usability. This version also converts HarvestMan
+from a web crawler application to a full-fledged application framework
+for writing custom web crawling/data mining applications.
+
+The changes in this version are many - there are changes in the
+source code layout, extensibility and usability features, performance
+enhancement fixes and numerous other bug-fixes and changes in dependence
+on third-party modules and in the setup.py script. Each of these
+changes will be discussed in detail here.
+
+
+Source code layout changes
+==========================
+The source code layout is changed considerably. Tne new layout splits
+the code into well-defined folders which abstract a functionality.
+The new layout starts from a top-level "harvestman" folder which holds
+all the code. The layout in this folder is as follows.
+
+harvestman
+        |
+        +---apps
+        |     |
+        |     |
+        |     +---samples
+        |
+        |
+        +---dev
+        |
+        |
+        +---ext
+        |    |
+        |    |  
+        |    +---lucene
+        |    |
+        |    |
+        |    +---swish-e
+        |
+        |
+        +---lib
+        |    |
+        |    +---common
+        |    |
+        |    +---js
+        |         |
+        |         +---samples
+        |
+        +---test
+
+The folders and their function are described below.
+
+1. apps - This holds all application modules. The HarvestMan framework's
+main application (harvestman.py), the Hget application's module (hget.py)
+and the module holding the base application class (appbase.py) sit in
+this module. This module also holds some sample configuration XML files.
+
+2. apps/samples - This holds sample applications based on HarvestMan
+event framework which demonstrates custom crawling applications, extending
+the HarvestMan framework. 
+
+3. dev - This holds test code and code which is under a prototype stage
+and not part of the HarvestMan library yet, but could become so in future
+versions.
+
+4. ext - This holds modules which make use of the HarvestMan plugin
+framework and implement plugin extensions on HarvestMan. 
+
+5. ext/lucene - This holds some useful code for working with Lucene
+indexes.
+
+6. ext/swish-e - This holds some documentation and a sample swish-e
+configuration file which can be used with the swish-e plugin of HarvestMan.
+
+7. lib - This holds the main library modules of HarvestMan. This folder
+contains most of the code of the HarvestMan framework and in a way
+defines the HarvestMan framework. 
+
+8. lib/common - This holds library modules which implement common
+algorithms or data structures or generic libraries or holds global 
+data/objects or contain code from third party libraries. 
+
+9. lib/js - This holds a barebones Javascript parser written in pure
+Python which is used in HarvestMan to parse basic javascript. It also
+contains a pure Python implementation of the Narcissus javascript
+parser, though this parser is not used in HarvestMan framework anywhere.
+
+10.lib/js/samples - Contains sample javascript/html files as test
+cases for the Javascript/Narcissus parsers.
+
+11.test - Contains a unit test module and a single unit test case
+for the urlparser module. 
+
+
+New Features
+============
+As mentioned earlier, the features can be split into two - extensibility
+features and usability features. 
+
+Extensibility
+-------------
+1. HarvestMan Event framework - This release adds an event framework
+to HarvestMan which allows a developer to very easily extend the program's
+behavior. Specific functions raise events before and after certain
+operations. A developer can bind his functions to these events and his
+functions are automatically called back by HarvestMan during program flow,
+when the event is raised. The developer can provide his own specific 
+custom processing in his event callback, which can modify the program
+behavior.
+
+There are many examples of writing custom crawler applications by using
+events in the "apps/samples" folder. For more information on HarvestMan
+event framework read the document "events.HOWTO" in this folder.
+
+2. HarvestMan plugins framework - This release adds a plugin
+mechanism to HarvestMan, which allows the developer to modify
+program behavior by writing custom logic and hooking it on to specific
+methods in HarvestMan classes. The plugin mechanism works using metaclasses
+and allows a developer to completely replace the code of a method or
+to attach functions as pre/post callbacks on methods. This has been
+used to implement sample plugins - the "ext" folder contains plugins
+which involve a simulator, a swish-e plugin, a lucene plugin etc. 
+
+For more information on plugins read "plugins.HOWTO" in this folder.
+
+3. Swish-e integration implemented as a plugin (see (2)). This plugin
+allows HarvestMan to run as an external program feeding content to swish-e
+indexer.
+
+4. Lucene integration implemented as a plugin (see (2)). This plugin
+converts HarvestMan to a web indexer, allowing to crawl and index web
+pages using Lucene via PyLucene.
+
+5. A simulate feature implemented as a standard plugin (see (2)). 
+This simulates crawling without actually downloading anything. 
+
+6. Crawl user database - From 2.0, a user crawl database named
+"crawls.db" is created in a user directory and all crawl meta
+information and statistics are appended as records to this database.
+The database is an sqlite database and consists of two tables
+namely "projects" and "project_stats". The former stores meta
+information on every HarvestMan project, while the latter stores
+information on crawl statistics of every project.
+
+For more information on the crawl database, see "dbdesign.txt" .
+
+7. New modules: Several new modules have been added. 
+These are:
+
+lib/
+
+o configparser.py - This contains configuration file parsing
+code. (This used to be named as xmlparser.py).
+o db.py - Defines classes implementing crawl database feature.
+o document.py - Defines a class which stands for a web document.
+o event.py - Defines classes for the HarvestMan event framework.
+o filethread.py - Defines a class for writing files in separate
+threas (not used).
+o hooks.py - Defines classes for the plugin mechanism.
+o methodwrapper.py - Defines metaclass level mechanisms for
+implementing the plugin feature.
+o mirrors.py - Defines classes which helps to manage mirrors
+for the Hget application.
+o options.py - Summarizes and holds all harvestman/hget options
+in tuples.
+o urlcollections.py - Defines URL context and collections classes
+which helps to associate and relate URLs belonging to specific
+contexts (frame, css etc) easily and to define new contexts.
+o urlproc.py - Defines a function which helps to replace HTML
+entitites in URLs.
+o urltypes.py - Defines a hierarchical type system for URLs encountered
+in the web, which is used by other modules.
+
+o common/* - The "common" sub-folder and all contained modules are
+brand new. These modules are,
+
+  - bst.py - Defines a binary search tree with disk caching.
+  - common.py - Contains global functions/data
+  - dictcache.py - Defines a dictionary type with disk caching.
+  - keepalive.py - Module borrowed from "urlgrabber" project, defining
+    HTTP handlers which provide HTTP/1.0 keep-alive connections.
+  - lrucache.py - Defines an O(1) LRU cache class. Code courtesy
+    Josiah Carlson.
+  - macros.py - Defines a metaclass and its derived C-like "macro" variables
+    and defines several "macros" for HarvestMan.
+  - netinfo.py - Common data and state moved from urlparser.py to this module.
+  - optionparser.py - Defines a generic option parser class which makes it
+    easy to write and modify command line options in the form of tuples.
+  - progress.py - Defines a progress bar class. Code borrowed from the 
+    "S.M.A.R.T" package manager project and customized.
+  - properties.py - A pure Python implementation of java.util.Properties class.
+  - pydblite.py - A pure Python in-memory database with selection by list 
+    comprehension and generator expression. Code courtesy Pierre Quentel.
+  - singleton.py - Singleton implementations.
+  - spincursor.py - A console spin-cursor implementation used by hget.
+
+apps/
+
+o hget.py - New application module for the "hget" application
+o appbase.py - New top-level application class module.
+
+ext/
+
+ o This folder and all code under it are new.
+
+test/
+
+ o This folder and all code under it are new.
+
+
+8. Deprecated/renamed modules - Several modules have been deprecated
+or renamed (moved) w.r.t 1.4.6 version.
+
+ o common.py moved to "common" sub-folder.
+ o feedparser.py moved to "dev" folder.
+ o strptime.py deprecated and removed.
+ o urlserver.py deprecated and removed.
+ o xmlparser.py renamed to configparser.py .
+
+
+Usability
+---------
+1. Support for HTTP compression (gzip, deflate).
+2. Support for HTML "embed" and "object" tags.
+3. Support and control for multimedia URL types. A
+new type called "multimedia" and subtypes "movies"
+and "sounds" have been added.
+4. Support for meta "refresh" tags.
+5. Support for meta "robot" tags (index, follow, noindex, nofollow).
+6. Feature to parse stylesheets, extract URLs and download them.
+7. Support for parsing and replacing HTML entities in URLs.
+8. Support for keywords and description attribtues in "meta" tags 
+for web pages.
+9. Support for specifying offset in child URLs of webpages.
+10. Support for HTTP 304 using "If-Modified-Since" HTTP headers.
+11. Support for "etags" in HTTP headers.
+12. Support for HTTP keep-alive in mutliple connections to the
+same site. Program now attempts to keep HTTP connections open
+as much as possible.
+13. Support for HTTP basic authorization for URLs.
+14. Command line options can be mixed with configuration file
+when using the -C option.
+15. Command line changes - The following command line options
+have been removed, added or updated.
+  1. --subdomain, -S: Changed to -s.
+  2. -m,--simulate: New option to simulate crawling.
+  3. -g,--plugin: New option to apply a given plugin.
+  4. --urllistfile, --urltreefile: Removed these options.
+  5. -F, --urlfile: New option to read list of start URLs from a file
+
+
+Other Changes (including performance enhancements)
+--------------------------------------------------
+
+1. Project caching uses the database object defined by the pydblite
+module instead of using pickling or shelve. This helps fast
+cache reads/writes than before.
+2. Logging module rewritten to make use of Python logging library.
+3. Log for same project run many times, keeps appending to same
+log file instead of deleting old logs. 
+4. Log files now have time stamps in every log line.
+5. Replaced md5 with sha module for generating hashes.
+6. Removed lock objects in many places when the data types are
+automatically synchronized (lists etc) by the GIL.
+7. Removed strptime module since it is no longer required.
+8. Default value for maximum file size (for single file) increased
+to 5MB (was 1 MB earlier).
+9. Changed sleep times inside the loops of fetcher/crawler thread
+clases to random times ranging from 0 to 0.3 second. This allows
+for more better resource allocation and pooling.
+10. Sleep times is available as a configuration option. This can
+be used to increase sleep-times for slow/traffic intense websites.
+11. Caching supports HTTP-304 using "If-modified-since" and 
+etags using "If-none-match". Etags in HTTP headers are saved
+to project cache if found along with last-modified time information.
+12. Better management of HTTP errors in connector module. A new
+error class is defined and errors are managed according to 
+HTTP/1.1 definitions.
+13. Rudimentary javascript support - for javascript based URL
+forwarding and basic support for DOM modifications using document.write* .
+14. Better support for Frame pages.
+15. Arbitrary return values in most methods replaced by custom 
+defined macros where a number is expected as return value.
+Each macro is a class which maps to a numerical value.
+16. A fast HTML parser based on sgmlop is added to HarvestMan.
+By default this parser is used. This parser can parse even bad
+HTML so more pages should get parsed than in previous versions.
+17. The "GetObject", "SetObject" methods are replaced by a global
+object named "objects" which holds handles to all global objects
+by using alias strings. For example, instead of getting the
+config object using,
+
+cfg = GetObject('config')
+
+now this is,
+
+cfg = objects.config
+
+The "objects" object lives in the common/common.py module. The
+aliases are set using the "SetAlias" method. Objects which want
+to be registered using "SetAlias" should define their unique alias 
+string in the "alias" attribute.
+
+
+(The following are specific performance enhancement fixes)
+
+18. The url dictionary and collections data structure are now
+disk-caching BSTs as opposed to pure in-memory dictionaries as earlier.
+This helps reduce the memory usage of the application and also
+to increase program speed. 
+19. Many redundant data structures removed. No separate data structure
+used for duplicate link checking. Instead the url dictionary BST
+is reused. The "downloaddict" in datamgr.py module replaced with
+counters.
+20. The "_filter" dictionary in rules.py module no longer stores
+full URLs, but only their indices. The "_links" list is removed
+from this module.
+
+21. In urlparser.py module a new method named "get_canonical_url"
+is added. This returns the canonical form of a URL. This form is used
+to calculate an index of the URL which is used to filter out 
+duplicate URLs etc. Since canonicalization is done, this URL 
+duplicate filter algorithm works much better than before.
+22. Better unicode handling in url* modules.
+23. A state machine has been added for managing program exit
+condition instead of the previous active wait loop. The state machine
+keeps track of state changes in threads using a dictionary. Program
+exit is related to certain synchronization of states. Active wait
+replaced by waiting on a condition object.
+24. Url status dictionaries in datamgr replaced by url queue status
+variable on url objects and status macros. The "qstatus" variable
+on a URL object changes when the URL enters and exits queues, gets
+downloaded etc.
+25. Retry logic improved. Only URLs which failed without fatal
+errors and which were not read from cache are retried. 
+26. The requests dictionary is removed from the HarvestManUrlConnectorFactory
+class. There is no need to limit connections per server, only a global
+limit is used.
+
+For more information on data structure changes, see "Datastructures.txt".
+For more information on the state machine, see "state_machine.txt".
+
+Bug-fixes
+---------
+1. Fixed 100% CPU utilization bug.
+2. Fixed many bugs in urlparser module,
+   - Correctly interpreting HTML entities
+   - Better unicode handling
+   - Bug-fixes for URLs with ".." character (URLs like http://www.foo.com/../bar )
+   - Bugs in re-resolving of URLs
+   - Bug to fix too many recalculations of the absolute url (in get_full_url())
+   - Bug fixing the URL index calculation
+   - Bug fixing handling of anchor tags
+   - Bug fixing handling of % characters in URLs
+   - Bug fixing changes in URLs which requires changes in directories/filenames etc (adding of recalc_locations method)
+3. Bug-fix in rules module to speed up rules checks.
+4. Bug-fix in rules module to correctly add URLs to filters dictionary for filtered URLs.
+5. Bug-fixes in downloading of duplicate content by fetchers.
+6.  Fixed problem with URLs not downloaded when base url is
+redefined. This was causing a deep-crawling problem for
+many sites.
+7. Bug-fixes in pageparser module. Fixed logic in CaselessDict class.
+8. Fixed unicode handling bug in logger module.
+9. Many others...
+
+
+Changes in setup/configuration
+------------------------------
+
+Since the 2.0 version also adds many changes in the setup.py script
+and also brings in the concept of user specific folders and 
+different levels of configuration and changes in the structure
+of configuration files also, so this is discussed separately
+in this section. 
+
+1. User folder - From 2.0 version, HarvestMan will create a folder
+for user specific configuration and data. For POSIX systems this
+folder is $HOME/.harvestman where $HOME is the home directory of the
+user. For Win32 systems this is %USERPROFILE%/Local Settings/Application Data/HarvestMan
+folder where %USERPROFILE% maps to the profile folder of the user, typically
+being the "C:/Documents and Settings/%USERNAME%" folder. A user specific
+configuration file is created in the "config" sub-folder of this folder.
+
+2. System folder - From 2.0 version, HarvestMan will create a folder for
+system wide configuration. For POSIX systems this is "/etc/harvestman"
+folder. For Win32 systems this is %ALLUSERPROFILE%/Application Data/HarvestMan/conf"
+folder. A system level configuration file is created and copied to this folder.
+
+HarvestMan can be customized by altering either the system configuration file,
+the user configuration file or both. HarvestMan first loads the system configuration
+file (if found) and next the user configuration file (if found) and further any
+project specific configuration files. So system-wide customization (for all users)
+can be kept in the system configuration file, user-specific customization in the
+user configuration file and project specific customization in specific project
+configuration files. Any changes applied further upstream overrides the settings
+applied earlier. In other words, project configuration files override user configuration
+files and user configuration files override the system configuration file.
+
+
+3. Configuration files - Earlier configuration XML files had to be complete and
+specify a <projects>...</projects> section specifying the URLs and other configuration
+for crawls. Now config XML files can be part or incomplete, with each specifying
+one or more top-level elements for any levels of configuration. In fact the user
+and system configuration files will not have the <projects>...</projects> section.
+These can be specified in another configuration file. 
+
+For example it is possible to have a configuration file as follows.
+
+<?xml version="1.0" encoding="utf-8"?>
+
+<HarvestMan xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://harvestmanontheweb.com/schemas/HarvestMan.xsd">
+  <config version="3.0" xmlversion="1.0">
+    
+    <control>
+      <plugins>
+        <plugin name="swish-e" enable="0" />
+        <plugin name="simulator" enable="0" />
+        <plugin name="lucene" enable="1" />
+      </plugins>
+    </control>
+
+  </config>
+  
+</HarvestMan>
+
+Since, this does not have a <projects>...</projects> section, to do
+any meaningful crawl with it, a URL has to be specified on the command line.
+So assuming the name of the above file is "cfg.xml", a sample crawl
+using this config file is,
+
+$ harvestman -C cfg.xml http://www.python.org/doc/current/tut/tut.html
+
+It is important to note that HarvestMan does not support multi-level cascading
+of configuration files. Only 3 levels of cascading are supported namely
+that of system=>user=>custom .So a crawl can be customized with configuration
+files at three levels which should be enough for most usage scenarios.
+
+4. setup.py - The setup.py script now installs sgmlop if it is not found.
+Since HarvestMan-2.0 depends on pyparsing it is also pulled in and automatically
+installed if not found. The setup.py script installs Python documentation for
+HarvestMan (generated by epydoc) and creates two shortcuts (softlinks) in POSIX
+systems namely "harvestman" for running the HarvestMan program and "hget" for
+running the hget program.

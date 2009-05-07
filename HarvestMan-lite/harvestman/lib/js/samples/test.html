@@ -1,0 +1,32 @@
+<script language="text/javascript">
+<!--hide this script from non-javascript-enabled browsers
+if (Browser=="IE") {
+//   document.write('<span id="temp"><nobr>'+text+'</nobr></span>');
+//   document.all.temp.style.visibility="hidden";
+//   rollbreite=document.all.temp.offsetWidth;
+//   rollbreite=900;
+   rollbreite=1050;
+}
+if (Browser=="NS6") {
+//   document.write('<span id="temp"><nobr>'+text+'</nobr></span>');
+//   document.getElementById("temp").style.visibility="hidden";
+//   rollbreite=document.getElementById("temp").offsetWidth;
+//   rollbreite=900;
+   rollbreite=1050;
+}
+if (Browser=="IE"||Browser=="NS6") {
+
+   document.write('<div class="ticker" id ="hticker" style="position:absolute;top:130;left:174;background-color:#dbf0ff;clip:rect(0,455,20,0);">')
+   document.write('<div class="ticker" id="iticker" style="position:relative;width:'+rollbreite+'">');
+   document.write(text);
+   document.write('</div> </div>');
+
+} else if (Browser=="NS4") {
+   document.write('<layer class="ticker" id="hticker" top="82px" left="181px" bgColor="#dbf0ff" clip="0,0,457,18">');
+   document.write('<layer class="ticker" id="iticker" left="0" >');
+   document.write("<nobr>"+text+"</nobr>");
+   document.write('</layer></layer>');
+
+}
+// stop hiding -->
+</script>
