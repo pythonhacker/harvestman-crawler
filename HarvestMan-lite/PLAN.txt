@@ -61,6 +61,14 @@ other js parser, which can remain)
 (The narcissus code will be moved to a separate project
 on google later.)
 
+III. Remove the following stuff
+
+1. tarhm.py
+2. Is deps/ folder required now that we are downloading
+and building everythning required ? 
+3. Can we do without ez_setup.py ?
+
+
 *NOTE* - This section is a work in progress.
 
 Documentation
