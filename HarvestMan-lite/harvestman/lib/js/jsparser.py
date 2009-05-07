@@ -525,18 +525,6 @@ def localtests():
     assert(P.locnchanged==True)
     assert(P.getLocation().href=="http://www.struer.dk/webtop/site.asp?site=5")
 
-    P.parse(open('samples/jsredirect2.html').read())
-    assert(repr(P.getDocument())==open('samples/jsredirect2.html').read())
-    assert(P.domchanged==False)
-    assert(P.locnchanged==True)
-    assert(P.getLocation().href=="http://www.struer.dk/webtop/site.asp?site=5")    
-
-    P.parse(open('samples/jsredirect3.html').read())
-    assert(repr(P.getDocument())==open('samples/jsredirect3.html').read())
-    assert(P.domchanged==False)
-    assert(P.locnchanged==True)
-    assert(P.getLocation().href=="fra/index.php")
-
     P.parse(open('samples/jsredirect4.html').read())
     assert(repr(P.getDocument())==open('samples/jsredirect4.html').read())
     assert(P.domchanged==False)
