@@ -6,12 +6,15 @@ Participants:  self, None ?
 
 The following steps are involved in the project.
 
-1. Identify redundant/useless/ modules, test files, other files - 3 days
-2. Clean up code to remove modules/code, files found in (1) - 1 week.
+1. Identify redundant/useless/ modules, test files, other files - 2 days
+2. Clean up code to remove modules/code, files found in (1) - 2 days.
 3. Identify redundant classes/objects etc in remaining
-   modules - 2 weeks
-4. Clean up code to remove items identified in (3) - 1 week.
-5. Produce HarvestMan-lite source code with complete
+   modules - 1 week
+4. Clean up code to remove items identified in (3) - 2 days.
+5. Refactor code, remove/collate functions, test - 1 week.
+6. Test code, modify datastructures for better perfomance
+   and memory usage - 2 weeks.
+7. Produce final HarvestMan-lite source code with complete
    documentation - 1 week.
 
 
@@ -58,5 +61,9 @@ other js parser, which can remain)
 (The narcissus code will be moved to a separate project
 on google later.)
 
+*NOTE* - This section is a work in progress.
+
+Documentation
+-------------
 
 All cleanup actions will be documented in the file doc/cleanlog.txt .
