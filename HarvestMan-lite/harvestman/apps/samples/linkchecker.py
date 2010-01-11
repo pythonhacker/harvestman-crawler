@@ -47,5 +47,5 @@ class LinkChecker(HarvestMan):
 if __name__ == "__main__":
     spider=LinkChecker()
     spider.initialize()
-    spider.bind_event('beforefinish', spider.find_broken_links)
+    spider.bind_event('before_finish_project', spider.find_broken_links)
     spider.main()

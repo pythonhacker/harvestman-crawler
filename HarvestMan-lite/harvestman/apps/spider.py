@@ -139,7 +139,7 @@ class HarvestMan(HarvestManAppBase):
     def finish_project(self):
         """ Actions to take after download is over for the current project """
 
-        if objects.eventmgr.raise_event('beforefinish', objects.queuemgr.baseurl, None)==False:
+        if objects.eventmgr.raise_event('before_finish_project', objects.queuemgr.baseurl, None)==False:
             return
         
         # Localise file links
@@ -153,7 +153,7 @@ class HarvestMan(HarvestManAppBase):
             browser.make_project_browse_page()
             logconsole("Done.")
 
-        objects.eventmgr.raise_event('afterfinish', objects.queuemgr.baseurl, None)
+        objects.eventmgr.raise_event('post_finish_project', objects.queuemgr.baseurl, None)
         
     def finalize(self):
         """ This method is called at program exit or when handling signals to clean up """
@@ -255,7 +255,7 @@ class HarvestMan(HarvestManAppBase):
     def start_project(self):
         """ Starts crawl for the current project, crawling its URL  """
 
-        if objects.eventmgr.raise_event('beforestart', objects.queuemgr.baseurl, None)==False:
+        if objects.eventmgr.raise_event('before_start_project', objects.queuemgr.baseurl, None)==False:
             return
         
         # crawls through a site using http/ftp/https protocols
@@ -298,7 +298,7 @@ class HarvestMan(HarvestManAppBase):
         else:
             objects.queuemgr.restart()
 
-        objects.eventmgr.raise_event('afterstart', objects.queuemgr.baseurl, None)
+        objects.eventmgr.raise_event('post_start_project', objects.queuemgr.baseurl, None)
         
     def clean_up(self):
         """ Performs clean up actions as part of the interrupt handling """
@@ -686,6 +686,7 @@ def main():
 
     spider = HarvestMan()
     spider.initialize()
+    
     #import pycallgraph
     #pycallgraph.start_trace(filter_func=callgraph_filter)
     spider.main()

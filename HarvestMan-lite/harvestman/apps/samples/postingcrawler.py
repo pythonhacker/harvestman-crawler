@@ -13,6 +13,7 @@ Copyright (C) 2008 Anand B Pillai
 import __init__
 from harvestman.apps.spider import HarvestMan
 from harvestman.lib.common.common import objects
+from harvestman.lib import logger
 
 import sys
 import blogger
@@ -108,10 +109,10 @@ if __name__ == "__main__":
     spider=JobPostingCrawler()
     spider.initialize()
     config = spider.get_config()
-    config.verbosity = 3
+    config.verbosity = logger.EXTRAINFO
     config.robots = 0
     config.localise = 0
 
-    spider.bind_event('afterparse', spider.after_parse_cb)
-    spider.bind_event('beforefinish', spider.finish_event_cb)    
+    spider.bind_event('post_parse_url', spider.after_parse_cb)
+    spider.bind_event('before_finish_project', spider.finish_event_cb)    
     spider.main()

@@ -73,7 +73,7 @@ if __name__ == "__main__":
     config = spider.get_config()
     config.verbosity = 3
 
-    spider.bind_event('beforecrawl', spider.crawl_this_link)
-    spider.bind_event('beforeparse', spider.parse_this_link)
-    spider.bind_event('writeurl', spider.write_this_url)
+    spider.bind_event('before_crawl_url', spider.crawl_this_link)
+    spider.bind_event('before_parse_url', spider.parse_this_link)
+    spider.bind_event('save_url_data', spider.write_this_url)
     spider.main()

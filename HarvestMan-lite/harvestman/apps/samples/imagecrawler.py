@@ -43,6 +43,6 @@ if __name__ == "__main__":
     # Need in-mem data mode to obtain data for
     # web-page URLs to parse them!
     config.datamode = CONNECTOR_DATA_MODE_INMEM 
-    spider.bind_event('writeurl', spider.write_this_url)
-    spider.bind_event('includelinks', spider.include_links)
+    spider.bind_event('save_url_data', spider.write_this_url)
+    spider.bind_event('include_this_link', spider.include_links)
     spider.main()

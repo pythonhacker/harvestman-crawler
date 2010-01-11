@@ -60,7 +60,7 @@ if __name__ == "__main__":
     config = spider.get_config()
     # Disable caching
     config.pagecache = 0
-    spider.bind_event('writeurl', spider.write_this_url)
-    spider.bind_event('beforetag', spider.analyze_this_tag)
-    spider.bind_event('beforefinish', spider.finish_event_cb)
+    spider.bind_event('save_this_url', spider.write_this_url)
+    spider.bind_event('before_tag_parse', spider.analyze_this_tag)
+    spider.bind_event('before_finish_project', spider.finish_event_cb)
     spider.main()

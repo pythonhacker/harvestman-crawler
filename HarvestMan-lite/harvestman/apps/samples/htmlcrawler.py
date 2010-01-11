@@ -13,6 +13,7 @@ Copyright (C) 2008 Anand B Pillai
 import sys
 import __init__
 from harvestman.apps.spider import HarvestMan
+from harvestman.lib import logger
 
 class HtmlCrawler(HarvestMan):
     """ A crawler which fetches only HTML (webpage) pages """
@@ -32,5 +33,6 @@ class HtmlCrawler(HarvestMan):
 if __name__ == "__main__":
     spider=HtmlCrawler()
     spider.initialize()
-    spider.bind_event('includelinks', spider.include_this_link)
+    cfg = spider.get_config()
+    spider.bind_event('include_this_link', spider.include_this_link)
     spider.main()

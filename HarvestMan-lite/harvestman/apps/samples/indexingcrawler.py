@@ -114,5 +114,5 @@ if __name__ == "__main__":
     config.images = 0
     config.pagecache = 0
 
-    spider.bind_event('postdownload', spider.post_download_cb)
+    spider.bind_event('post_crawl_complete', spider.post_download_cb)
     spider.main()
