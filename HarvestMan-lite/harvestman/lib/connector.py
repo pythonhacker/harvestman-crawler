@@ -839,7 +839,7 @@ class HarvestManUrlConnector(object):
         lmt, tag = lastmodified, etag
 
         # Raise an event...
-        if objects.eventmgr.raise_event('beforeconnect', urlobj, None, last_modified=lastmodified, etag=etag)==False:
+        if objects.eventmgr.raise_event('before_url_connect', urlobj, None, last_modified=lastmodified, etag=etag)==False:
             return CONNECT_NO_FILTERED
 
         add_ua = self._cfg._connaddua
@@ -902,7 +902,7 @@ class HarvestManUrlConnector(object):
                     maxsz = self._cfg.maxfilesize
                     extrainfo("Url",urltofetch,"does not match size constraints")
                     # Raise an event...
-                    objects.eventmgr.raise_event('afterconnect', urlobj, None)
+                    objects.eventmgr.raise_event('post_url_connect', urlobj, None)
                     
                     return CONNECT_NO_RULES_VIOLATION
                 
@@ -1270,7 +1270,7 @@ class HarvestManUrlConnector(object):
             debug('Setting %s status to %s' % (urlobj.get_full_url(), str(urlobj.status)))
             
         # Raise an event...
-        objects.eventmgr.raise_event('afterconnect', urlobj, None)
+        objects.eventmgr.raise_event('post_url_connect', urlobj, None)
         
         if three_oh_four:
             return CONNECT_NO_UPTODATE
@@ -1315,7 +1315,6 @@ class HarvestManUrlConnector(object):
         # (HTTP 400) error. Egs: http://www.bad-ischl.ooe.gv.at/. In such
         # cases, the connect method, sets useragent flag to False and calls
         # this method again.
-        # print 'User agent', self._cfg.USER_AGENT
         if useragent: 
             request.add_header('User-Agent', self._cfg.USER_AGENT)
         
@@ -1425,7 +1424,7 @@ class HarvestManUrlConnector(object):
         """ Writes the data for the URL object 'urlobj' to a disk file (internal method) """
 
         # Raise writeurl event
-        if objects.eventmgr.raise_event('writeurl', urlobj, data=self._data)==False:
+        if objects.eventmgr.raise_event('save_url_data', urlobj, data=self._data)==False:
             extrainfo('Filtering write of URL',urlobj)
             return WRITE_URL_FILTERED
 

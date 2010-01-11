@@ -429,7 +429,7 @@ class HarvestManUrlCrawler(HarvestManBaseUrlCrawler):
         """ Crawl a web page, recursively downloading its links """
 
         # Raise before crawl event...
-        if objects.eventmgr.raise_event('beforecrawl', self.url, self.document)==False:
+        if objects.eventmgr.raise_event('before_crawl_url', self.url, self.document)==False:
             extrainfo('Not crawling this url',self.url)
             return
         
@@ -472,7 +472,7 @@ class HarvestManUrlCrawler(HarvestManBaseUrlCrawler):
             if not objects.queuemgr.push( url_obj, "crawler" ):
                 if self._pushflag: self.buffer.append(url_obj)
 
-        objects.eventmgr.raise_event('aftercrawl', self.url, self.document)
+        objects.eventmgr.raise_event('post_crawl_url', self.url, self.document)
         
 class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
     """ This is the fetcher class, which downloads data for a url
@@ -561,7 +561,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
                 self.process_url()
 
                 # Raise "afterfetch" event
-                objects.eventmgr.raise_event('afterfetch', self.url)
+                objects.eventmgr.raise_event('post_fetch_url', self.url)
                 
                 self._loops += 1
 
@@ -608,7 +608,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
 
         data = ''
         # Raise "beforefetch" event...
-        if objects.eventmgr.raise_event('beforefetch', self.url)==False:
+        if objects.eventmgr.raise_event('before_download_url', self.url)==False:
             return 
         
         if self.url.qstatus==urlparser.URL_NOT_QUEUED:
@@ -631,7 +631,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
             document = url_obj.make_document(data, [], '', [])
             
             # Raise "beforeparse" event...
-            if objects.eventmgr.raise_event('beforeparse', self.url, document)==False:
+            if objects.eventmgr.raise_event('before_parse_url', self.url, document)==False:
                 return 
             
             # Check if this page was already crawled
@@ -650,7 +650,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
             if self._configobj.javascript:
                 skipjsparse = False
                 # Raise "beforejsparse" event...
-                if objects.eventmgr.raise_event('beforejsparse', self.url, document)==False:
+                if objects.eventmgr.raise_event('before_js_parse', self.url, document)==False:
                     # Don't return, skip this...
                     skipjsparse = True
 
@@ -680,7 +680,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
                         pass
 
                     # Raise "afterjsparse" event
-                    objects.eventmgr.raise_event('afterjsparse', self.url, document, links=links)
+                    objects.eventmgr.raise_event('post_js_parse', self.url, document, links=links)
 
             parsecount = 0
             
@@ -749,7 +749,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
             document.title = self.wp.title
             
             # Raise "afterparse" event...
-            objects.eventmgr.raise_event('afterparse', self.url, document, links=links)
+            objects.eventmgr.raise_event('post_parse_url', self.url, document, links=links)
 
             # Apply textfilter check here. This filter is applied on content
             # or metadata and is always a crawl filter, i.e since it operates
@@ -859,16 +859,9 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
             # information to events...
             document = url_obj.make_document(data, [], '', [])
 
-            # Raise "beforecssparse" event...
-            if objects.eventmgr.raise_event('beforecssparse', self.url, document)==False:
-                # Dont do anything with this URL...
-                return
-            
             sp = pageparser.HarvestManCSSParser()
             sp.feed(data)
 
-            objects.eventmgr.raise_event('aftercssparse', self.url, links=sp.links)
-            
             links = self.offset_links(sp.links)
             
             # Filter the CSS URLs also w.r.t rules

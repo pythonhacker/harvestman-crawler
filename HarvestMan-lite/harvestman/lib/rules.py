@@ -92,7 +92,7 @@ class HarvestManRulesChecker(object):
         violates the rules, else returns False """
 
         # raise event to allow custom logic
-        ret = objects.eventmgr.raise_event('includelinks', urlObj)
+        ret = objects.eventmgr.raise_event('include_this_url', urlObj)
         if ret==False:
             self.add_to_filter(urlObj.index)            
             return True

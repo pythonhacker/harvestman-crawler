@@ -566,9 +566,8 @@ class HarvestManDataManager(object):
                 }
 
         self.print_project_info(statsd)
-
-        objects.eventmgr.raise_event('postdownload', None)
-        
+        objects.eventmgr.raise_event('post_crawl_complete', None)
+            
     def check_exists(self, urlobj):
 
         # Check if this URL object exits (is a duplicate)
