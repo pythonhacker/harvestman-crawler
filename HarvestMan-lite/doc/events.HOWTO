@@ -78,13 +78,13 @@ def write_this_url(event, *args):
     else:
         return False
 
-We want to bind this to the 'writeurl' event to make
+We want to bind this to the 'save_url_data' event to make
 sure we write only image URLs. To bind it,
 
 spider = HarvestMan()
-spider.bind_event('writeurl', write_this_url)
+spider.bind_event('save_url_data', write_this_url)
 
-Now whenever the 'writeurl' event is raised, the function
+Now whenever the 'save_url_data' event is raised, the function
 'write_this_url' is called automatically.
 
 Using Events
@@ -93,63 +93,67 @@ Typical use of events are as 'before handlers', to
 allow the developer to insert custom logic to decide
 whether an action should be taken on a URL or document.
 
-For example, the event 'includelinks' allows the developer
-to hook into int and return a value, based on custom
-processing. If the event handler returns True, the URL
-is included, else filtered. 
+For example, the event 'before_crawl_url' allows the 
+developer to hook into int and return a value, based 
+on custom processing. If the event handler returns True, 
+the URL is included, else filtered. 
 
 To write such handlers, the programmer has to clearly
 return True if we want the handler to allow the action
 or return False to deny the action. Look at the previous
 sample code as an illustration for this.
 
-Other events are 'after handlers' which raise an event
+Other events are 'post handlers' which raise an event
 after an action is done. Since the programmer cannot 
 influence the action at this stage, the return value of 
 these events are of no importance.
 
 Events in HarvestMan
 --------------------
-HarvestMan as of now, defines the following events. This
+HarvestMan defines the following events. This
 is grouped into 'before events' and 'after events'.
 
 Before Events
 -------------
-1. beforecrawl => Raised before a URL's children are 
+Events raised before an action is performed.
+
+1. before_crawl_url : Raised before a URL's children are 
 put into the crawl queue. Args: url, document .
-2. beforefetch => Raised before a URL is fetched, i.e
+2. before_download_url : Raised before a URL is fetched, i.e
 downloaded from the web. Args: url .
-3. beforeparse => Raised before a webpage URL's data
+3. before_url_connect : Raised before a connection is opened
+for a URL. Args: url, last modified time, etag.
+4. before_tag_parse: Raised before an HTML tag is parsed
+by the parser. Args: url, tag, tag attributes dictionary.
+5. before_tag_data: Raised before the CDATA of an HTML
+tag is parsed. Args: url, tag, CDATA.
+6. before_parse_url : Raised before a webpage URL's data
 is parsed to extract child links. Args: url, document
-4. beforejsparse => Raised before a webpage URL's data
-is parsed to extract any links hidden in Javascript. 
-Args: url, document.
-5. beforecssparse => Raised before a stylesheet URL's data
-is parsed to extract any links. Args: url, document. 
-6.writeurl => Raised before a URL's data is saved to disk.
+7. save_url_data : Raised before a URL's data is saved to disk.
 Args: url, data
-7. includelinks => Raised before a URL is put into the 
+8. include_this_link : Raised before a URL is put into the 
 crawl queue. Filtering logic can be added in the handler
 to filter the URL. Args: url .
+9. before_start_project: Raised before a crawl project
+is started. Args: starting URL.
+10. before_finish_project: Raised before a crawl project
+is finished: Args: starting URL.
 
-After Events
+Post Events
 -------------
-1. aftercrawl => Raised after the crawl of a URL's children
+Events raised after an action is performed.
+
+1. post_crawl_url : Raised after the crawl of a URL's children
 are complete, i.e the children are put into the crawl
 queue. Args: url, document.
-2. afterfetch => Raised after the URL is downloaded and
+2. post_fetch_url => Raised after the URL is downloaded and
 if a webpage, parsed and its children are put into the
 fetch queue. Args: url, document.
-3. afterjsparse => Raised after a webpage URL's data
-is parsed to extract any links hidden in Javascript. 
-Args: url, document, links
-4. afterparse => Raised after a webpage URL's data
-is parsed to extract webpage links. Args: url, document, links
-5. aftercssparse => Raised after a stylesheet URL's data
-is parsed to extract any links. Args: url, document, links.
-6. postdownload => Raised immediately after the steps
-performed after a download is completed. (This effectively
-functions as a callback function for the post_download_setup
-method in datamgr module). Args: None .
-
-
+3. post_parse_url : Raised after a webpage URL's data
+is parsed to extract webpage links. Args: url, document, links.
+4. post_crawl_complete: Raised after the crawl of all URLs
+is complete and just before exiting the application. Args: None.
+5. post_start_project: Raised after a crawl project is started.
+Args: starting URL.
+6. post_finish_project: Raised after a crawl project is finished.
+Args: starting URL.
