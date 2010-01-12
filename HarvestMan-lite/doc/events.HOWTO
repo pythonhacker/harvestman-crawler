@@ -47,7 +47,7 @@ Note that every event may not supply all the arguments
 to the event handler.
 
 
-Binding event handlers
+Registering event handlers
 ----------------------
 Event handlers can be bound using the 'bind' method of the
 HarvestManEvent class. This takes 3 arguments namely,
@@ -57,18 +57,14 @@ HarvestManEvent class. This takes 3 arguments namely,
               The function is called back when the event is
               raised.
 
-Apart from that you can pass additional positional arguments
-for the function. This will be passed to the function when
-the event is raised.
-
 The bind method is exposed on the HarvestMan class (as
-bind_event), so practically, you will be using that method 
+"register"), so practically, you will be using that method 
 instead of using the method directly on the HarvestManEvent class.
 
 
 Example
 -------
-The following code shows how to bind for an event
+The following code shows how to register for an event.
 
 def write_this_url(event, *args):
         
@@ -82,7 +78,7 @@ We want to bind this to the 'save_url_data' event to make
 sure we write only image URLs. To bind it,
 
 spider = HarvestMan()
-spider.bind_event('save_url_data', write_this_url)
+spider.register('save_url_data', write_this_url)
 
 Now whenever the 'save_url_data' event is raised, the function
 'write_this_url' is called automatically.
@@ -107,6 +103,11 @@ Other events are 'post handlers' which raise an event
 after an action is done. Since the programmer cannot 
 influence the action at this stage, the return value of 
 these events are of no importance.
+
+By defaul every event raises the referring URL and
+the Document object. For most events the URL is a 
+valid (not None) object. However for some events,
+this need not be valid.
 
 Events in HarvestMan
 --------------------
