@@ -20,7 +20,7 @@ from harvestman.lib import logger
 class HtmlTableCrawler(HarvestMan):
     """ A crawler which fetches only HTML (webpage) pages """
 
-    prefix_link = 'List_of_airports_by_IATA_code'.lower()
+    prefix_link = '/wiki/List_of_airports_by_IATA_code'.lower()
     prev_tag = ''
     tag_data = []
     count = 0
@@ -29,7 +29,7 @@ class HtmlTableCrawler(HarvestMan):
         
         url, url_string = event.url, event.url.origurl
         
-        if url.is_webpage() and url_string.lower().find(self.prefix_link) != -1:
+        if url.is_webpage() and url_string.lower().startswith(self.prefix_link):
             return None
         else:
             return False
@@ -38,7 +38,7 @@ class HtmlTableCrawler(HarvestMan):
         
         url, url_string = event.url, event.url.origurl
         
-        if url.is_webpage() and url_string.lower().find(self.prefix_link) != -1:
+        if url.is_webpage() and url_string.lower().startswith(self.prefix_link):
             return None
         else:
             return False        
