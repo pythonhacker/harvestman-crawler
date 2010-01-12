@@ -652,6 +652,13 @@ class HarvestMan(HarvestManAppBase):
         """ Binds a function to a specific event in HarvestMan """
         
         objects.eventmgr.bind(event, funktion, args)
+
+    def register(self, event, funktion):
+        """ Alias for bind-event method. Registers a user supplied
+        function as a call-back to the HarvestMan event defined by
+        'event' """
+
+        self.bind_event(event, funktion)
         
     def main(self):
         """ The main sub-routine of the HarvestMan class """

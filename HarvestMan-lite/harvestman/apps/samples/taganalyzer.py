@@ -29,10 +29,7 @@ class TagAnalyzingCrawler(HarvestMan):
         # Since we are doing only tag analysis, don't write anything..
         return False
     
-    def analyze_this_tag(self, event, *args, **kwargs):
-
-        tag = kwargs.get('tag','')
-        attrs = kwargs.get('attrs',None)
+    def analyze_this_tag(self, event, tag, attrs, **kwargs):
 
         # This performs a check on images not having the 'alt' attribute...
         if tag.lower() == 'img':
@@ -60,7 +57,8 @@ if __name__ == "__main__":
     config = spider.get_config()
     # Disable caching
     config.pagecache = 0
-    spider.bind_event('save_this_url', spider.write_this_url)
-    spider.bind_event('before_tag_parse', spider.analyze_this_tag)
-    spider.bind_event('before_finish_project', spider.finish_event_cb)
+
+    spider.register('save_this_url', spider.write_this_url)
+    spider.register('before_tag_parse', spider.analyze_this_tag)
+    spider.register('before_finish_project', spider.finish_event_cb)
     spider.main()

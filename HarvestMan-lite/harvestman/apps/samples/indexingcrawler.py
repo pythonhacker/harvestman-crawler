@@ -18,8 +18,8 @@ from harvestman.apps.spider import HarvestMan
 from harvestman.lib.common.common import *
 from types import StringTypes
 
-# You can write pretty crazy custom crawlers by combining
-# different events and writing handlers for them ! :)
+# You can write a variety of custom crawlers by combining
+# different events and writing handlers for them...
 
 class IndexingCrawler(HarvestMan):
     """ A text indexing crawler using PyLucene """
@@ -114,5 +114,5 @@ if __name__ == "__main__":
     config.images = 0
     config.pagecache = 0
 
-    spider.bind_event('post_crawl_complete', spider.post_download_cb)
+    spider.register('post_crawl_complete', spider.post_download_cb)
     spider.main()

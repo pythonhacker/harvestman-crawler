@@ -21,27 +21,45 @@ class HtmlTableCrawler(HarvestMan):
     """ A crawler which fetches only HTML (webpage) pages """
 
     prefix_link = 'List_of_airports_by_IATA_code'.lower()
+    prev_tag = ''
+    tag_data = []
+    count = 0
     
     def crawl_this_url(self, event, *args, **kwargs):
         
         url, url_string = event.url, event.url.get_full_url()
 
         if url.is_webpage() and url_string.lower().startswith(self.prefix_link):
-            # Allow for further processing by rules...
-            # otherwise we will end up crawling the entire
-            # web, since no other rules will apply if we
-            # return True here.
             return None
         else:
             return False
 
-    def parse_tag_data(self, event, *args, **kwargs):
+    def parse_tag(self, event, tag, attrs, **kwargs):
+        """ Parse tag """
+
+        if tag.lower()=='a' and self.prev_tag=='td':
+            self.count += 1
+            print event.url,':',self.tag_data[-2:],'=>',attrs
+
+
+        if self.count>=2:
+            self.tag_data = []
+            self.count = 0
+            
+        # Reset tag_data
+        self.prev_tag = tag
+        
+        
+    def parse_tag_data(self, event, tag, data, **kwargs):
         """ Parse specific tag data """
 
-        tag, data = kwargs['tag'], kwargs['data']
-        
         if tag.lower()=='td':
-            print 'URL=>',event.url,'Tag=>',tag,'Data=>',data
+            # Need to append tag data since there are two <td> elements i.e
+            # 2 columns before the <a ...> tags come.
+            self.tag_data.append(data)
+            
+            
+        self.prev_tag = tag
 
 if __name__ == "__main__":
     spider=HtmlTableCrawler()
@@ -52,8 +70,10 @@ if __name__ == "__main__":
     # Need to fool web-site
     cfg.USER_AGENT = 'Firefox/v3.5'
     cfg.add(url='http://en.wikipedia.org/wiki/List_of_airports_by_IATA_code:_A')
-    spider.bind_event('before_craw_url', spider.crawl_this_url)
-    spider.bind_event('before_tag_data', spider.parse_tag_data)
+
+    spider.register('before_craw_url', spider.crawl_this_url)
+    spider.register('before_tag_data', spider.parse_tag_data)
+    spider.register('before_tag_parse', spider.parse_tag)    
 
     cfg.setup()
     spider.main()

@@ -34,5 +34,6 @@ if __name__ == "__main__":
     spider=HtmlCrawler()
     spider.initialize()
     cfg = spider.get_config()
-    spider.bind_event('include_this_link', spider.include_this_link)
+
+    spider.register('include_this_link', spider.include_this_link)
     spider.main()

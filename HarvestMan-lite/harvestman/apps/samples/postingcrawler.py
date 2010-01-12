@@ -113,6 +113,6 @@ if __name__ == "__main__":
     config.robots = 0
     config.localise = 0
 
-    spider.bind_event('post_parse_url', spider.after_parse_cb)
-    spider.bind_event('before_finish_project', spider.finish_event_cb)    
+    spider.register('post_parse_url', spider.after_parse_cb)
+    spider.register('before_finish_project', spider.finish_event_cb)    
     spider.main()
