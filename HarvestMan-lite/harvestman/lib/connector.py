@@ -839,7 +839,7 @@ class HarvestManUrlConnector(object):
         lmt, tag = lastmodified, etag
 
         # Raise an event...
-        if objects.eventmgr.raise_event('before_url_connect', urlobj, None, last_modified=lastmodified, etag=etag)==False:
+        if objects.eventmgr.raise_event('before_url_connect', urlobj, None, lastmodified, etag)==False:
             return CONNECT_NO_FILTERED
 
         add_ua = self._cfg._connaddua
@@ -1424,7 +1424,7 @@ class HarvestManUrlConnector(object):
         """ Writes the data for the URL object 'urlobj' to a disk file (internal method) """
 
         # Raise writeurl event
-        if objects.eventmgr.raise_event('save_url_data', urlobj, data=self._data)==False:
+        if objects.eventmgr.raise_event('save_url_data', urlobj, None, self._data)==False:
             extrainfo('Filtering write of URL',urlobj)
             return WRITE_URL_FILTERED
 

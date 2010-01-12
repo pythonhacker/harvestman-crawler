@@ -680,7 +680,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
                         pass
 
                     # Raise "afterjsparse" event
-                    objects.eventmgr.raise_event('post_js_parse', self.url, document, links=links)
+                    objects.eventmgr.raise_event('post_js_parse', self.url, document, links)
 
             parsecount = 0
             
@@ -749,7 +749,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
             document.title = self.wp.title
             
             # Raise "afterparse" event...
-            objects.eventmgr.raise_event('post_parse_url', self.url, document, links=links)
+            objects.eventmgr.raise_event('post_parse_url', self.url, document, links)
 
             # Apply textfilter check here. This filter is applied on content
             # or metadata and is always a crawl filter, i.e since it operates

@@ -41,16 +41,16 @@ class HarvestManEvent(Singleton):
         # the event name, the url associated to the event (should be valid),
         # the document associated to the event (could be None) and the configuration
         # object of the system.
-        self.events[event] = (funktion, args)
+        self.events[event] = funktion
         # print self.events
         
-    def raise_event(self, event, url, document=None, **kwargs):
+    def raise_event(self, event, url, document=None, *args, **kwargs):
         """ Raise a certain event. This automatically calls back on any function
         registered for the event and returns the return value of that function. This
         is an internal method """
 
         try:
-            funktion, args = self.events[event]
+            funktion = self.events[event]
             eventobj = Event()
             eventobj.name = event
             eventobj.url = url

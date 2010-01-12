@@ -231,7 +231,7 @@ class HarvestManSimpleParser(SGMLParser):
         tuples """
 
         # Raise event for anybody interested in catching a tagparse event...
-        if objects.eventmgr and objects.eventmgr.raise_event('before_tag_parse', self.url, None, tag=tag, attrs=attrs)==False:
+        if objects.eventmgr and objects.eventmgr.raise_event('before_tag_parse', self.url, None, tag, attrs)==False:
             # Don't parse this tag..
             return
                                      
@@ -364,7 +364,7 @@ class HarvestManSimpleParser(SGMLParser):
     def handle_data(self, data):
 
         # Raise event for anybody interested in catching a tagparse event...
-        if objects.eventmgr and objects.eventmgr.raise_event('before_tag_data', self.url, None, tag=self._tag, data=data)==False:
+        if objects.eventmgr and objects.eventmgr.raise_event('before_tag_data', self.url, None, self._tag, data)==False:
             # Don't handle data
             return
         
