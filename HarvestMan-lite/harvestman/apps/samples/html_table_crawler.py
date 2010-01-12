@@ -27,12 +27,21 @@ class HtmlTableCrawler(HarvestMan):
     
     def crawl_this_url(self, event, *args, **kwargs):
         
-        url, url_string = event.url, event.url.get_full_url()
-
-        if url.is_webpage() and url_string.lower().startswith(self.prefix_link):
+        url, url_string = event.url, event.url.origurl
+        
+        if url.is_webpage() and url_string.lower().find(self.prefix_link) != -1:
             return None
         else:
             return False
+
+    def download_this_url(self, event, *args, **kwargs):
+        
+        url, url_string = event.url, event.url.origurl
+        
+        if url.is_webpage() and url_string.lower().find(self.prefix_link) != -1:
+            return None
+        else:
+            return False        
 
     def parse_tag(self, event, tag, attrs, **kwargs):
         """ Parse tag """
@@ -71,7 +80,8 @@ if __name__ == "__main__":
     cfg.USER_AGENT = 'Firefox/v3.5'
     cfg.add(url='http://en.wikipedia.org/wiki/List_of_airports_by_IATA_code:_A')
 
-    spider.register('before_craw_url', spider.crawl_this_url)
+    spider.register('before_crawl_url', spider.crawl_this_url)
+    spider.register('before_download_url', spider.download_this_url)    
     spider.register('before_tag_data', spider.parse_tag_data)
     spider.register('before_tag_parse', spider.parse_tag)    
 
