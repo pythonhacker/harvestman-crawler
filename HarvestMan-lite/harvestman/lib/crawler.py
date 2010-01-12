@@ -429,7 +429,7 @@ class HarvestManUrlCrawler(HarvestManBaseUrlCrawler):
         """ Crawl a web page, recursively downloading its links """
 
         # Raise before crawl event...
-        if objects.eventmgr.raise_event('before_crawl_url', self.url, self.document)==False:
+        if (objects.eventmgr.raise_event('before_crawl_url', self.url, self.document)==False) and (not self.url.starturl):
             extrainfo('Not crawling this url',self.url)
             return
         
@@ -608,7 +608,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
 
         data = ''
         # Raise "beforefetch" event...
-        if objects.eventmgr.raise_event('before_download_url', self.url)==False:
+        if (objects.eventmgr.raise_event('before_download_url', self.url)==False) and (not self.url.starturl):
             return 
         
         if self.url.qstatus==urlparser.URL_NOT_QUEUED:
@@ -631,7 +631,7 @@ class HarvestManUrlFetcher(HarvestManBaseUrlCrawler):
             document = url_obj.make_document(data, [], '', [])
             
             # Raise "beforeparse" event...
-            if objects.eventmgr.raise_event('before_parse_url', self.url, document)==False:
+            if (objects.eventmgr.raise_event('before_parse_url', self.url, document)==False) and (not self.url.starturl):
                 return 
             
             # Check if this page was already crawled
