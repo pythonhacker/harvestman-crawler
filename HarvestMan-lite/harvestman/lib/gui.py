@@ -13,7 +13,7 @@ import web
 import webbrowser
 import time
 
-from web import form, net, request
+from web import form, net #, request
 
 def get_templates_location():
     # Templates are located at harvestman/ui/templates folder...
@@ -23,6 +23,16 @@ def get_templates_location():
 
 # Global render object
 g_render = web.template.render(get_templates_location())
+
+CONFIG_HTML_TEMPLATE="""\
+<html><head><title>HarvestMan Configuration File Generator</title>
+%s
+</head>
+<body>
+%s
+</body>
+</html>
+"""
 
 PLUG_TEMPLATE="""\
        <plugin name="%s" enable="1" />
@@ -600,44 +610,38 @@ class HarvestManConfigGenerator(object):
     def GET(self):
         
         form = self.create_form()
-        print "<html><head><title>HarvestMan Configuration File Generator</title>"
-        # Styles...
-        print "%s\n" % render_stylesheet()
-        print "</head>\n"
-        print "<body>\n"
-        print g_render.form(form)
-        print "</body>"
-        print "</html>"
+        return CONFIG_HTML_TEMPLATE % (render_stylesheet(), g_render.form(form))
 
     def POST(self): 
 
         form = self.create_form()
         if not form.validates(): 
-            print g_render.form(form)
+            return g_render.form(form)
         else:
-            print self.make_config_xml(form)
+            return self.make_config_xml(form)
 
 class HarvestManGUI(object):
     """ Main UI class for HarvestMan """
 
     def GET(self):
-        print "%s" % render_tabs()
+        return "%s" % render_tabs()
 
 class HarvestManLoader(object):
 
-    GET = request.autodelegate('GET_')
+    # GET = request.autodelegate('GET_')
 
     def GET_tabberjs(self):
+        print 'LOCATION=>',get_templates_location()
         path = os.path.join(get_templates_location(), 'content','tabber.js')
-        print '%s' % open(path).read()
+        return '%s' % open(path).read()
 
     def GET_example_css(self):
         path = os.path.join(get_templates_location(), 'content','example.css')
-        print '%s' % open(path).read()
+        return '%s' % open(path).read()
 
     def GET_example_print_css(self):
         path = os.path.join(get_templates_location(), 'content','example-print.css')
-        print '%s' % open(path).read()        
+        return '%s' % open(path).read()        
         
 
 urls = ('/', 'HarvestManGUI',
@@ -651,8 +655,9 @@ def run():
     sys.argv.append("5940")
     print "Starting HarvestMan Web UI at port 5940..."
     web.internalerror = web.debugerror
-    web.run(urls, globals(), web.reloader)
-
+    app=web.application(urls, globals())
+    app.run()
+    
 if __name__ == "__main__":
     run()
 
