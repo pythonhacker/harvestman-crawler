@@ -268,9 +268,9 @@ class HarvestMan(HarvestManAppBase):
 
             
             # Write the project file 
-            if not objects.config.fromprojfile:
-                projector = utils.HarvestManProjectManager()
-                projector.write_project()
+            # if not objects.config.fromprojfile:
+            #    projector = utils.HarvestManProjectManager()
+            #    projector.write_project()
 
             # Write the project database record
             HarvestManDbManager.add_project_record()
