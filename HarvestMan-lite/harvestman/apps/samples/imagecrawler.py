@@ -11,7 +11,7 @@ Copyright (C) 2008 Anand B Pillai
 """
 
 import sys
-import __init__
+#import __init__
 from harvestman.apps.spider import HarvestMan
 from harvestman.lib.common.macros import *
 
