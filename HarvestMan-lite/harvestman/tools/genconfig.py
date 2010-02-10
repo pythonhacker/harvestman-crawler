@@ -46,4 +46,4 @@ def main():
     # Start timer thread to run after 5 seconds
     print 'Waiting for page to load in browser...'
     threading.Timer(5.0, open_page).start()
-    web.run(urls, globals(), web.reloader)
+    web.application(urls, globals()).run()
