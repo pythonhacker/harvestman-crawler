@@ -348,17 +348,6 @@ class HarvestManRulesChecker(object):
         
         return True
 
-    def apply_word_filter(self, data):
-        """ Apply the word filter """
-
-        if self._configobj.wordfilter:
-            if self._configobj.wordfilterre.search(data):
-                return True
-            else:
-                return False
-
-        return False
-
     def is_under_starting_directory(self, urlObj):
         """ Check whether the url in the url object belongs
         to the same directory as the starting url for the

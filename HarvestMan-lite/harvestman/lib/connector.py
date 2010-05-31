@@ -1635,12 +1635,6 @@ class HarvestManUrlConnector(object):
             # Set the data as cache-data
             self._data = cached_data
             
-        # Apply word filter
-        if not urlobj.starturl:
-            if urlobj.is_webpage() and objects.rulesmgr.apply_word_filter(self._data):
-                extrainfo("Word filter prevents download of url =>", url)
-                return DOWNLOAD_NO_RULE_VIOLATION
-
         # If no need to save html files return from here
         if urlobj.is_webpage() and not self._cfg.html:
             extrainfo("Html filter prevents download of url =>", url)
