@@ -1,0 +1,3 @@
+HarvestMan is a modular, extensible and flexible web crawler program cum framework written in pure Python. HarvestMan can be used to download files from websites according to a number of customized rules and constraints. It can be used to find information from websites matching keywords or regular expressions.
+
+The final goal of the project is to develop a full-fledged semantic personal data mining platform which can be used to retrieve information from the Internet in a highly customizable manner, so that one can fetch information from the web _the way he wants it, when he wants it_. For this, HarvestMan project will provide support for Web 2.0 and 3.0 technologies such as RSS, RDF, OWL etc.
